@@ -12,7 +12,6 @@ class HorizontalCollectionView: UICollectionView {
 
     init(fixedCellWidth: Int? = nil) {
         super.init(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-        backgroundColor = .clear
         
         // IMPORTANT: estimated size must be less than actual size, or
         // collectionViewContentSize will take on the large dimension
@@ -41,6 +40,11 @@ class HorizontalCollectionView: UICollectionView {
         heightConstraint.isActive = true
         
         showsHorizontalScrollIndicator = false
+        
+        // For some strange reason, a completely transparent background will result
+        // in zero touch feedback where there isn't a child view; to work around this,
+        // setting a practically invisible background color:
+        backgroundColor = .appBackground.withAlphaComponent(0.001)
     }
     
     required init?(coder: NSCoder) {

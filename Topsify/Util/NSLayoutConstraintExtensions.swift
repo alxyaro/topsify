@@ -18,4 +18,9 @@ extension NSLayoutConstraint {
         self.priority += adjustment
         return self
     }
+    
+    func isActive(_ active: Bool) -> Self {
+        self.isActive = active
+        return self
+    }
 }

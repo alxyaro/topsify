@@ -7,11 +7,11 @@
 
 import UIKit
 
-class ProductionCollectionView: HorizontalCollectionView {
+class ArtifactCollectionView: HorizontalCollectionView {
     
     init() {
         super.init()
-        register(ProductionCell.self, forCellWithReuseIdentifier: ProductionCell.identifier)
+        register(ArtifactCell.self, forCellWithReuseIdentifier: ArtifactCell.identifier)
         dataSource = self
     }
     
@@ -20,13 +20,13 @@ class ProductionCollectionView: HorizontalCollectionView {
     }
 }
 
-extension ProductionCollectionView: UICollectionViewDataSource {
+extension ArtifactCollectionView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         10
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductionCell.identifier, for: indexPath)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ArtifactCell.identifier, for: indexPath)
         
         return cell
     }

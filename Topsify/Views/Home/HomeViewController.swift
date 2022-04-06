@@ -13,7 +13,7 @@ class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let productionRowView = ProductionCollectionView()
+        let productionRowView = ArtifactCollectionView()
         view.addSubview(productionRowView)
         productionRowView.translatesAutoresizingMaskIntoConstraints = false
         productionRowView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
