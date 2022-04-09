@@ -12,7 +12,7 @@ class RootViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = UIColor(named: "Background")
+        view.backgroundColor = .appBackground
         
         // TODO use a tab bar controller instead of this
         let child = HomeViewController()

@@ -13,7 +13,9 @@ class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let productionRowView = ArtifactCollectionView()
+        let productionRowView = ArtifactRowView()
+        productionRowView.contentInset.left = 15
+        productionRowView.contentInset.right = 15
         view.addSubview(productionRowView)
         productionRowView.translatesAutoresizingMaskIntoConstraints = false
         productionRowView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true

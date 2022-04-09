@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ArtifactCollectionView: HorizontalCollectionView {
+class ArtifactRowView: HorizontalCollectionView {
     
     init() {
         super.init()
@@ -20,7 +20,7 @@ class ArtifactCollectionView: HorizontalCollectionView {
     }
 }
 
-extension ArtifactCollectionView: UICollectionViewDataSource {
+extension ArtifactRowView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         10
     }
