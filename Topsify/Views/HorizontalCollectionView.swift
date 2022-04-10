@@ -56,6 +56,12 @@ class HorizontalCollectionView: UICollectionView {
         heightConstraint.constant = collectionViewLayout.collectionViewContentSize.height
         layoutIfNeeded()
     }
+    
+    override func layoutMarginsDidChange() {
+        super.layoutMarginsDidChange()
+        contentInset.left = directionalLayoutMargins.leading
+        contentInset.right = directionalLayoutMargins.trailing
+    }
 }
 
 extension HorizontalCollectionView: UICollectionViewDelegate {

@@ -13,14 +13,25 @@ class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.directionalLayoutMargins.leading = 15
+        view.directionalLayoutMargins.trailing = 15
+        
+        let header = HomeHeaderView()
+        
+        view.addSubview(header)
+        header.translatesAutoresizingMaskIntoConstraints = false
+        header.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor).isActive = true
+        header.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor).isActive = true
+        header.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        
         let productionRowView = ArtifactRowView()
-        productionRowView.contentInset.left = 15
-        productionRowView.contentInset.right = 15
+        productionRowView.preservesSuperviewLayoutMargins = true
+        
         view.addSubview(productionRowView)
         productionRowView.translatesAutoresizingMaskIntoConstraints = false
-        productionRowView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        productionRowView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
-        productionRowView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
+        productionRowView.topAnchor.constraint(equalTo: header.bottomAnchor, constant: 15).isActive = true
+        productionRowView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        productionRowView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
     
 
