@@ -14,17 +14,14 @@ class RootViewController: UIViewController {
         
         view.backgroundColor = .appBackground
         
-        // TODO use a tab bar controller instead of this
-        let child = HomeViewController()
-        addChild(child)
-        child.didMove(toParent: self)
-        view.addSubview(child.view)
+        let tempNavController = AppNavigationController(rootViewController: HomeViewController())
         
-        child.view.translatesAutoresizingMaskIntoConstraints = true
-        child.view.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        child.view.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        child.view.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        child.view.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        // TODO use a tab bar controller instead of this
+        addChild(tempNavController)
+        tempNavController.didMove(toParent: self)
+        view.addSubview(tempNavController.view)
+        
+        tempNavController.view.constrain(into: view)
     }
 
 

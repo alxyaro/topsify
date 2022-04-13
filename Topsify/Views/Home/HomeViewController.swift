@@ -7,11 +7,17 @@
 
 import UIKit
 
-class HomeViewController: UIViewController {
+class HomeViewController: UIViewController, AppNavigableController {
     
+    var isNavBarSticky = false
+    var navBarButtons = [AppNavigationBarButton]()
+    var mainScrollView: UIScrollView? = nil
+    var mainScrollViewOnScroll: AppNavigableController.Callback?
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        title = "Test Title"
         
         view.directionalLayoutMargins.leading = 15
         view.directionalLayoutMargins.trailing = 15
@@ -32,6 +38,10 @@ class HomeViewController: UIViewController {
         productionRowView.topAnchor.constraint(equalTo: header.bottomAnchor, constant: 15).isActive = true
         productionRowView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         productionRowView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        
+        navBarButtons.append(AppNavigationBarButton(iconName: Bool.random() ? "flame" : "trash", onTap: {
+            self.navigationController?.pushViewController(HomeViewController(), animated: true)
+        }))
     }
     
 
