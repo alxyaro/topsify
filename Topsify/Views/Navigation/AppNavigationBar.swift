@@ -9,19 +9,21 @@ import UIKit
 
 class AppNavigationBar: UIView {
     private static let titleAnimationMoveDelta: CGFloat = 45
+    weak var navigationController: AppNavigationController?
     
     private var currentViewController: UIViewController?
     
-    private let backArrow: UIImageView = {
-        let arrow = UIImageView()
-        arrow.image = UIImage(systemName: "chevron.left", withConfiguration: UIImage.SymbolConfiguration(pointSize: 19, weight: .bold))
-        arrow.tintColor = .appTextPrimary
-        arrow.translatesAutoresizingMaskIntoConstraints = false
+    private let backArrow: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "chevron.left", withConfiguration: UIImage.SymbolConfiguration(pointSize: 19, weight: .bold)), for: .normal)
+        button.tintColor = .appTextPrimary
+        button.translatesAutoresizingMaskIntoConstraints = false
         // TODO: make into custom over-arching component
-        arrow.widthAnchor.constraint(equalToConstant: 30).isActive = true
-        arrow.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        arrow.contentMode = .center
-        return arrow
+        button.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        button.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        button.contentMode = .center
+        button.addTarget(self, action: #selector(handleBackButtonTap), for: .touchUpInside)
+        return button
     }()
     
     private let titleLabel: UILabel = {
@@ -78,6 +80,13 @@ class AppNavigationBar: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    @objc private func handleBackButtonTap() {
+        guard navigationController?.animationActive == false else {
+            return
+        }
+        navigationController?.popViewController(animated: true)
+    }
+    
     private func calcVerticalPosition(for controller: UIViewController) -> CGFloat {
         guard let scrollView = (controller as? AppNavigableController)?.mainScrollView else {
             return 0
@@ -95,11 +104,12 @@ class AppNavigationBar: UIView {
         return offset
     }
     
-    func update(for viewController: UIViewController, isRoot: Bool) {
+    func update(for viewController: UIViewController, isRoot: Bool, performLayout: Bool = false) {
         let navigable = viewController as? AppNavigableController
         
         backArrow.isHidden = isRoot
         titleLabel.text = viewController.navigationItem.title ?? "Untitled"
+        titleLabel.alpha = 1
         for button in buttonStackView.arrangedSubviews {
             buttonStackView.removeArrangedSubview(button)
             button.removeFromSuperview()
@@ -107,25 +117,33 @@ class AppNavigationBar: UIView {
         for button in navigable?.navBarButtons ?? [] {
             buttonStackView.addArrangedSubview(button)
         }
+        buttonStackView.alpha = 1
         
         frame = CGRect(x: frame.minX, y: calcVerticalPosition(for: viewController), width: frame.width, height: frame.height)
+        
+        setNeedsLayout()
+        if performLayout {
+            layoutIfNeeded()
+        }
     }
     
     typealias TransitionContext = (fromVC: UIViewController, toVC: UIViewController, containerView: UIView)
     
-    func pushTransition(using context: TransitionContext, animator: UIViewPropertyAnimator) {
+    func transition(using context: UIViewControllerContextTransitioning, operation: UINavigationController.Operation, toRootVC: Bool, animator: UIViewPropertyAnimator) {
+        let pushing = operation == .push
+        
         // record previous state
         let prevFrame = frame
         let prevBackArrowIsHidden = backArrow.isHidden
+        let prevBackArrow = backArrow.snapshotView(afterScreenUpdates: false)
+        prevBackArrow?.frame = backArrow.convert(backArrow.bounds, to: self)
         let prevTitleLabel = titleLabel.snapshotView(afterScreenUpdates: false)
         prevTitleLabel?.frame = titleLabel.convert(titleLabel.bounds, to: self)
         let prevButtonStackView = buttonStackView.snapshotView(afterScreenUpdates: false)
         prevButtonStackView?.frame = buttonStackView.convert(buttonStackView.bounds, to: self)
         
         // update state
-        update(for: context.toVC, isRoot: false)
-        setNeedsLayout()
-        layoutIfNeeded()
+        update(for: context.viewController(forKey: .to)!, isRoot: toRootVC, performLayout: true)
         
         // add temp snapshot views
         if prevTitleLabel != nil {
@@ -136,22 +154,28 @@ class AppNavigationBar: UIView {
         }
         
         // perform animations
-        if prevBackArrowIsHidden {
+        if prevBackArrowIsHidden && !backArrow.isHidden {
             backArrow.alpha = 0
             backArrow.frame = backArrow.frame.offsetBy(dx: Self.titleAnimationMoveDelta/2, dy: 0)
             animator.addAnimations { [unowned self] in
                 backArrow.alpha = 1
                 backArrow.frame = backArrow.frame.offsetBy(dx: -Self.titleAnimationMoveDelta/2, dy: 0)
             }
+        } else if let prevBackArrow = prevBackArrow, !prevBackArrowIsHidden && backArrow.isHidden {
+            addSubview(prevBackArrow)
+            animator.addAnimations {
+                prevBackArrow.alpha = 0
+                prevBackArrow.frame = prevBackArrow.frame.offsetBy(dx: Self.titleAnimationMoveDelta/2, dy: 0)
+            }
         }
         
         titleLabel.alpha = 0
         let titleTargetFrame = titleLabel.frame
-        titleLabel.frame = titleLabel.frame.offsetBy(dx: Self.titleAnimationMoveDelta, dy: 0)
+        titleLabel.frame = titleLabel.frame.offsetBy(dx: Self.titleAnimationMoveDelta * (pushing ? 1 : -1), dy: 0)
         animator.addAnimations { [unowned self] in
             if let prevTitleLabel = prevTitleLabel {
                 prevTitleLabel.alpha = 0
-                prevTitleLabel.frame = prevTitleLabel.frame.offsetBy(dx: -Self.titleAnimationMoveDelta, dy: 0)
+                prevTitleLabel.frame = prevTitleLabel.frame.offsetBy(dx: -Self.titleAnimationMoveDelta * (pushing ? 1 : -1), dy: 0)
             }
             titleLabel.alpha = 1
             titleLabel.frame = titleTargetFrame
@@ -169,16 +193,15 @@ class AppNavigationBar: UIView {
             frame = newFrame
         }
         
-        animator.addCompletion { pos in
-            if pos == .end {
-                self.currentViewController = context.toVC
+        animator.addCompletion { [unowned self] pos in
+            if pos == .start, let fromVC = context.viewController(forKey: .from) {
+                // revert to true state (due to cancellation, i.e. pos == .start)
+                let returningToRoot = navigationController?.viewControllers[0] == fromVC
+                update(for: fromVC, isRoot: returningToRoot)
             }
+            prevBackArrow?.removeFromSuperview()
             prevTitleLabel?.removeFromSuperview()
             prevButtonStackView?.removeFromSuperview()
         }
-    }
-    
-    func popTransition(using context: UIViewControllerContextTransitioning, animator: UIViewPropertyAnimator) {
-        
     }
 }

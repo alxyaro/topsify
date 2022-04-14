@@ -8,15 +8,22 @@
 import UIKit
 
 class AppNavigationController: UINavigationController {
-    let rootViewController: UIViewController
     let customNavBar = AppNavigationBar()
-    var initialSetupComplete = false
+    var animationActive = false {
+        didSet {
+            // this is just for good measure
+            // if UIVIewPropertyAnimator.isUserInteractionEnabled is not explicitly set to true,
+            // the user can click on buttons in the nav bar before animation completes
+            customNavBar.isUserInteractionEnabled = !animationActive
+        }
+    }
+    let customPopGestureRecoginizer = UIScreenEdgePanGestureRecognizer()
+    var activePopGestureTransition: UIPercentDrivenInteractiveTransition?
     
     override init(rootViewController: UIViewController) {
-        self.rootViewController = rootViewController
-        
         super.init(rootViewController: rootViewController)
         delegate = self
+        customNavBar.navigationController = self
         
         navigationBar.isHidden = true
         isNavigationBarHidden = true
@@ -29,6 +36,10 @@ class AppNavigationController: UINavigationController {
         // force viewDidLoad to run
         _ = rootViewController.view
         customNavBar.update(for: rootViewController, isRoot: true)
+        
+        customPopGestureRecoginizer.edges = .left
+        customPopGestureRecoginizer.addTarget(self, action: #selector(handlePopGesture))
+        customPopGestureRecoginizer.isEnabled = true
     }
     
     override func viewDidLayoutSubviews() {
@@ -39,86 +50,63 @@ class AppNavigationController: UINavigationController {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    @objc private func handlePopGesture(sender: UIScreenEdgePanGestureRecognizer) {
+        switch sender.state {
+        case .began:
+            if animationActive || activePopGestureTransition != nil || viewControllers.count < 2 {
+                return;
+            }
+            activePopGestureTransition = UIPercentDrivenInteractiveTransition()
+            popViewController(animated: true)
+        case .changed:
+            let pct = sender.translation(in: view).x / view.bounds.width
+            activePopGestureTransition?.update(pct)
+        case .ended, .cancelled:
+            guard let activePopGestureTransition = activePopGestureTransition else {
+                return
+            }
+            var shouldFinish = activePopGestureTransition.percentComplete > 0.5
+            
+            let velocity = sender.velocity(in: view).x
+            if !shouldFinish && velocity > 100 {
+                shouldFinish = true
+            }
+            
+            if shouldFinish {
+                activePopGestureTransition.finish()
+            } else {
+                activePopGestureTransition.cancel()
+            }
+            self.activePopGestureTransition = nil
+        default:
+            break
+        }
+    }
 }
 
 extension AppNavigationController: UINavigationControllerDelegate {
     
-    func navigationController(_: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        
+    func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
+        interactivePopGestureRecognizer?.isEnabled = false
+        if viewControllers.count > 1 {
+            viewController.view.addGestureRecognizer(customPopGestureRecoginizer)
+        } else if let mountedView = customPopGestureRecoginizer.view {
+            mountedView.removeGestureRecognizer(customPopGestureRecoginizer)
+        }
+        // in case animated=false was used for the push/pop:
+        customNavBar.update(for: viewController, isRoot: viewControllers.count == 1)
     }
     
     func navigationController(_: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         switch operation {
-        case .push:
-            return NavigationPushTransition(navigationController: self)
+        case .push, .pop:
+            return NavigationTransitionController(operation: operation, navigationController: self)
         default: return nil
         }
     }
-}
-
-fileprivate class NavigationPushTransition: NSObject, UIViewControllerAnimatedTransitioning {
-    private let navigationController: AppNavigationController
-    private var animator: UIViewPropertyAnimator?
     
-    init(navigationController: AppNavigationController) {
-        self.navigationController = navigationController
-    }
-    
-    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        0.3
-    }
-    
-    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        let animator = interruptibleAnimator(using: transitionContext)
-        animator.startAnimation()
-    }
-    
-    func interruptibleAnimator(using transitionContext: UIViewControllerContextTransitioning) -> UIViewImplicitlyAnimating {
-        if let animator = animator {
-            return animator
-        }
-        let animator = UIViewPropertyAnimator(duration: transitionDuration(using: transitionContext), curve: .easeInOut)
-        
-        let fromView = transitionContext.view(forKey: .from)!
-        let toView = transitionContext.view(forKey: .to)!
-        
-        let tempOverlay = UIView()
-        tempOverlay.backgroundColor = .black
-        tempOverlay.alpha = 0
-        tempOverlay.bounds = fromView.bounds
-        tempOverlay.center = fromView.center
-        fromView.addSubview(tempOverlay)
-        
-        transitionContext.containerView.addSubview(toView)
-        toView.backgroundColor = .appBackground
-        
-        toView.frame = toView.frame.offsetBy(dx: toView.frame.width, dy: 0)
-        animator.addAnimations {
-            fromView.frame = fromView.frame.offsetBy(dx: -fromView.frame.width/3, dy: 0)
-            toView.frame = toView.frame.offsetBy(dx: -toView.frame.width, dy: 0)
-            tempOverlay.alpha = 0.5
-        }
-        
-        animator.addCompletion { pos in
-            let completed = pos == .end
-            transitionContext.completeTransition(completed)
-            if completed {
-                transitionContext.finishInteractiveTransition()
-                fromView.removeFromSuperview()
-            } else {
-                transitionContext.cancelInteractiveTransition()
-                toView.removeFromSuperview()
-            }
-            tempOverlay.removeFromSuperview()
-        }
-        
-        navigationController.customNavBar.pushTransition(using: (
-            fromVC: transitionContext.viewController(forKey: .from)!,
-            toVC: transitionContext.viewController(forKey: .to)!,
-            containerView: transitionContext.containerView
-        ), animator: animator)
-        
-        self.animator = animator
-        return animator
+    func navigationController(_: UINavigationController, interactionControllerFor animationController: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        activePopGestureTransition
     }
 }
