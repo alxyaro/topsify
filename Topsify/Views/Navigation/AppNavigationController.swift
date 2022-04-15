@@ -17,7 +17,7 @@ class AppNavigationController: UINavigationController {
             customNavBar.isUserInteractionEnabled = !animationActive
         }
     }
-    let customPopGestureRecoginizer = UIScreenEdgePanGestureRecognizer()
+    let customPopGestureRecognizer = UIScreenEdgePanGestureRecognizer()
     var activePopGestureTransition: UIPercentDrivenInteractiveTransition?
     
     override init(rootViewController: UIViewController) {
@@ -37,9 +37,10 @@ class AppNavigationController: UINavigationController {
         _ = rootViewController.view
         customNavBar.update(for: rootViewController, isRoot: true)
         
-        customPopGestureRecoginizer.edges = .left
-        customPopGestureRecoginizer.addTarget(self, action: #selector(handlePopGesture))
-        customPopGestureRecoginizer.isEnabled = true
+        customPopGestureRecognizer.edges = .left
+        customPopGestureRecognizer.addTarget(self, action: #selector(handlePopGesture))
+        customPopGestureRecognizer.isEnabled = true
+        customPopGestureRecognizer.delegate = self
     }
     
     override func viewDidLayoutSubviews() {
@@ -90,9 +91,9 @@ extension AppNavigationController: UINavigationControllerDelegate {
     func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
         interactivePopGestureRecognizer?.isEnabled = false
         if viewControllers.count > 1 {
-            viewController.view.addGestureRecognizer(customPopGestureRecoginizer)
-        } else if let mountedView = customPopGestureRecoginizer.view {
-            mountedView.removeGestureRecognizer(customPopGestureRecoginizer)
+            viewController.view.addGestureRecognizer(customPopGestureRecognizer)
+        } else if let mountedView = customPopGestureRecognizer.view {
+            mountedView.removeGestureRecognizer(customPopGestureRecognizer)
         }
         // in case animated=false was used for the push/pop:
         customNavBar.update(for: viewController, isRoot: viewControllers.count == 1)
@@ -108,5 +109,13 @@ extension AppNavigationController: UINavigationControllerDelegate {
     
     func navigationController(_: UINavigationController, interactionControllerFor animationController: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
         activePopGestureTransition
+    }
+}
+
+extension AppNavigationController: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        // any other gesture recognizer (otherGestureRecognizer) should require
+        // failure of the custom pop recognizer to run
+        return true
     }
 }
