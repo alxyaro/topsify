@@ -13,17 +13,16 @@ class AppNavigationBar: UIView {
     
     private var currentViewController: UIViewController?
     
-    private let backArrow: UIButton = {
+    private let backArrow: UIView = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "chevron.left", withConfiguration: UIImage.SymbolConfiguration(pointSize: 19, weight: .bold)), for: .normal)
         button.tintColor = .appTextPrimary
         button.translatesAutoresizingMaskIntoConstraints = false
-        // TODO: make into custom over-arching component
-        button.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        button.widthAnchor.constraint(equalToConstant: 35).isActive = true
         button.heightAnchor.constraint(equalToConstant: 40).isActive = true
         button.contentMode = .center
         button.addTarget(self, action: #selector(handleBackButtonTap), for: .touchUpInside)
-        return button
+        return OverhangingView(button)
     }()
     
     private let titleLabel: UILabel = {
