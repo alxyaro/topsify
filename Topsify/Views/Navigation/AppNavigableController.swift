@@ -8,10 +8,10 @@
 import UIKit
 
 protocol AppNavigableController {
-    typealias Callback = () -> Void
+    typealias ScrollCallback = () -> Void
     
     var isNavBarSticky: Bool { get }
     var navBarButtons: [AppNavigationBarButton] { get }
     var mainScrollView: UIScrollView? { get }
-    var mainScrollViewOnScroll: Callback? { get set }
+    var mainScrollViewOnScroll: ScrollCallback? { get set }
 }

@@ -24,6 +24,5 @@ class RootViewController: UIViewController {
         tempNavController.view.constrain(into: view)
     }
 
-
 }
 

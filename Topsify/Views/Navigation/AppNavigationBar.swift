@@ -36,7 +36,7 @@ class AppNavigationBar: UIView {
     private let buttonStackView: UIStackView = {
         let stack = UIStackView()
         stack.axis = .horizontal
-        stack.spacing = 5
+        stack.spacing = 15
         stack.alignment = .center
         return stack
     }()
@@ -44,7 +44,7 @@ class AppNavigationBar: UIView {
     init() {
         super.init(frame: .zero)
         
-        backgroundColor = .appBackground.withAlphaComponent(0.1)
+        backgroundColor = .appBackground.withAlphaComponent(0.3)
         preservesSuperviewLayoutMargins = true
         
         // ContentHuggingPriority doesn't seem to work on the nested stack view
