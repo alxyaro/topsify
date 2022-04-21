@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol AppNavigableController {
+protocol AppNavigableController: AnyObject {
     typealias ScrollCallback = () -> Void
     
     var isNavBarSticky: Bool { get }

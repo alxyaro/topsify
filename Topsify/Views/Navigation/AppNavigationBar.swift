@@ -11,7 +11,18 @@ class AppNavigationBar: UIView {
     private static let titleAnimationMoveDelta: CGFloat = 45
     weak var navigationController: AppNavigationController?
     
-    private var currentViewController: UIViewController?
+    var currentViewController: UIViewController? {
+        didSet {
+            if let oldController = oldValue as? AppNavigableController {
+                oldController.mainScrollViewOnScroll = nil
+            }
+            if let newController = currentViewController as? AppNavigableController & UIViewController {
+                newController.mainScrollViewOnScroll = { [unowned self] in
+                    updateFrame(using: newController)
+                }
+            }
+        }
+    }
     
     private let backArrow: UIView = {
         let button = UIButton()
@@ -91,16 +102,20 @@ class AppNavigationBar: UIView {
             return 0
         }
         
-        var offset = scrollView.contentOffset.y + scrollView.adjustedContentInset.top
+        var offset = -(scrollView.contentOffset.y + scrollView.adjustedContentInset.top)
         if offset > 0 {
             // scroll view bounces or pull-downs should be ignored
             offset = 0
         }
         if offset < -self.bounds.height {
-            offset = self.bounds.height
+            offset = -self.bounds.height
         }
         
         return offset
+    }
+    
+    private func updateFrame(using controller: UIViewController) {
+        frame = CGRect(x: frame.minX, y: calcVerticalPosition(for: controller), width: frame.width, height: frame.height)
     }
     
     func update(for viewController: UIViewController, isRoot: Bool, performLayout: Bool = false) {
@@ -118,7 +133,7 @@ class AppNavigationBar: UIView {
         }
         buttonStackView.alpha = 1
         
-        frame = CGRect(x: frame.minX, y: calcVerticalPosition(for: viewController), width: frame.width, height: frame.height)
+        updateFrame(using: viewController)
         
         setNeedsLayout()
         if performLayout {
@@ -186,6 +201,18 @@ class AppNavigationBar: UIView {
             buttonStackView.alpha = 1
         }
         
+        // When Auto Layout performs layout of the navigation bar, it forcefully sets
+        // the frame to have a y=0; this is a problem as animations are performed as
+        // displacements, and the following animation's starting point will be shifted
+        // to the wrong place, causing a glitchy "jump" if the target frame has a y<0.
+        // Presumably as the frame is set directly within the animation block, Auto
+        // Layout kicks in right as the animation starts, and so you get that awful
+        // jump. To work around this, I disable auto layout temporarily by setting
+        // this flag to true, which prevents Auto Layout from making this adjustment.
+        // The less-ideal alternative (imo) would be to move the navigation bar using
+        // a changing topAnchor constraint; that would require a layoutIfNeeded() call
+        // which is bound to mess up the animation further.
+        translatesAutoresizingMaskIntoConstraints = true
         let newFrame = frame
         frame = prevFrame
         animator.addAnimations { [unowned self] in
@@ -193,6 +220,7 @@ class AppNavigationBar: UIView {
         }
         
         animator.addCompletion { [unowned self] pos in
+            translatesAutoresizingMaskIntoConstraints = false
             if pos == .start, let fromVC = context.viewController(forKey: .from) {
                 // revert to true state (due to cancellation, i.e. pos == .start)
                 let returningToRoot = navigationController?.viewControllers[0] == fromVC

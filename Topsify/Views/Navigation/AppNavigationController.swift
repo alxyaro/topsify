@@ -97,6 +97,7 @@ extension AppNavigationController: UINavigationControllerDelegate {
         }
         // in case animated=false was used for the push/pop:
         customNavBar.update(for: viewController, isRoot: viewControllers.count == 1)
+        customNavBar.currentViewController = viewController
     }
     
     func navigationController(_: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
