@@ -8,6 +8,7 @@
 import UIKit
 
 class AppNavigationController: UINavigationController {
+    private static let navBarBottomSpacing: CGFloat = 8
     let customNavBar = AppNavigationBar()
     var animationActive = false {
         didSet {
@@ -43,13 +44,13 @@ class AppNavigationController: UINavigationController {
         customPopGestureRecognizer.delegate = self
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        topViewController?.additionalSafeAreaInsets.top = customNavBar.bounds.height - view.safeAreaInsets.top
-    }
-    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        topViewController?.additionalSafeAreaInsets.top = customNavBar.bounds.height + Self.navBarBottomSpacing - view.safeAreaInsets.top
     }
     
     @objc private func handlePopGesture(sender: UIScreenEdgePanGestureRecognizer) {
@@ -95,6 +96,7 @@ extension AppNavigationController: UINavigationControllerDelegate {
         } else if let mountedView = customPopGestureRecognizer.view {
             mountedView.removeGestureRecognizer(customPopGestureRecognizer)
         }
+        viewController.additionalSafeAreaInsets.top = customNavBar.bounds.height + Self.navBarBottomSpacing - view.safeAreaInsets.top
         // in case animated=false was used for the push/pop:
         customNavBar.update(for: viewController, isRoot: viewControllers.count == 1)
         customNavBar.currentViewController = viewController

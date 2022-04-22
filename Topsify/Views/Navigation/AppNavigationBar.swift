@@ -78,12 +78,14 @@ class AppNavigationBar: UIView {
         rootStackView.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor).isActive = true
         rootStackView.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor).isActive = true
         rootStackView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor).isActive = true
-        rootStackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10).isActive = true
+        rootStackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8).isActive = true
         rootStackView.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
         // prevent back arrow & buttons from being shrunk
         backArrow.setContentCompressionResistancePriority(.required, for: .horizontal)
         buttonStackView.setContentCompressionResistancePriority(.required, for: .horizontal)
+        
+        // FIXME: make scrollview dragging work on non-interactive parts of navbar
     }
     
     required init?(coder: NSCoder) {
