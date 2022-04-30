@@ -7,9 +7,9 @@
 
 import Foundation
 
-struct Album: Production, Codable {
-    let imageId: String
+struct Album: Identifiable, Codable {
+    let id: UUID
+    let artistIds: [UUID]
+    let imageId: UUID
     let title: String
-    let artist: Artist
-    let songs: [Song]
 }
