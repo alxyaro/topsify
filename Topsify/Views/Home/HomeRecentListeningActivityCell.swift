@@ -1,35 +1,53 @@
 //
-//  HomeRecentArtifactsCell.swift
+//  HomeRecentListeningActivityCell.swift
 //  Topsify
 //
 //  Created by Alex Yaro on 2022-04-16.
 //
 
 import UIKit
+import Combine
 
-class HomeRecentArtifactsCell: UICollectionViewCell {
+class HomeRecentListeningActivityCell: UICollectionViewCell {
+    private var cancellables = [AnyCancellable]()
+    var viewModel: HomeRecentListeningActivityViewModel? {
+        didSet {
+            if oldValue === viewModel {
+                return
+            }
+            cancellables = []
+            guard let viewModel = viewModel else {
+                return
+            }
+            viewModel.$recentActivity.sink { [unowned self] recentActivity in
+                collectionView.reloadData()
+                
+                setNeedsLayout()
+                layoutIfNeeded()
+                didUpdateLayout.send()
+            }.store(in: &cancellables)
+        }
+    }
+    let didUpdateLayout = PassthroughSubject<Void, Never>()
+    
     private var collectionView: UICollectionView!
     private var heightConstraint: NSLayoutConstraint!
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
         collectionView.backgroundColor = .clear
-        // TODO: convert to diffable data source
         collectionView.dataSource = self
-        collectionView.register(HomeRecentArtifactCell.self, forCellWithReuseIdentifier: HomeRecentArtifactCell.identifier)
+        collectionView.register(HomeRecentListeningActivityItemCell.self, forCellWithReuseIdentifier: HomeRecentListeningActivityItemCell.identifier)
         
         contentView.addSubview(collectionView)
         collectionView.constrain(into: contentView)
-        heightConstraint = contentView.heightAnchor.constraint(equalToConstant: 0).isActive(false)
+        heightConstraint = contentView.heightAnchor.constraint(equalToConstant: 0).isActive(true)
         heightConstraint.priority -= 1
         
-        // This might seem dumb, but two layouts are actually necessary here
-        // The first run causes cells to be created (but only after layoutSubviews()...)
-        // The second run can then use the established collectionViewContentSize
-        setNeedsLayout()
-        layoutIfNeeded()
+        // keep this; it ensures accurate layout in case the viewModel callback is
+        // executed immediately after init (via testing)
         setNeedsLayout()
         layoutIfNeeded()
     }
@@ -60,14 +78,15 @@ class HomeRecentArtifactsCell: UICollectionViewCell {
     }
 }
 
-extension HomeRecentArtifactsCell: UICollectionViewDataSource {
+extension HomeRecentListeningActivityCell: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 6
+        return viewModel?.recentActivity.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeRecentArtifactCell.identifier, for: indexPath) as! HomeRecentArtifactCell
-        cell.viewModel = HomeRecentArtifactViewModel()
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeRecentListeningActivityItemCell.identifier, for: indexPath) as! HomeRecentListeningActivityItemCell
+        cell.viewModel = HomeRecentListeningActivityItemViewModel(contentObject: viewModel!.recentActivity[indexPath.row])
+        cell.viewModel?.loadThumbnail()
         return cell
     }
 }

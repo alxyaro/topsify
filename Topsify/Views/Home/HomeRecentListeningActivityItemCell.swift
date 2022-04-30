@@ -1,5 +1,5 @@
 //
-//  HomeRecentArtifactCell.swift
+//  HomeRecentListeningActivityItemCell.swift
 //  Topsify
 //
 //  Created by Alex Yaro on 2022-04-16.
@@ -8,16 +8,7 @@
 import UIKit
 import Combine
 
-class HomeRecentArtifactCell: UICollectionViewCell {
-    var cancellables = [AnyCancellable]()
-    var viewModel: HomeRecentArtifactViewModel? {
-        didSet {
-            cancellables = []
-            viewModel?.loadThumbnail()
-            viewModel?.$title.map({ Optional($0) }).assign(to: \.text, on: label).store(in: &cancellables)
-        }
-    }
-    
+class HomeRecentListeningActivityItemCell: UICollectionViewCell {
     let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.backgroundColor = .systemGray
@@ -33,6 +24,20 @@ class HomeRecentArtifactCell: UICollectionViewCell {
         label.textAlignment = .left
         return label
     }()
+    
+    var cancellables = [AnyCancellable]()
+    var viewModel: HomeRecentListeningActivityItemViewModel? {
+        didSet {
+            cancellables = []
+            label.text = viewModel?.title
+            
+            viewModel?.$thumbnail.sink(receiveValue: { [unowned self] image in
+                UIView.transition(with: imageView, duration: 0.2, options: [.transitionCrossDissolve]) {
+                    imageView.image = image
+                }
+            }).store(in: &cancellables)
+        }
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)

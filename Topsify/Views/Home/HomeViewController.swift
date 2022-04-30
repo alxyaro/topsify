@@ -6,9 +6,9 @@
 //
 
 import UIKit
+import Combine
 
 class HomeViewController: UICollectionViewController, AppNavigableController {
-    
     var isNavBarSticky = false
     var navBarButtons = [AppNavigationBarButton]()
     var mainScrollView: UIScrollView? {
@@ -16,10 +16,8 @@ class HomeViewController: UICollectionViewController, AppNavigableController {
     }
     var mainScrollViewOnScroll: AppNavigableController.ScrollCallback?
     
-    enum Section {
-        case recents
-        case content
-    }
+    var headerSizeSubscriptionCancellable: AnyCancellable?
+    let headerViewModel = HomeRecentListeningActivityViewModel()
     
     init() {
         super.init(collectionViewLayout: UICollectionViewFlowLayout())
@@ -28,12 +26,14 @@ class HomeViewController: UICollectionViewController, AppNavigableController {
         configureCollectionViewLayout()
         
         collectionView.register(
-            HomeRecentArtifactsCell.self,
+            HomeRecentListeningActivityCell.self,
             forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: HomeRecentArtifactsCell.identifier
+            withReuseIdentifier: HomeRecentListeningActivityCell.identifier
         )
-        
+        collectionView.contentInset.bottom = 1000
         collectionView.backgroundColor = .clear
+        
+        headerViewModel.loadData()
     }
 
     required init?(coder: NSCoder) {
@@ -62,7 +62,7 @@ class HomeViewController: UICollectionViewController, AppNavigableController {
         let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(60))
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item, item])
         
-        let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(100)) /* estimated should be smaller than actual */
+        let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(50)) /* estimated should be smaller than actual */
         let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerSize, elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
         
         let section = NSCollectionLayoutSection(group: group)
@@ -79,7 +79,11 @@ class HomeViewController: UICollectionViewController, AppNavigableController {
 extension HomeViewController {
     
     override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        let cell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: HomeRecentArtifactsCell.identifier, for: indexPath) as! HomeRecentArtifactsCell
+        let cell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: HomeRecentListeningActivityCell.identifier, for: indexPath) as! HomeRecentListeningActivityCell
+        cell.viewModel = headerViewModel
+        headerSizeSubscriptionCancellable = cell.didUpdateLayout.sink {
+            collectionView.collectionViewLayout.invalidateLayout()
+        }
         return cell
     }
 }
