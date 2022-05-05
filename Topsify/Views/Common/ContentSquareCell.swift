@@ -1,18 +1,35 @@
 //
-//  ProductionCell.swift
+//  ContentSquareCell.swift
 //  Topsify
 //
 //  Created by Alex Yaro on 2022-04-04.
 //
 
 import UIKit
+import Combine
 
-class ArtifactCell: UICollectionViewCell {
+class ContentSquareCell: UICollectionViewCell {
+    private var imageViewWidthConstraint: NSLayoutConstraint!
     private var subtitleToTitleConstraint: NSLayoutConstraint!
     private var subtitleToImageConstraint: NSLayoutConstraint!
     
+    var imageFixedSize: CGFloat? {
+        get {
+            imageViewWidthConstraint.isActive ? imageViewWidthConstraint.constant : nil
+        }
+        set {
+            if let newValue = newValue {
+                imageViewWidthConstraint.isActive = true
+                imageViewWidthConstraint.constant = newValue
+            } else {
+                imageViewWidthConstraint.isActive = false
+            }
+        }
+    }
+    
     let imageView: UIImageView = {
         let view = UIImageView()
+        view.backgroundColor = .gray
         return view
     }()
     
@@ -32,6 +49,28 @@ class ArtifactCell: UICollectionViewCell {
         return view
     }()
     
+    private var cancellables = [AnyCancellable]()
+    var viewModel: ContentSquareViewModel? {
+        didSet {
+            if oldValue === viewModel {
+                return
+            }
+            cancellables = []
+            
+            if let image = viewModel?.image {
+                imageView.image = image
+            } else {
+                imageView.image = nil
+                viewModel?.$image.sink(receiveValue: { [unowned self] image in
+                    UIView.transition(with: imageView, duration: 0.2, options: [.transitionCrossDissolve]) {
+                        imageView.image = image
+                    }
+                }).store(in: &cancellables)
+            }
+            setText(title: viewModel?.title, subtitle: viewModel?.subtitle ?? "")
+        }
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -44,7 +83,7 @@ class ArtifactCell: UICollectionViewCell {
         imageView.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
         imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor).isActive = true
         imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
-        imageView.widthAnchor.constraint(equalToConstant: 140).priorityAdjustment(-1).isActive = true
+        imageViewWidthConstraint = imageView.widthAnchor.constraint(equalToConstant: 140).priorityAdjustment(-1).isActive(true)
         imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor).isActive = true
         
         button.addSubview(titleLabel)
@@ -61,13 +100,6 @@ class ArtifactCell: UICollectionViewCell {
         
         subtitleToTitleConstraint = subtitleLabel.firstBaselineAnchor.constraint(equalToSystemSpacingBelow: titleLabel.bottomAnchor, multiplier: 0.9).isActive(true)
         subtitleToImageConstraint = subtitleLabel.firstBaselineAnchor.constraint(equalToSystemSpacingBelow: imageView.bottomAnchor, multiplier: 1.2).isActive(false)
-        
-        imageView.backgroundColor = .brown
-        if Bool.random() {
-            setText(title: nil, subtitle: "Catch all the latest music from artists you are listening to")
-        } else {
-            setText(title: "Best Melodies", subtitle: Bool.random() ? "Playlist" : "Single \u{00B7} Drake, The Weeknd, PnB Rock")
-        }
     }
     
     required init(coder: NSCoder) {
@@ -78,10 +110,12 @@ class ArtifactCell: UICollectionViewCell {
         if title == nil {
             subtitleToTitleConstraint.isActive = false
             subtitleToImageConstraint.isActive = true
+            titleLabel.isHidden = true
         } else {
-            subtitleToTitleConstraint.isActive = true
             subtitleToImageConstraint.isActive = false
+            subtitleToTitleConstraint.isActive = true
             titleLabel.text = title
+            titleLabel.isHidden = false
         }
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.25

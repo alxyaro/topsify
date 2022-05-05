@@ -8,7 +8,8 @@
 import UIKit
 import Combine
 
-enum ImageService {
+class ImageService {
+    private static var cachedImageIds = Set<UUID>()
     
     enum ImageSize {
         case small, medium, large
@@ -19,7 +20,9 @@ enum ImageService {
     
     static func fetchImage(id: UUID, ofSize size: ImageSize = .large) -> AnyPublisher<UIImage, FetchError> {
         return Future { promise in
-            DispatchQueue.main.asyncAfter(deadline: .now() + Double.random(in: 0..<1)) {
+            let delay = cachedImageIds.contains(id) ? 0 : Double.random(in: 0..<1)
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                cachedImageIds.insert(id)
                 let image = UIImage(named: TestImages.idsToNames[id] ?? "")
                 guard let image = image else {
                     promise(.failure(.notFound))

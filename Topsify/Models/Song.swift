@@ -9,7 +9,7 @@ import Foundation
 
 struct Song: Identifiable, Codable {
     let id: UUID
-    let artistIds: [UUID]
+    let artists: [User]
     let albumId: UUID?
     let imageId: UUID
     let title: String

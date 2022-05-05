@@ -23,4 +23,9 @@ extension NSLayoutConstraint {
         self.isActive = active
         return self
     }
+    
+    func identifier(_ identifier: String?) -> Self {
+        self.identifier = identifier
+        return self
+    }
 }

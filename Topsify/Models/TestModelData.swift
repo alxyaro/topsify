@@ -49,22 +49,22 @@ class TestUsers {
 }
 
 class TestAlbums {
-    static let twoAlive = Album(id: UUID(), artistIds: [TestUsers.yeat.id], imageId: TestImages.getID(name: "album_2-alive"), title: "2 Alive")
-    static let catchTheseVibes = Album(id: UUID(), artistIds: [TestUsers.pnbRock.id], imageId: TestImages.getID(name: "album_catch-these-vibes"), title: "Catch These Vibes")
-    static let equals = Album(id: UUID(), artistIds: [TestUsers.edSheeran.id], imageId: TestImages.getID(name: "album_equals"), title: "=")
-    static let eternalAtake = Album(id: UUID(), artistIds: [TestUsers.lilUziVert.id], imageId: TestImages.getID(name: "album_eternal-atake"), title: "Eternal Atake")
-    static let goodbyeAndGoodRiddance = Album(id: UUID(), artistIds: [TestUsers.juiceWrld.id], imageId: TestImages.getID(name: "album_goodbye-and-good-riddance"), title: "Goodbye & Good Riddance")
-    static let gttm = Album(id: UUID(), artistIds: [TestUsers.pnbRock.id], imageId: TestImages.getID(name: "album_gttm"), title: "GTTM: Goin Thru the Motions")
-    static let legendsNeverDie = Album(id: UUID(), artistIds: [TestUsers.juiceWrld.id], imageId: TestImages.getID(name: "album_legends-never-die"), title: "Legends Never Die")
-    static let lilBoat2 = Album(id: UUID(), artistIds: [TestUsers.lilYachty.id], imageId: TestImages.getID(name: "album_lil-boat-2"), title: "Lil Boat 2")
-    static let nav = Album(id: UUID(), artistIds: [TestUsers.nav.id], imageId: TestImages.getID(name: "album_nav"), title: "NAV")
-    static let perfectTiming = Album(id: UUID(), artistIds: [TestUsers.nav.id], imageId: TestImages.getID(name: "album_perfect-timing"), title: "Perfect Timing")
-    static let plutoXBabyPluto = Album(id: UUID(), artistIds: [TestUsers.lilUziVert.id, TestUsers.future.id], imageId: TestImages.getID(name: "album_pluto-x-baby-pluto"), title: "Pluto x Baby Pluto")
-    static let scorpion = Album(id: UUID(), artistIds: [TestUsers.drake.id], imageId: TestImages.getID(name: "album_scorpion"), title: "Scorpion")
-    static let soundcloudDaze = Album(id: UUID(), artistIds: [TestUsers.pnbRock.id], imageId: TestImages.getID(name: "album_soundcloud-daze"), title: "Soundcloud Daze")
-    static let stoneyDeluxe = Album(id: UUID(), artistIds: [TestUsers.postMalone.id], imageId: TestImages.getID(name: "album_stoney-deluxe"), title: "Stoney (Deluxe)")
-    static let views = Album(id: UUID(), artistIds: [TestUsers.drake.id], imageId: TestImages.getID(name: "album_views"), title: "Views")
-    static let wunna = Album(id: UUID(), artistIds: [TestUsers.gunna.id], imageId: TestImages.getID(name: "album_wunna"), title: "Wunna")
+    static let twoAlive = Album(id: UUID(), artists: [TestUsers.yeat], imageId: TestImages.getID(name: "album_2-alive"), title: "2 Alive")
+    static let catchTheseVibes = Album(id: UUID(), artists: [TestUsers.pnbRock], imageId: TestImages.getID(name: "album_catch-these-vibes"), title: "Catch These Vibes")
+    static let equals = Album(id: UUID(), artists: [TestUsers.edSheeran], imageId: TestImages.getID(name: "album_equals"), title: "=")
+    static let eternalAtake = Album(id: UUID(), artists: [TestUsers.lilUziVert], imageId: TestImages.getID(name: "album_eternal-atake"), title: "Eternal Atake")
+    static let goodbyeAndGoodRiddance = Album(id: UUID(), artists: [TestUsers.juiceWrld], imageId: TestImages.getID(name: "album_goodbye-and-good-riddance"), title: "Goodbye & Good Riddance")
+    static let gttm = Album(id: UUID(), artists: [TestUsers.pnbRock], imageId: TestImages.getID(name: "album_gttm"), title: "GTTM: Goin Thru the Motions")
+    static let legendsNeverDie = Album(id: UUID(), artists: [TestUsers.juiceWrld], imageId: TestImages.getID(name: "album_legends-never-die"), title: "Legends Never Die")
+    static let lilBoat2 = Album(id: UUID(), artists: [TestUsers.lilYachty], imageId: TestImages.getID(name: "album_lil-boat-2"), title: "Lil Boat 2")
+    static let nav = Album(id: UUID(), artists: [TestUsers.nav], imageId: TestImages.getID(name: "album_nav"), title: "NAV")
+    static let perfectTiming = Album(id: UUID(), artists: [TestUsers.nav], imageId: TestImages.getID(name: "album_perfect-timing"), title: "Perfect Timing")
+    static let plutoXBabyPluto = Album(id: UUID(), artists: [TestUsers.lilUziVert, TestUsers.future], imageId: TestImages.getID(name: "album_pluto-x-baby-pluto"), title: "Pluto x Baby Pluto")
+    static let scorpion = Album(id: UUID(), artists: [TestUsers.drake], imageId: TestImages.getID(name: "album_scorpion"), title: "Scorpion")
+    static let soundcloudDaze = Album(id: UUID(), artists: [TestUsers.pnbRock], imageId: TestImages.getID(name: "album_soundcloud-daze"), title: "Soundcloud Daze")
+    static let stoneyDeluxe = Album(id: UUID(), artists: [TestUsers.postMalone], imageId: TestImages.getID(name: "album_stoney-deluxe"), title: "Stoney (Deluxe)")
+    static let views = Album(id: UUID(), artists: [TestUsers.drake], imageId: TestImages.getID(name: "album_views"), title: "Views")
+    static let wunna = Album(id: UUID(), artists: [TestUsers.gunna], imageId: TestImages.getID(name: "album_wunna"), title: "Wunna")
     
     static var all: [Album] {
         Mirror(reflecting: Self.self).children.filter { child in
@@ -77,7 +77,8 @@ class TestAlbums {
 
 class TestPlaylists {
     private static func create(title: String, desc: String, image: String, creator: User) -> Playlist {
-        return Playlist(id: UUID(), creatorId: creator.id, imageId: TestImages.getID(name: "playlist_"+image), title: title, description: desc)
+        let isOfficial = creator.id == TestUsers.topsify.id
+        return Playlist(id: UUID(), creator: creator, imageId: TestImages.getID(name: "playlist_"+image), title: title, description: desc, isOfficial: isOfficial, isCoverSelfDescriptive: isOfficial)
     }
     
     static let dailyMix1 = create(title: "Daily Mix 1", desc: "PnB Rock, Lil Uzi Vert, Yeat, and more", image: "daily-mix-1", creator: TestUsers.topsify)
@@ -86,7 +87,7 @@ class TestPlaylists {
     static let dailyMix4 = create(title: "Daily Mix 4", desc: "AK, Aurix, Rameses B, and more", image: "daily-mix-4", creator: TestUsers.topsify)
     static let dailyMix5 = create(title: "Daily Mix 5", desc: "Ava Max, Sam Smith, Khalid, and more", image: "daily-mix-5", creator: TestUsers.topsify)
     static let hipHopFavourites = create(title: "Hip-Hop Favourites", desc: "The songs you keep coming back to.", image: "hip-hop-favourites", creator: TestUsers.topsify)
-    static let hitRewind = create(title: "Hit Rewind", desc: "All the tracks you've been mising.", image: "hit-rewind", creator: TestUsers.topsify)
+    static let hitRewind = create(title: "Hit Rewind", desc: "All the tracks you've been missing.", image: "hit-rewind", creator: TestUsers.topsify)
     static let newMusicFriday = create(title: "New Music Friday", desc: "End the week with new favourites.", image: "new-music-friday", creator: TestUsers.topsify)
     static let onRepeat = create(title: "On Repeat", desc: "Songs you just can't stop listening to.", image: "on-repeat", creator: TestUsers.topsify)
     static let rapCaviar = create(title: "Rap Caviar", desc: "New music from Future, Lil Baby, and Lil Tjay.", image: "rap-caviar", creator: TestUsers.topsify)
@@ -109,10 +110,10 @@ class TestPlaylists {
 }
 
 class TestSongs {
-    static let capToMe = Song(id: UUID(), artistIds: [TestUsers.yeat.id], albumId: nil, imageId: TestImages.getID(name: "single_cap-to-me"), title: "Cap to Me")
-    static let loveMusic = Song(id: UUID(), artistIds: [TestUsers.lilYachty.id], albumId: nil, imageId: TestImages.getID(name: "single_love-music"), title: "Love Music")
-    static let turks = Song(id: UUID(), artistIds: [TestUsers.nav.id, TestUsers.gunna.id], albumId: nil, imageId: TestImages.getID(name: "single_turks"), title: "Turks")
-    static let wantedYou = Song(id: UUID(), artistIds: [TestUsers.nav.id, TestUsers.lilUziVert.id], albumId: nil, imageId: TestImages.getID(name: "single_wanted-you"), title: "Wanted You")
+    static let capToMe = Song(id: UUID(), artists: [TestUsers.yeat], albumId: nil, imageId: TestImages.getID(name: "single_cap-to-me"), title: "Cap to Me")
+    static let loveMusic = Song(id: UUID(), artists: [TestUsers.lilYachty], albumId: nil, imageId: TestImages.getID(name: "single_love-music"), title: "Love Music")
+    static let turks = Song(id: UUID(), artists: [TestUsers.nav, TestUsers.gunna], albumId: nil, imageId: TestImages.getID(name: "single_turks"), title: "Turks")
+    static let wantedYou = Song(id: UUID(), artists: [TestUsers.nav, TestUsers.lilUziVert], albumId: nil, imageId: TestImages.getID(name: "single_wanted-you"), title: "Wanted You")
     
     static var all: [Song] {
         Mirror(reflecting: Self.self).children.filter { child in
