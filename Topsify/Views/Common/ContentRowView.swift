@@ -37,6 +37,7 @@ extension ContentRowView: UICollectionViewDataSource, UICollectionViewDataSource
         let viewModel = viewModels[indexPath.row]
         viewModel.loadImage()
         cell.viewModel = viewModel
+        cell.setNeedsLayout()
         return cell
     }
     

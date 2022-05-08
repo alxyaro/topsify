@@ -8,6 +8,7 @@
 import UIKit
 
 class HomeSpotlightContentListCell: UICollectionViewCell {
+    static private let padding: CGFloat = 16
     
     let label: UILabel = {
         let label = UILabel()
@@ -32,12 +33,20 @@ class HomeSpotlightContentListCell: UICollectionViewCell {
         contentView.addSubview(contentRowView)
         contentRowView.translatesAutoresizingMaskIntoConstraints = false
         contentRowView.topAnchor.constraint(equalToSystemSpacingBelow: label.lastBaselineAnchor, multiplier: 1).isActive = true
-        contentRowView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor).isActive = true
-        contentRowView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor).isActive = true
+        contentRowView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: -Self.padding).isActive = true
+        contentRowView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: Self.padding).isActive = true
         contentRowView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).priorityAdjustment(-1).isActive = true
+        
+        contentRowView.contentInset.left = Self.padding
+        contentRowView.contentInset.right = Self.padding
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        contentRowView.contentOffset.x = -Self.padding
     }
 }

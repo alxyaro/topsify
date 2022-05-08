@@ -77,8 +77,8 @@ class HomeViewController: UICollectionViewController, AppNavigableController {
         
         let section = NSCollectionLayoutSection(group: group)
         section.boundarySupplementaryItems = [header]
-        section.interGroupSpacing = 16
-        section.contentInsets.top = 16
+        section.interGroupSpacing = 24
+        section.contentInsets.top = 24
         section.contentInsets.leading = 16
         section.contentInsets.trailing = 16
         

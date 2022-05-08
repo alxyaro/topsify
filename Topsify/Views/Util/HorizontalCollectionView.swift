@@ -18,7 +18,7 @@ class HorizontalCollectionView: UICollectionView {
         
         let widthDimension = fixedCellWidth != nil ?
             NSCollectionLayoutDimension.absolute(CGFloat(fixedCellWidth!)) :
-            NSCollectionLayoutDimension.estimated(1)
+            NSCollectionLayoutDimension.estimated(500)
         
         let itemSize = NSCollectionLayoutSize(widthDimension: widthDimension, heightDimension: .estimated(1))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
@@ -36,7 +36,8 @@ class HorizontalCollectionView: UICollectionView {
         collectionViewLayout = layout
         
         translatesAutoresizingMaskIntoConstraints = false
-        heightConstraint = heightAnchor.constraint(equalToConstant: 50)
+        heightConstraint = heightAnchor.constraint(equalToConstant: 1)
+        heightConstraint.priority -= 1
         heightConstraint.isActive = true
         
         showsHorizontalScrollIndicator = false
@@ -49,6 +50,12 @@ class HorizontalCollectionView: UICollectionView {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func reloadData() {
+        heightConstraint.constant = 1
+        setNeedsLayout()
+        super.reloadData()
     }
     
     override func layoutSubviews() {
