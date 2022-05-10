@@ -58,6 +58,7 @@
 		6B357247280BB999007CBDF6 /* HomeRecentListeningActivityItemViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B357246280BB999007CBDF6 /* HomeRecentListeningActivityItemViewModel.swift */; };
 		6B35724B280C8E15007CBDF6 /* Playlist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B35724A280C8E15007CBDF6 /* Playlist.swift */; };
 		6B357250281469F9007CBDF6 /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B35724F281469F9007CBDF6 /* API.swift */; };
+		6BFE66842829CDD000566BED /* HomeSpotlightMoreLikeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BFE66832829CDD000566BED /* HomeSpotlightMoreLikeViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -133,6 +134,7 @@
 		6B357246280BB999007CBDF6 /* HomeRecentListeningActivityItemViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeRecentListeningActivityItemViewModel.swift; sourceTree = "<group>"; };
 		6B35724A280C8E15007CBDF6 /* Playlist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Playlist.swift; sourceTree = "<group>"; };
 		6B35724F281469F9007CBDF6 /* API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
+		6BFE66832829CDD000566BED /* HomeSpotlightMoreLikeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSpotlightMoreLikeViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -369,6 +371,7 @@
 				6B0C39CC28208E9800B59313 /* HomeViewModel.swift */,
 				6B0C39BD281DA33D00B59313 /* HomeRecentListeningActivityViewModel.swift */,
 				6B357246280BB999007CBDF6 /* HomeRecentListeningActivityItemViewModel.swift */,
+				6BFE66832829CDD000566BED /* HomeSpotlightMoreLikeViewModel.swift */,
 			);
 			path = Home;
 			sourceTree = "<group>";
@@ -546,6 +549,7 @@
 				6B3572232803411E007CBDF6 /* AppNavigationController.swift in Sources */,
 				6B0C39B22819FDAB00B59313 /* LibraryAPI.swift in Sources */,
 				6B0C39C9281DD85E00B59313 /* LatePublished.swift in Sources */,
+				6BFE66842829CDD000566BED /* HomeSpotlightMoreLikeViewModel.swift in Sources */,
 				6B0D784727F10B3E001BA64E /* HomeViewController.swift in Sources */,
 				6B35720927FBDCD8007CBDF6 /* NSLayoutConstraintExtensions.swift in Sources */,
 				6B357244280BB8DA007CBDF6 /* HomeRecentListeningActivityItemCell.swift in Sources */,

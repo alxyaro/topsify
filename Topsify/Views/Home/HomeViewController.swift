@@ -126,9 +126,12 @@ extension HomeViewController {
             cell.setNeedsLayout()
             cell.layoutIfNeeded()
             return cell
-        case .moreLike/*(let user, let content)*/:
+        case .moreLike(let user, let content):
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeSpotlightMoreLikeCell.identifier, for: indexPath) as! HomeSpotlightMoreLikeCell
-            // TODO configure cell
+            cell.viewModel = HomeSpotlightMoreLikeViewModel(user: user, contentObjects: content)
+            cell.viewModel?.loadUserAvatar()
+            cell.setNeedsLayout()
+            cell.layoutIfNeeded()
             return cell
         }
     }
