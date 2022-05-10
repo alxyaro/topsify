@@ -10,20 +10,19 @@ import UIKit
 class HorizontalCollectionView: UICollectionView {
     private var heightConstraint: NSLayoutConstraint!
 
-    init(fixedCellWidth: Int? = nil) {
+    init(estimatedCellWidth: CGFloat = 100, estimatedCellHeight: CGFloat = 100) {
         super.init(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
         
         // IMPORTANT: estimated size must be less than actual size, or
         // collectionViewContentSize will take on the large dimension
         
-        let widthDimension = fixedCellWidth != nil ?
-            NSCollectionLayoutDimension.absolute(CGFloat(fixedCellWidth!)) :
-            NSCollectionLayoutDimension.estimated(500)
+        let widthDimension = NSCollectionLayoutDimension.estimated(estimatedCellWidth)
+        let heightDimension = NSCollectionLayoutDimension.estimated(estimatedCellHeight)
         
-        let itemSize = NSCollectionLayoutSize(widthDimension: widthDimension, heightDimension: .estimated(1))
+        let itemSize = NSCollectionLayoutSize(widthDimension: widthDimension, heightDimension: heightDimension)
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
-        let groupSize = NSCollectionLayoutSize(widthDimension: widthDimension, heightDimension: .estimated(1))
+        let groupSize = NSCollectionLayoutSize(widthDimension: widthDimension, heightDimension: heightDimension)
         let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
         
         let section = NSCollectionLayoutSection(group: group)

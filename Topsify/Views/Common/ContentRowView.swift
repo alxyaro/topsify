@@ -17,7 +17,7 @@ class ContentRowView: HorizontalCollectionView {
     }
     
     init() {
-        super.init()
+        super.init(estimatedCellWidth: 140, estimatedCellHeight: 160)
         register(ContentSquareCell.self, forCellWithReuseIdentifier: ContentSquareCell.identifier)
         dataSource = self
     }
@@ -37,7 +37,6 @@ extension ContentRowView: UICollectionViewDataSource, UICollectionViewDataSource
         let viewModel = viewModels[indexPath.row]
         viewModel.loadImage()
         cell.viewModel = viewModel
-        cell.setNeedsLayout()
         return cell
     }
     

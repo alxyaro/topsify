@@ -82,8 +82,8 @@ class ContentSquareCell: UICollectionViewCell {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.topAnchor.constraint(equalTo: button.contentView.topAnchor).isActive = true
         imageView.leadingAnchor.constraint(equalTo: button.contentView.leadingAnchor).isActive = true
-        imageView.trailingAnchor.constraint(equalTo: button.contentView.trailingAnchor).isActive = true
-        imageViewWidthConstraint = imageView.widthAnchor.constraint(equalToConstant: 140).priorityAdjustment(-1).isActive(true)
+        imageView.trailingAnchor.constraint(equalTo: button.contentView.trailingAnchor).priorityAdjustment(-1).isActive = true
+        imageViewWidthConstraint = imageView.widthAnchor.constraint(equalToConstant: 140).isActive(true)
         imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor).isActive = true
         
         button.addSubview(titleLabel)
