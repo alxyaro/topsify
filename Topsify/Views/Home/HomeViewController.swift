@@ -66,10 +66,10 @@ class HomeViewController: UICollectionViewController, AppNavigableController {
         // if you give the itemSize height a .fractionalWidth(1) as would be a rational approach, with an estimated
         // size on the group, the group estimated size will just become FIXED! Putting an estimated height here actually
         // fixes that and allows each cell to expand if it needs more size than the estimated value
-        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(100))
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(160))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
-        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(100))
+        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(160))
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 1)
         
         let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(50)) /* estimated should be smaller than actual */

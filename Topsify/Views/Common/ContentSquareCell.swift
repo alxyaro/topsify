@@ -30,6 +30,7 @@ class ContentSquareCell: UICollectionViewCell {
     let imageView: UIImageView = {
         let view = UIImageView()
         view.backgroundColor = .gray
+        view.clipsToBounds = true
         return view
     }()
     
@@ -68,6 +69,7 @@ class ContentSquareCell: UICollectionViewCell {
                 }).store(in: &cancellables)
             }
             setText(title: viewModel?.title, subtitle: viewModel?.subtitle ?? "")
+            updateCornerRadius()
         }
     }
     
@@ -123,6 +125,15 @@ class ContentSquareCell: UICollectionViewCell {
         // explicitly set again so attributedTest is affected
         // https://developer.apple.com/documentation/uikit/uilabel/1620525-linebreakmode
         subtitleLabel.lineBreakMode = .byTruncatingTail
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        updateCornerRadius()
+    }
+    
+    func updateCornerRadius() {
+        imageView.layer.cornerRadius = viewModel?.circular ?? false ? imageView.bounds.width / 2 : 0
     }
     
 }

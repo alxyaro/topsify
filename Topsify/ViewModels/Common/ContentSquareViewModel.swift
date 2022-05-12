@@ -31,6 +31,13 @@ class ContentSquareViewModel {
         return content.typeName+" \u{00B7} "+content.attribution
     }
     
+    var circular: Bool {
+        if case .user = content {
+            return true
+        }
+        return false
+    }
+    
     init(content: ContentObject) {
         self.content = content
     }
