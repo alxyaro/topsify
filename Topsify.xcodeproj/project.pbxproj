@@ -59,6 +59,9 @@
 		6B35724B280C8E15007CBDF6 /* Playlist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B35724A280C8E15007CBDF6 /* Playlist.swift */; };
 		6B357250281469F9007CBDF6 /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B35724F281469F9007CBDF6 /* API.swift */; };
 		6BFE66842829CDD000566BED /* HomeSpotlightMoreLikeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BFE66832829CDD000566BED /* HomeSpotlightMoreLikeViewModel.swift */; };
+		6BFE6686282DD42B00566BED /* AppTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BFE6685282DD42B00566BED /* AppTabBarController.swift */; };
+		6BFE6688282F227500566BED /* AppTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BFE6687282F227500566BED /* AppTabBar.swift */; };
+		6BFE668A282F262700566BED /* AppTabBarButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BFE6689282F262700566BED /* AppTabBarButton.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -135,6 +138,9 @@
 		6B35724A280C8E15007CBDF6 /* Playlist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Playlist.swift; sourceTree = "<group>"; };
 		6B35724F281469F9007CBDF6 /* API.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
 		6BFE66832829CDD000566BED /* HomeSpotlightMoreLikeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSpotlightMoreLikeViewModel.swift; sourceTree = "<group>"; };
+		6BFE6685282DD42B00566BED /* AppTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTabBarController.swift; sourceTree = "<group>"; };
+		6BFE6687282F227500566BED /* AppTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTabBar.swift; sourceTree = "<group>"; };
+		6BFE6689282F262700566BED /* AppTabBarButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTabBarButton.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -344,6 +350,9 @@
 				6B3572222803411E007CBDF6 /* AppNavigationController.swift */,
 				6B3572242803430C007CBDF6 /* AppNavigationBar.swift */,
 				6B35722828034DB1007CBDF6 /* AppNavigationBarButton.swift */,
+				6BFE6685282DD42B00566BED /* AppTabBarController.swift */,
+				6BFE6687282F227500566BED /* AppTabBar.swift */,
+				6BFE6689282F262700566BED /* AppTabBarButton.swift */,
 			);
 			path = Navigation;
 			sourceTree = "<group>";
@@ -530,10 +539,13 @@
 				6B0C39D82821E31A00B59313 /* HomeSpotlightContentListCell.swift in Sources */,
 				6B3571FC27FBA880007CBDF6 /* ContentSquareCell.swift in Sources */,
 				6B0C39BC281D9B8A00B59313 /* ImageService.swift in Sources */,
+				6BFE6686282DD42B00566BED /* AppTabBarController.swift in Sources */,
 				6B35720727FBDB78007CBDF6 /* UICollectionReusableView+identifier.swift in Sources */,
 				6B35721727FCFC8D007CBDF6 /* UIColorExtensions.swift in Sources */,
 				6B3572252803430C007CBDF6 /* AppNavigationBar.swift in Sources */,
+				6BFE6688282F227500566BED /* AppTabBar.swift in Sources */,
 				6B0C39CD28208E9800B59313 /* HomeViewModel.swift in Sources */,
+				6BFE668A282F262700566BED /* AppTabBarButton.swift in Sources */,
 				6B0C39BA281A03DF00B59313 /* TestModelData.swift in Sources */,
 				6B357247280BB999007CBDF6 /* HomeRecentListeningActivityItemViewModel.swift in Sources */,
 				6B005C1027F29FF30064929C /* UIViewExtensions.swift in Sources */,

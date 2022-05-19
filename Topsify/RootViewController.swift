@@ -14,14 +14,33 @@ class RootViewController: UIViewController {
         
         view.backgroundColor = .appBackground
         
-        let tempNavController = AppNavigationController(rootViewController: HomeViewController())
+        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)
         
-        // TODO use a tab bar controller instead of this
-        addChild(tempNavController)
-        tempNavController.didMove(toParent: self)
-        view.addSubview(tempNavController.view)
+        let homeTabController = AppNavigationController(rootViewController: HomeViewController())
+        homeTabController.title = "Home"
+        homeTabController.tabBarItem.image = UIImage(systemName: "house", withConfiguration: symbolConfig)
+        homeTabController.tabBarItem.selectedImage = UIImage(systemName: "house.fill", withConfiguration: symbolConfig)
         
-        tempNavController.view.constrain(into: view)
+        let temp1 = UIViewController()
+        temp1.title = "Search"
+        temp1.tabBarItem.image = UIImage(systemName: "magnifyingglass", withConfiguration: symbolConfig)
+        temp1.tabBarItem.selectedImage = UIImage(systemName: "magnifyingglass", withConfiguration: symbolConfig)
+        
+        let temp2 = UIViewController()
+        temp2.title = "Library"
+        temp2.tabBarItem.image = UIImage(systemName: "books.vertical", withConfiguration: symbolConfig)
+        temp2.tabBarItem.selectedImage = UIImage(systemName: "books.vertical.fill", withConfiguration: symbolConfig)
+        
+        let tabBarController = AppTabBarController(viewControllers: [
+            homeTabController,
+            temp1,
+            temp2
+        ])
+        
+        addChild(tabBarController)
+        tabBarController.didMove(toParent: self)
+        view.addSubview(tabBarController.view)
+        tabBarController.view.constrain(into: view)
     }
 
 }
