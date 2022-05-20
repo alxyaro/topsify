@@ -90,7 +90,7 @@ class NavigationTransitionController: NSObject, UIViewControllerAnimatedTransiti
         navigationController.customNavBar.transition(
             using: transitionContext,
             operation: operation,
-            toRootVC: navigationController.viewControllers.count == 1,
+            toRootVC: transitionContext.viewController(forKey: .to) === navigationController.rootViewController,
             animator: animator
         )
         

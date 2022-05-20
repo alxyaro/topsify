@@ -18,6 +18,9 @@ class AppNavigationBar: UIView {
             }
             if let newController = currentViewController as? AppNavigableController & UIViewController {
                 newController.mainScrollViewOnScroll = { [unowned self] in
+                    guard navigationController?.animationActive == false else {
+                        return
+                    }
                     updateFrame(using: newController)
                 }
             }
@@ -116,7 +119,7 @@ class AppNavigationBar: UIView {
         return offset
     }
     
-    private func updateFrame(using controller: UIViewController) {
+    func updateFrame(using controller: UIViewController) {
         frame = CGRect(x: frame.minX, y: calcVerticalPosition(for: controller), width: frame.width, height: frame.height)
     }
     
@@ -225,7 +228,7 @@ class AppNavigationBar: UIView {
             translatesAutoresizingMaskIntoConstraints = false
             if pos == .start, let fromVC = context.viewController(forKey: .from) {
                 // revert to true state (due to cancellation, i.e. pos == .start)
-                let returningToRoot = navigationController?.viewControllers[0] == fromVC
+                let returningToRoot = navigationController?.rootViewController == fromVC
                 update(for: fromVC, isRoot: returningToRoot)
             }
             prevBackArrow?.removeFromSuperview()

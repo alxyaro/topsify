@@ -9,6 +9,11 @@ import UIKit
 
 class AppNavigationController: UINavigationController {
     private static let navBarBottomSpacing: CGFloat = 8
+    // storing this explicitly as there seems to be a bug with self.viewControllers during
+    // popToRootViewController calls (the array becomes [top view controller, root view controller])
+    // this breaks my animations, so storing root VC here explicitly
+    // see this related post: https://developer.apple.com/forums/thread/702091
+    let rootViewController: UIViewController
     let customNavBar = AppNavigationBar()
     var animationActive = false {
         didSet {
@@ -22,6 +27,7 @@ class AppNavigationController: UINavigationController {
     var activePopGestureTransition: UIPercentDrivenInteractiveTransition?
     
     override init(rootViewController: UIViewController) {
+        self.rootViewController = rootViewController
         super.init(rootViewController: rootViewController)
         delegate = self
         customNavBar.navigationController = self
@@ -50,7 +56,11 @@ class AppNavigationController: UINavigationController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        topViewController?.additionalSafeAreaInsets.top = customNavBar.bounds.height + Self.navBarBottomSpacing - view.safeAreaInsets.top
+        
+        customNavBar.updateFrame(using: topViewController!)
+        
+        topViewController!.additionalSafeAreaInsets.top = 0
+        topViewController!.additionalSafeAreaInsets.top = customNavBar.bounds.height + Self.navBarBottomSpacing - view.safeAreaInsets.top
     }
     
     @objc private func handlePopGesture(sender: UIScreenEdgePanGestureRecognizer) {
