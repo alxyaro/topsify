@@ -27,6 +27,7 @@ class AppTabBarController: UITabBarController {
         
         super.init(nibName: nil, bundle: nil)
         self.viewControllers = viewControllers
+        delegate = self
         
         customTabBar.buttons.forEach { button in
             button.onTap = { [unowned self] in
@@ -86,7 +87,7 @@ class AppTabBarController: UITabBarController {
 
 extension AppTabBarController: UITabBarControllerDelegate {
     
-    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-        
+    func tabBarController(_ tabBarController: UITabBarController, animationControllerForTransitionFrom fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return TabTransitionController()
     }
 }

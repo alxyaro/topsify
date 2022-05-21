@@ -25,11 +25,13 @@ class RootViewController: UIViewController {
         temp1.title = "Search"
         temp1.tabBarItem.image = UIImage(systemName: "magnifyingglass", withConfiguration: symbolConfig)
         temp1.tabBarItem.selectedImage = UIImage(systemName: "magnifyingglass", withConfiguration: symbolConfig)
+        temp1.view.backgroundColor = .yellow
         
         let temp2 = UIViewController()
         temp2.title = "Library"
         temp2.tabBarItem.image = UIImage(systemName: "books.vertical", withConfiguration: symbolConfig)
         temp2.tabBarItem.selectedImage = UIImage(systemName: "books.vertical.fill", withConfiguration: symbolConfig)
+        temp2.view.backgroundColor = .cyan
         
         let tabBarController = AppTabBarController(viewControllers: [
             homeTabController,
