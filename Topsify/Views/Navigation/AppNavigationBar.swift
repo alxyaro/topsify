@@ -11,22 +11,6 @@ class AppNavigationBar: UIView {
     private static let titleAnimationMoveDelta: CGFloat = 45
     weak var navigationController: AppNavigationController?
     
-    var currentViewController: UIViewController? {
-        didSet {
-            if let oldController = oldValue as? AppNavigableController {
-                oldController.mainScrollViewOnScroll = nil
-            }
-            if let newController = currentViewController as? AppNavigableController & UIViewController {
-                newController.mainScrollViewOnScroll = { [unowned self] in
-                    guard navigationController?.animationActive == false else {
-                        return
-                    }
-                    updateFrame(using: newController)
-                }
-            }
-        }
-    }
-    
     private let backArrow: UIView = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "chevron.left", withConfiguration: UIImage.SymbolConfiguration(pointSize: 19, weight: .bold)), for: .normal)
@@ -129,12 +113,14 @@ class AppNavigationBar: UIView {
         backArrow.isHidden = isRoot
         titleLabel.text = viewController.navigationItem.title ?? "Untitled"
         titleLabel.alpha = 1
-        for button in buttonStackView.arrangedSubviews {
-            buttonStackView.removeArrangedSubview(button)
-            button.removeFromSuperview()
-        }
-        for button in navigable?.navBarButtons ?? [] {
-            buttonStackView.addArrangedSubview(button)
+        if navigable?.navBarButtons != buttonStackView.arrangedSubviews {
+            for button in buttonStackView.arrangedSubviews {
+                buttonStackView.removeArrangedSubview(button)
+                button.removeFromSuperview()
+            }
+            for button in navigable?.navBarButtons ?? [] {
+                buttonStackView.addArrangedSubview(button)
+            }
         }
         buttonStackView.alpha = 1
         

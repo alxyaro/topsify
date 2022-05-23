@@ -8,13 +8,8 @@
 import UIKit
 import Combine
 
-class HomeViewController: UICollectionViewController, AppNavigableController {
-    var isNavBarSticky = false
-    var navBarButtons = [AppNavigationBarButton]()
-    var mainScrollView: UIScrollView? {
-        collectionView
-    }
-    var mainScrollViewOnScroll: AppNavigableController.ScrollCallback?
+class HomeViewController: AppNavigableController {
+    private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
     private var cancellables = [AnyCancellable]()
     let viewModel: HomeViewModel
@@ -29,7 +24,7 @@ class HomeViewController: UICollectionViewController, AppNavigableController {
         self.viewModel = viewModel
         self.headerViewModel = headerViewModel
         
-        super.init(collectionViewLayout: UICollectionViewFlowLayout())
+        super.init()
         
         configureIdentity()
         configureCollectionView()
@@ -83,6 +78,7 @@ class HomeViewController: UICollectionViewController, AppNavigableController {
         section.contentInsets.trailing = 16
         
         collectionView.collectionViewLayout = UICollectionViewCompositionalLayout(section: section)
+        collectionView.dataSource = self
         
         collectionView.register(
             HomeRecentListeningActivityCell.self,
@@ -98,13 +94,16 @@ class HomeViewController: UICollectionViewController, AppNavigableController {
             forCellWithReuseIdentifier: HomeSpotlightMoreLikeCell.identifier
         )
         collectionView.backgroundColor = .clear
+        
+        view.addSubview(collectionView)
+        collectionView.constrain(into: view)
     }
 }
 
 // MARK: - Data Source
-extension HomeViewController {
+extension HomeViewController: UICollectionViewDataSource {
     
-    override func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let cell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: HomeRecentListeningActivityCell.identifier, for: indexPath) as! HomeRecentListeningActivityCell
         cell.viewModel = headerViewModel
         headerSizeSubscriptionCancellable = cell.didUpdateLayout.sink {
@@ -113,11 +112,11 @@ extension HomeViewController {
         return cell
     }
     
-    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         viewModel.spotlight.count
     }
     
-    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         switch viewModel.spotlight[indexPath.row] {
         case .contentList(let title, let content):
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeSpotlightContentListCell.identifier, for: indexPath) as! HomeSpotlightContentListCell
@@ -134,13 +133,5 @@ extension HomeViewController {
             cell.layoutIfNeeded()
             return cell
         }
-    }
-}
-
-// MARK: - Delegate
-extension HomeViewController {
-    
-    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        mainScrollViewOnScroll?()
     }
 }

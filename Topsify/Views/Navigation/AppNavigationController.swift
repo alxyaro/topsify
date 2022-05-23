@@ -42,7 +42,7 @@ class AppNavigationController: UINavigationController {
         
         // force viewDidLoad to run
         _ = rootViewController.view
-        customNavBar.update(for: rootViewController, isRoot: true)
+        updateNavigationBar()
         
         customPopGestureRecognizer.edges = .left
         customPopGestureRecognizer.addTarget(self, action: #selector(handlePopGesture))
@@ -95,6 +95,17 @@ class AppNavigationController: UINavigationController {
             break
         }
     }
+    
+    func childViewControllerDidScroll() {
+        if animationActive {
+            return
+        }
+        customNavBar.updateFrame(using: topViewController!)
+    }
+    
+    func updateNavigationBar() {
+        customNavBar.update(for: topViewController!, isRoot: topViewController === rootViewController)
+    }
 }
 
 extension AppNavigationController: UINavigationControllerDelegate {
@@ -108,8 +119,7 @@ extension AppNavigationController: UINavigationControllerDelegate {
         }
         viewController.additionalSafeAreaInsets.top = customNavBar.bounds.height + Self.navBarBottomSpacing - view.safeAreaInsets.top
         // in case animated=false was used for the push/pop:
-        customNavBar.update(for: viewController, isRoot: viewControllers.count == 1)
-        customNavBar.currentViewController = viewController
+        updateNavigationBar()
     }
     
     func navigationController(_: UINavigationController, animationControllerFor operation: UINavigationController.Operation, from fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
