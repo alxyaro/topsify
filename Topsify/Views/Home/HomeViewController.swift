@@ -41,8 +41,14 @@ class HomeViewController: AppNavigableController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateTitle()
+    }
+    
     private func configureIdentity() {
-        title = "Good Evening"
+        updateTitle()
+        
         navBarButtons += [
             AppNavigationBarButton(iconName: "bell", onTap: {
                 
@@ -97,6 +103,22 @@ class HomeViewController: AppNavigableController {
         
         view.addSubview(collectionView)
         collectionView.constrain(into: view)
+    }
+    
+    private func updateTitle() {
+        let hour = Calendar.current.component(.hour, from: Date())
+        var timeOfDay: String
+        if hour < 5 {
+            timeOfDay = "night"
+        } else if hour < 12 {
+            timeOfDay = "morning"
+        } else if hour < 18 {
+            timeOfDay = "afternoon"
+        } else {
+            timeOfDay = "evening"
+        }
+        
+        title = "Good "+timeOfDay
     }
 }
 
