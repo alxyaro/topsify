@@ -9,13 +9,15 @@ import UIKit
 import Combine
 
 class HomeViewController: AppNavigableController {
-    private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
-    private var cancellables = [AnyCancellable]()
     let viewModel: HomeViewModel
     let headerViewModel: HomeRecentListeningActivityViewModel
+    private var cancellables = [AnyCancellable]()
+    private var headerSizeSubscriptionCancellable: AnyCancellable?
     
-    var headerSizeSubscriptionCancellable: AnyCancellable?
+    private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    
+    private let backgroundGradient = CAGradientLayer()
     
     init(
         viewModel: HomeViewModel = HomeViewModel(),
@@ -26,8 +28,9 @@ class HomeViewController: AppNavigableController {
         
         super.init()
         
-        configureIdentity()
+        configureNavigation()
         configureCollectionView()
+        configureBackgroundGradient()
         
         viewModel.$spotlight.sink { [unowned self] _ in
             collectionView.reloadData()
@@ -41,14 +44,22 @@ class HomeViewController: AppNavigableController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Lifecycle
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        updateTitle()
+        updateTimeDynamicStyles()
     }
     
-    private func configureIdentity() {
-        updateTitle()
-        
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        backgroundGradient.anchorPoint = .zero
+        backgroundGradient.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 200)
+    }
+    
+    // MARK: - Helpers
+
+    private func configureNavigation() {
         navBarButtons += [
             AppNavigationBarButton(iconName: "bell", onTap: {
                 
@@ -85,6 +96,7 @@ class HomeViewController: AppNavigableController {
         
         collectionView.collectionViewLayout = UICollectionViewCompositionalLayout(section: section)
         collectionView.dataSource = self
+        collectionView.delegate = self
         
         collectionView.register(
             HomeRecentListeningActivityCell.self,
@@ -105,8 +117,18 @@ class HomeViewController: AppNavigableController {
         collectionView.constrain(into: view)
     }
     
-    private func updateTitle() {
+    private func configureBackgroundGradient() {
+        backgroundGradient.type = .axial
+        backgroundGradient.colors = [UIColor.clear.cgColor, UIColor.clear.cgColor]
+        backgroundGradient.startPoint = .zero
+        backgroundGradient.endPoint = CGPoint(x: 0.4, y: 0.8)
+        
+        view.layer.insertSublayer(backgroundGradient, at: 0)
+    }
+    
+    private func updateTimeDynamicStyles() {
         let hour = Calendar.current.component(.hour, from: Date())
+        
         var timeOfDay: String
         if hour < 5 {
             timeOfDay = "night"
@@ -119,6 +141,9 @@ class HomeViewController: AppNavigableController {
         }
         
         title = "Good "+timeOfDay
+        if let color = UIColor(named: "HomeTimeTints/\(timeOfDay.capitalized)Color") {
+            backgroundGradient.colors?[0] = color.withAlphaComponent(0.4).cgColor
+        }
     }
 }
 
@@ -155,5 +180,18 @@ extension HomeViewController: UICollectionViewDataSource {
             cell.layoutIfNeeded()
             return cell
         }
+    }
+}
+
+// MARK: - Collection View Delegate
+extension HomeViewController: UICollectionViewDelegate {
+    
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        super.scrollViewDidScroll(scrollView)
+        
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        backgroundGradient.position.y = min(0, -(scrollView.contentOffset.y + scrollView.adjustedContentInset.top) / 2)
+        CATransaction.commit()
     }
 }
