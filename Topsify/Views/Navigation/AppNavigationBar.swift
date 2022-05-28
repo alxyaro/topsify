@@ -8,8 +8,14 @@
 import UIKit
 
 class AppNavigationBar: UIView {
+    private static let height: CGFloat = 50
+    private static let bottomPadding: CGFloat = 8
     private static let titleAnimationMoveDelta: CGFloat = 45
+    
     weak var navigationController: AppNavigationController?
+    
+    private let statusBarBackgroundView = UIView()
+    private let containerView = UIView()
     
     private let backArrow: UIView = {
         let button = UIButton()
@@ -42,8 +48,19 @@ class AppNavigationBar: UIView {
     init() {
         super.init(frame: .zero)
         
-        backgroundColor = .appBackground.withAlphaComponent(0.3)
         preservesSuperviewLayoutMargins = true
+        
+        addSubview(statusBarBackgroundView)
+        statusBarBackgroundView.translatesAutoresizingMaskIntoConstraints = false
+        statusBarBackgroundView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        statusBarBackgroundView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor).isActive = true
+        statusBarBackgroundView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        statusBarBackgroundView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        statusBarBackgroundView.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor).isActive = true
+        
+        insertSubview(containerView, belowSubview: statusBarBackgroundView)
+        // note: explicitly not using Auto Layout for this view, but this anchor is still needed
+        containerView.bottomAnchor.constraint(equalTo: bottomAnchor).priorityAdjustment(-1).isActive = true
         
         // ContentHuggingPriority doesn't seem to work on the nested stack view
         // so using this spacer view as a workaround
@@ -60,13 +77,12 @@ class AppNavigationBar: UIView {
         rootStackView.alignment = .center
         rootStackView.spacing = 5
         
-        addSubview(rootStackView)
+        containerView.addSubview(rootStackView)
         rootStackView.translatesAutoresizingMaskIntoConstraints = false
         rootStackView.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor).isActive = true
         rootStackView.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor).isActive = true
-        rootStackView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor).isActive = true
-        rootStackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8).isActive = true
-        rootStackView.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        rootStackView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -Self.bottomPadding).isActive = true
+        rootStackView.heightAnchor.constraint(equalToConstant: Self.height).isActive = true
         
         // prevent back arrow & buttons from being shrunk
         backArrow.setContentCompressionResistancePriority(.required, for: .horizontal)
@@ -79,6 +95,15 @@ class AppNavigationBar: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func layoutSubviews() {
+        containerView.frame.size.width = frame.width
+        super.layoutSubviews()
+    }
+    
+    override func safeAreaInsetsDidChange() {
+        containerView.frame.size.height = safeAreaInsets.top + Self.height + Self.bottomPadding
+    }
+    
     @objc private func handleBackButtonTap() {
         guard navigationController?.animationActive == false else {
             return
@@ -86,25 +111,39 @@ class AppNavigationBar: UIView {
         navigationController?.popViewController(animated: true)
     }
     
-    private func calcVerticalPosition(for controller: UIViewController) -> CGFloat {
-        guard let scrollView = (controller as? AppNavigableController)?.mainScrollView else {
-            return 0
-        }
-        
-        var offset = -(scrollView.contentOffset.y + scrollView.adjustedContentInset.top)
-        if offset > 0 {
-            // scroll view bounces or pull-downs should be ignored
-            offset = 0
-        }
-        if offset < -self.bounds.height {
-            offset = -self.bounds.height
-        }
-        
-        return offset
+    func getMaximumHeight() -> CGFloat {
+        return safeAreaInsets.top + Self.height + Self.bottomPadding
     }
     
-    func updateFrame(using controller: UIViewController) {
-        frame = CGRect(x: frame.minX, y: calcVerticalPosition(for: controller), width: frame.width, height: frame.height)
+    func updatePosition(using viewController: UIViewController) {
+        let navigable = viewController as? AppNavigableController
+        let isSticky = navigable?.isNavBarSticky ?? false
+        
+        var scrollAmount: CGFloat = 0
+        if let scrollView = navigable?.mainScrollView {
+            scrollAmount = scrollView.contentOffset.y + scrollView.adjustedContentInset.top
+        }
+        
+        var verticalOffset = isSticky ? 0 : -scrollAmount
+        if verticalOffset > 0 {
+            // scroll view bounces or pull-downs should be ignored
+            verticalOffset = 0
+        }
+        if verticalOffset < -getMaximumHeight() {
+            verticalOffset = -getMaximumHeight()
+        }
+        
+        containerView.frame.origin.y = verticalOffset
+        
+        let backgroundOpacity = min(Self.height, scrollAmount)/Self.height
+        let backgroundColor = UIColor.appBackground.withAlphaComponent(0.75 * backgroundOpacity)
+        if isSticky {
+            statusBarBackgroundView.backgroundColor = .clear
+            containerView.backgroundColor = backgroundColor
+        } else {
+            statusBarBackgroundView.backgroundColor = backgroundColor
+            containerView.backgroundColor = .clear
+        }
     }
     
     func update(for viewController: UIViewController, isRoot: Bool, performLayout: Bool = false) {
@@ -124,7 +163,7 @@ class AppNavigationBar: UIView {
         }
         buttonStackView.alpha = 1
         
-        updateFrame(using: viewController)
+        updatePosition(using: viewController)
         
         setNeedsLayout()
         if performLayout {
@@ -138,27 +177,39 @@ class AppNavigationBar: UIView {
         let pushing = operation == .push
         
         // record previous state
-        let prevFrame = frame
+        let prevStatusBarBackgroundViewBackgroundColor = statusBarBackgroundView.backgroundColor
+        let prevContainerViewBackgroundColor = containerView.backgroundColor
+        let prevContainerViewFrame = containerView.frame
         let prevBackArrowIsHidden = backArrow.isHidden
         let prevBackArrow = backArrow.snapshotView(afterScreenUpdates: false)
-        prevBackArrow?.frame = backArrow.convert(backArrow.bounds, to: self)
+        prevBackArrow?.frame = backArrow.convert(backArrow.bounds, to: containerView)
         let prevTitleLabel = titleLabel.snapshotView(afterScreenUpdates: false)
-        prevTitleLabel?.frame = titleLabel.convert(titleLabel.bounds, to: self)
+        prevTitleLabel?.frame = titleLabel.convert(titleLabel.bounds, to: containerView)
         let prevButtonStackView = buttonStackView.snapshotView(afterScreenUpdates: false)
-        prevButtonStackView?.frame = buttonStackView.convert(buttonStackView.bounds, to: self)
+        prevButtonStackView?.frame = buttonStackView.convert(buttonStackView.bounds, to: containerView)
         
         // update state
         update(for: context.viewController(forKey: .to)!, isRoot: toRootVC, performLayout: true)
         
         // add temp snapshot views
         if prevTitleLabel != nil {
-            addSubview(prevTitleLabel!)
+            containerView.addSubview(prevTitleLabel!)
         }
         if prevButtonStackView != nil {
-            addSubview(prevButtonStackView!)
+            containerView.addSubview(prevButtonStackView!)
         }
         
         // perform animations
+        
+        let newStatusBarBackgroundViewBackgroundColor = statusBarBackgroundView.backgroundColor
+        let newContainerViewBackgroundColor = containerView.backgroundColor
+        statusBarBackgroundView.backgroundColor = prevStatusBarBackgroundViewBackgroundColor
+        containerView.backgroundColor = prevContainerViewBackgroundColor
+        animator.addAnimations { [unowned self] in
+            statusBarBackgroundView.backgroundColor = newStatusBarBackgroundViewBackgroundColor
+            containerView.backgroundColor = newContainerViewBackgroundColor
+        }
+        
         if prevBackArrowIsHidden && !backArrow.isHidden {
             backArrow.alpha = 0
             backArrow.frame = backArrow.frame.offsetBy(dx: Self.titleAnimationMoveDelta/2, dy: 0)
@@ -167,7 +218,7 @@ class AppNavigationBar: UIView {
                 backArrow.frame = backArrow.frame.offsetBy(dx: -Self.titleAnimationMoveDelta/2, dy: 0)
             }
         } else if let prevBackArrow = prevBackArrow, !prevBackArrowIsHidden && backArrow.isHidden {
-            addSubview(prevBackArrow)
+            containerView.addSubview(prevBackArrow)
             animator.addAnimations {
                 prevBackArrow.alpha = 0
                 prevBackArrow.frame = prevBackArrow.frame.offsetBy(dx: Self.titleAnimationMoveDelta/2, dy: 0)
@@ -203,15 +254,17 @@ class AppNavigationBar: UIView {
         // The less-ideal alternative (imo) would be to move the navigation bar using
         // a changing topAnchor constraint; that would require a layoutIfNeeded() call
         // which is bound to mess up the animation further.
-        translatesAutoresizingMaskIntoConstraints = true
-        let newFrame = frame
-        frame = prevFrame
+        //  UPDATE: no longer using Auto Layout for shifting the view (containerView)
+        //  logic commented out but kept for future reference
+        //containerView.translatesAutoresizingMaskIntoConstraints = true
+        let newContainerViewFrame = containerView.frame
+        containerView.frame = prevContainerViewFrame
         animator.addAnimations { [unowned self] in
-            frame = newFrame
+            containerView.frame = newContainerViewFrame
         }
         
         animator.addCompletion { [unowned self] pos in
-            translatesAutoresizingMaskIntoConstraints = false
+            //containerView.translatesAutoresizingMaskIntoConstraints = false
             if pos == .start, let fromVC = context.viewController(forKey: .from) {
                 // revert to true state (due to cancellation, i.e. pos == .start)
                 let returningToRoot = navigationController?.rootViewController == fromVC

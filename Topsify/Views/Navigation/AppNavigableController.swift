@@ -50,6 +50,6 @@ class AppNavigableController: UIViewController {
 extension AppNavigableController: UIScrollViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        appNavigationController?.childViewControllerDidScroll()
+        appNavigationController?.updateNavigationBarPosition()
     }
 }

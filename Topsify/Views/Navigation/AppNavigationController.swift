@@ -37,12 +37,9 @@ class AppNavigationController: UINavigationController {
         
         view.addSubview(customNavBar)
         customNavBar.translatesAutoresizingMaskIntoConstraints = false
+        customNavBar.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         customNavBar.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         customNavBar.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        
-        // force viewDidLoad to run
-        _ = rootViewController.view
-        updateNavigationBar()
         
         customPopGestureRecognizer.edges = .left
         customPopGestureRecognizer.addTarget(self, action: #selector(handlePopGesture))
@@ -56,11 +53,15 @@ class AppNavigationController: UINavigationController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
-        customNavBar.updateFrame(using: topViewController!)
-        
-        topViewController!.additionalSafeAreaInsets.top = 0
-        topViewController!.additionalSafeAreaInsets.top = customNavBar.bounds.height + Self.navBarBottomSpacing - view.safeAreaInsets.top
+        updateTopViewControllerSafeArea()
+        // important check - repositioning during navbar animation will likely make it glitch
+        if !animationActive {
+            customNavBar.updatePosition(using: topViewController!)
+        }
+    }
+    
+    private func updateTopViewControllerSafeArea() {
+        topViewController?.additionalSafeAreaInsets.top = customNavBar.getMaximumHeight() + Self.navBarBottomSpacing - view.safeAreaInsets.top
     }
     
     @objc private func handlePopGesture(sender: UIScreenEdgePanGestureRecognizer) {
@@ -96,11 +97,11 @@ class AppNavigationController: UINavigationController {
         }
     }
     
-    func childViewControllerDidScroll() {
+    func updateNavigationBarPosition() {
         if animationActive {
             return
         }
-        customNavBar.updateFrame(using: topViewController!)
+        customNavBar.updatePosition(using: topViewController!)
     }
     
     func updateNavigationBar() {
@@ -111,14 +112,14 @@ class AppNavigationController: UINavigationController {
 extension AppNavigationController: UINavigationControllerDelegate {
     
     func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
+        // note: this will also be called when showing initial view controller
         interactivePopGestureRecognizer?.isEnabled = false
         if viewControllers.count > 1 {
             viewController.view.addGestureRecognizer(customPopGestureRecognizer)
         } else if let mountedView = customPopGestureRecognizer.view {
             mountedView.removeGestureRecognizer(customPopGestureRecognizer)
         }
-        viewController.additionalSafeAreaInsets.top = customNavBar.bounds.height + Self.navBarBottomSpacing - view.safeAreaInsets.top
-        // in case animated=false was used for the push/pop:
+        updateTopViewControllerSafeArea()
         updateNavigationBar()
     }
     
