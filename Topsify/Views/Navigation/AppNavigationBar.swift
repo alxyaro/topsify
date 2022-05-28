@@ -87,8 +87,6 @@ class AppNavigationBar: UIView {
         // prevent back arrow & buttons from being shrunk
         backArrow.setContentCompressionResistancePriority(.required, for: .horizontal)
         buttonStackView.setContentCompressionResistancePriority(.required, for: .horizontal)
-        
-        // FIXME: make scrollview dragging work on non-interactive parts of navbar
     }
     
     required init?(coder: NSCoder) {
@@ -102,6 +100,25 @@ class AppNavigationBar: UIView {
     
     override func safeAreaInsetsDidChange() {
         containerView.frame.size.height = safeAreaInsets.top + Self.height + Self.bottomPadding
+    }
+    
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        for view in [backArrow, buttonStackView] {
+            let localPoint = convert(point, to: view)
+            if view.point(inside: localPoint, with: event) {
+                let hitView = view.hitTest(localPoint, with: event)
+                // this check is to avoid hitting an empty area of the stack view
+                if hitView is UIControl {
+                    return hitView
+                }
+            }
+        }
+        if let navigable = navigationController?.topViewController as? AppNavigableController,
+           navigable.isNavBarSticky {
+            // if the nav bar is sticky, swallow all touch events as normal
+            return super.hitTest(point, with: event)
+        }
+        return nil
     }
     
     @objc private func handleBackButtonTap() {

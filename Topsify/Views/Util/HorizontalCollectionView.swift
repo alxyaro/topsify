@@ -68,11 +68,10 @@ class HorizontalCollectionView: UICollectionView {
         contentInset.left = directionalLayoutMargins.leading
         contentInset.right = directionalLayoutMargins.trailing
     }
-}
-
-extension HorizontalCollectionView: UICollectionViewDelegate {
+    
     override func touchesShouldCancel(in view: UIView) -> Bool {
-        if view.isKind(of: UIButton.self) {
+        // this matches AppButton & any other UIControl-s
+        if view.isKind(of: UIControl.self) {
             return true
         }
         return super.touchesShouldCancel(in: view)
