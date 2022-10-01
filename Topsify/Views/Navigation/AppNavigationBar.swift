@@ -16,8 +16,10 @@ class AppNavigationBar: UIView {
     
     private let statusBarBackgroundView = UIView()
     private let containerView = UIView()
-    
-    private let backArrow: UIView = {
+
+	// lazy var makes the `self` in addTarget refer to the instance vs the class,
+	// but it actually works either way
+    private lazy var backArrow: UIView = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "chevron.left", withConfiguration: UIImage.SymbolConfiguration(pointSize: 19, weight: .bold)), for: .normal)
         button.tintColor = .appTextPrimary

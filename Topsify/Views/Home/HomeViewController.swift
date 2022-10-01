@@ -152,10 +152,9 @@ extension HomeViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let cell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: HomeRecentListeningActivityCell.identifier, for: indexPath) as! HomeRecentListeningActivityCell
-        cell.viewModel = headerViewModel
-        headerSizeSubscriptionCancellable = cell.didUpdateLayout.sink {
-            collectionView.collectionViewLayout.invalidateLayout()
-        }
+        cell.configure(with: headerViewModel, onSizeUpdate: {
+            collectionView.performBatchUpdates(nil)
+        })
         return cell
     }
     

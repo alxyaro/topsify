@@ -12,7 +12,9 @@ class AppNavigableController: UIViewController {
     var navBarButtons = [AppNavigationBarButton]()
     var mainScrollView: UIScrollView?
     
-    private weak var appNavigationController: AppNavigationController?
+	private var appNavigationController: AppNavigationController? {
+		navigationController as? AppNavigationController
+	}
     
     override var title: String? {
         didSet {
@@ -38,12 +40,6 @@ class AppNavigableController: UIViewController {
             self.mainScrollView = mainScrollView
             mainScrollView.delegate = self
         }
-    }
-    
-    override func didMove(toParent parent: UIViewController?) {
-        super.didMove(toParent: parent)
-        
-        appNavigationController = navigationController as? AppNavigationController
     }
 }
 

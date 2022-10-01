@@ -20,6 +20,7 @@ class ContentRowView: HorizontalCollectionView {
         super.init(estimatedCellWidth: 140, estimatedCellHeight: 160)
         register(ContentSquareCell.self, forCellWithReuseIdentifier: ContentSquareCell.identifier)
         dataSource = self
+        prefetchDataSource = self
     }
     
     required init?(coder: NSCoder) {
