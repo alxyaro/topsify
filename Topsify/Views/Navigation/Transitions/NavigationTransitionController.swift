@@ -15,6 +15,13 @@ class NavigationTransitionController: NSObject, UIViewControllerAnimatedTransiti
     init(operation: UINavigationController.Operation, navigationController: AppNavigationController) {
         self.operation = operation
         self.navigationController = navigationController
+
+        // setting animationActive to true immediately as the call site is ran before
+        // viewWillAppear on the appearing VC; viewWillAppear may set the title,
+        // which would invoke AppNavigationController.updateNavigationBar, and
+        // without this being set at that time, it would update the nav bar to the
+        // final animation state before the animation even begins
+        navigationController.animationActive = true
     }
     
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {

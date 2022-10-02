@@ -105,6 +105,9 @@ class AppNavigationController: UINavigationController {
     }
     
     func updateNavigationBar() {
+        if animationActive {
+            return
+        }
         customNavBar.update(for: topViewController!, isRoot: topViewController === rootViewController)
     }
 }
@@ -120,6 +123,8 @@ extension AppNavigationController: UINavigationControllerDelegate {
             mountedView.removeGestureRecognizer(customPopGestureRecognizer)
         }
         updateTopViewControllerSafeArea()
+        // TODO: on interactive animations, animationActive is still true when this is called, so it doesn't do much
+        // see if this needs to be addressed
         updateNavigationBar()
     }
     

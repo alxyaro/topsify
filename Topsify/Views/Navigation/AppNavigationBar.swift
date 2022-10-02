@@ -211,56 +211,32 @@ class AppNavigationBar: UIView {
         update(for: context.viewController(forKey: .to)!, isRoot: toRootVC, performLayout: true)
         
         // add temp snapshot views
-        if prevTitleLabel != nil {
-            containerView.addSubview(prevTitleLabel!)
+        if let prevTitleLabel {
+            containerView.addSubview(prevTitleLabel)
         }
-        if prevButtonStackView != nil {
-            containerView.addSubview(prevButtonStackView!)
+        if let prevButtonStackView {
+            containerView.addSubview(prevButtonStackView)
         }
         
         // perform animations
-        
-        let newStatusBarBackgroundViewBackgroundColor = statusBarBackgroundView.backgroundColor
-        let newContainerViewBackgroundColor = containerView.backgroundColor
-        statusBarBackgroundView.backgroundColor = prevStatusBarBackgroundViewBackgroundColor
-        containerView.backgroundColor = prevContainerViewBackgroundColor
-        animator.addAnimations { [unowned self] in
-            statusBarBackgroundView.backgroundColor = newStatusBarBackgroundViewBackgroundColor
-            containerView.backgroundColor = newContainerViewBackgroundColor
-        }
+
+        animator.transition(on: statusBarBackgroundView, property: \.backgroundColor, fromValue: prevStatusBarBackgroundViewBackgroundColor)
+        animator.transition(on: containerView, property: \.backgroundColor, fromValue: prevContainerViewBackgroundColor)
         
         if prevBackArrowIsHidden && !backArrow.isHidden {
-            backArrow.alpha = 0
-            backArrow.frame = backArrow.frame.offsetBy(dx: Self.titleAnimationMoveDelta/2, dy: 0)
-            animator.addAnimations { [unowned self] in
-                backArrow.alpha = 1
-                backArrow.frame = backArrow.frame.offsetBy(dx: -Self.titleAnimationMoveDelta/2, dy: 0)
+            // showing back arrow
+            animator.slideFade(adding: backArrow, slideAmount: Self.titleAnimationMoveDelta/2, slideLeft: true)
+        } else if !prevBackArrowIsHidden && backArrow.isHidden {
+            // hiding back arrow
+            if let prevBackArrow {
+                containerView.addSubview(prevBackArrow)
             }
-        } else if let prevBackArrow = prevBackArrow, !prevBackArrowIsHidden && backArrow.isHidden {
-            containerView.addSubview(prevBackArrow)
-            animator.addAnimations {
-                prevBackArrow.alpha = 0
-                prevBackArrow.frame = prevBackArrow.frame.offsetBy(dx: Self.titleAnimationMoveDelta/2, dy: 0)
-            }
+            animator.slideFade(removing: prevBackArrow, slideAmount: Self.titleAnimationMoveDelta/2, slideLeft: false)
         }
-        
-        titleLabel.alpha = 0
-        let titleTargetFrame = titleLabel.frame
-        titleLabel.frame = titleLabel.frame.offsetBy(dx: Self.titleAnimationMoveDelta * (pushing ? 1 : -1), dy: 0)
-        animator.addAnimations { [unowned self] in
-            if let prevTitleLabel = prevTitleLabel {
-                prevTitleLabel.alpha = 0
-                prevTitleLabel.frame = prevTitleLabel.frame.offsetBy(dx: -Self.titleAnimationMoveDelta * (pushing ? 1 : -1), dy: 0)
-            }
-            titleLabel.alpha = 1
-            titleLabel.frame = titleTargetFrame
-        }
-        
-        buttonStackView.alpha = 0
-        animator.addAnimations { [unowned self] in
-            prevButtonStackView?.alpha = 0
-            buttonStackView.alpha = 1
-        }
+
+        animator.slideFade(removing: prevTitleLabel, adding: titleLabel, slideAmount: Self.titleAnimationMoveDelta, slideLeft: pushing)
+
+        animator.fade(removing: prevButtonStackView, adding: buttonStackView)
         
         // When Auto Layout performs layout of the navigation bar, it forcefully sets
         // the frame to have a y=0; this is a problem as animations are performed as
@@ -276,11 +252,7 @@ class AppNavigationBar: UIView {
         //  UPDATE: no longer using Auto Layout for shifting the view (containerView)
         //  logic commented out but kept for future reference
         //containerView.translatesAutoresizingMaskIntoConstraints = true
-        let newContainerViewFrame = containerView.frame
-        containerView.frame = prevContainerViewFrame
-        animator.addAnimations { [unowned self] in
-            containerView.frame = newContainerViewFrame
-        }
+        animator.transition(on: containerView, property: \.frame, fromValue: prevContainerViewFrame)
         
         animator.addCompletion { [unowned self] pos in
             //containerView.translatesAutoresizingMaskIntoConstraints = false
