@@ -11,6 +11,6 @@ struct Song: Identifiable, Codable {
     let id: UUID
     let artists: [User]
     let albumId: UUID?
-    let imageId: UUID
+    let imageURL: URL
     let title: String
 }

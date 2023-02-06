@@ -39,16 +39,16 @@ enum ContentObject {
         }
     }
     
-    var imageId: UUID {
+    var imageURL: URL {
         switch self {
         case .album(let album):
-            return album.imageId
+            return album.imageURL
         case .song(let song):
-            return song.imageId
+            return song.imageURL
         case .playlist(let playlist):
-            return playlist.imageId
+            return playlist.imageURL
         case .user(let user):
-            return user.avatarId
+            return user.avatarURL
         }
     }
     

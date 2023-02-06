@@ -8,11 +8,12 @@
 import UIKit
 import Combine
 
-class ContentSquareViewModel {
-    private var content: ContentObject
-    @LatePublished var image: UIImage?
-    private var imageLoadCancellable: AnyCancellable?
-    
+struct ContentTileViewModel {
+
+    var imageURL: URL {
+        content.imageURL
+    }
+
     var title: String? {
         if case .playlist(let playlist) = content, playlist.isOfficial && playlist.isCoverSelfDescriptive {
             return nil
@@ -31,25 +32,25 @@ class ContentSquareViewModel {
         return content.typeName+" \u{00B7} "+content.attribution
     }
     
-    var circular: Bool {
-        if case .user = content {
-            return true
+    var isCircular: Bool {
+        switch content {
+        case .user: return true
+        default: return false
         }
-        return false
     }
+
+    private let content: ContentObject
+    private let imageProvider: ImageProviderType
     
-    init(content: ContentObject) {
+    init(
+        content: ContentObject,
+        imageProvider: ImageProviderType = Environment.current.imageProvider
+    ) {
         self.content = content
+        self.imageProvider = imageProvider
     }
-    
-    func loadImage() {
-        if imageLoadCancellable != nil || image != nil {
-            return
-        }
-        imageLoadCancellable = ImageService.fetchImage(id: content.imageId, ofSize: .medium).sink(receiveCompletion: { [unowned self] _ in
-            imageLoadCancellable = nil
-        }, receiveValue: { [unowned self] image in
-            self.image = image
-        })
+
+    func prefetchImage() {
+        imageProvider.prefetchImage(for: imageURL)
     }
 }

@@ -12,10 +12,9 @@ class HomeSpotlightMoreLikeCell: UICollectionViewCell {
     private static let padding: CGFloat = 16
     private static let imageSize: CGFloat = 40
     
-    private let imageView: UIImageView = {
-        let imageView = UIImageView()
+    private let imageView: RemoteImageView = {
+        let imageView = RemoteImageView()
         imageView.contentMode = .scaleAspectFill
-        imageView.backgroundColor = .gray
         imageView.layer.cornerRadius = imageSize / 2
         imageView.clipsToBounds = true
         return imageView
@@ -39,30 +38,6 @@ class HomeSpotlightMoreLikeCell: UICollectionViewCell {
     }()
     
     private let contentRowView = ContentRowView()
-    
-    var cancellables = [AnyCancellable]()
-    var viewModel: HomeSpotlightMoreLikeViewModel? {
-        didSet {
-            if oldValue === viewModel {
-                return
-            }
-            cancellables = []
-            
-            if let avatar = viewModel?.userAvatar {
-                imageView.image = avatar
-            } else {
-                imageView.image = nil
-                viewModel?.$userAvatar.sink { [unowned self] avatar in
-                    UIView.transition(with: imageView, duration: 0.2, options: [.transitionCrossDissolve]) {
-                        imageView.image = avatar
-                    }
-                }.store(in: &cancellables)
-            }
-            
-            label.text = viewModel?.user.name
-            contentRowView.contentObjects = viewModel?.contentObjects ?? []
-        }
-    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -115,5 +90,11 @@ class HomeSpotlightMoreLikeCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         contentRowView.contentOffset.x = -Self.padding
+    }
+
+    func configure(with viewModel: HomeSpotlightMoreLikeViewModel) {
+        imageView.configure(with: viewModel.userAvatarURL)
+        label.text = viewModel.userName
+        contentRowView.contentObjects = viewModel.contentObjects
     }
 }

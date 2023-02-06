@@ -7,19 +7,37 @@
 
 import Foundation
 import Combine
+import CombineExt
 
 class HomeRecentListeningActivityViewModel {
-    @LatePublished private(set) var recentActivity = [ContentObject]()
-    private var recentActivityLoadCancellable: AnyCancellable?
+    private let loadDataRelay = PassthroughRelay<Void>()
+    private let cellViewModelsRelay = CurrentValueRelay<[HomeRecentListeningActivityItemViewModel]>([])
+    private var cancellables = Set<AnyCancellable>()
+
+    var reloadCells: AnyPublisher<Void, Never> {
+        cellViewModelsRelay.mapToVoid().eraseToAnyPublisher()
+    }
+    var cellViewModels: [HomeRecentListeningActivityItemViewModel] {
+        cellViewModelsRelay.value
+    }
+
+    init() {
+        loadDataRelay
+            .map {
+                API.account.getRecentListeningActivity().materialize()
+            }
+            .switchToLatest()
+            .values()
+            .sink(receiveValue: { [cellViewModelsRelay] recentActivity in
+                let viewModels = recentActivity.map {
+                    HomeRecentListeningActivityItemViewModel(title: $0.textValue, imageURL: $0.imageURL)
+                }
+                cellViewModelsRelay.accept(viewModels)
+            })
+            .store(in: &cancellables)
+    }
     
     func loadData() {
-        if recentActivityLoadCancellable != nil {
-            return
-        }
-        recentActivityLoadCancellable = API.account.getRecentListeningActivity().sink(receiveCompletion: { [unowned self] _ in
-            recentActivityLoadCancellable = nil
-        }, receiveValue: { [unowned self] recentActivity in
-            self.recentActivity = recentActivity
-        })
+        loadDataRelay.accept()
     }
 }

@@ -9,7 +9,7 @@ import Foundation
 
 struct User: Identifiable, Codable {
     let id: UUID
-    let avatarId: UUID
+    let avatarURL: URL
     let name: String
     let isArtist: Bool
 }

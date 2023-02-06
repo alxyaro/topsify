@@ -10,7 +10,7 @@ import Foundation
 struct Playlist: Identifiable, Codable {
     let id: UUID
     let creator: User
-    let imageId: UUID
+    let imageURL: URL
     let title: String
     let description: String
     let isOfficial: Bool

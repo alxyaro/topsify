@@ -35,15 +35,16 @@ extension ContentRowView: UICollectionViewDataSource, UICollectionViewDataSource
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ContentSquareCell.identifier, for: indexPath) as! ContentSquareCell
-        let viewModel = viewModels[indexPath.row]
-        viewModel.loadImage()
-        cell.viewModel = viewModel
+        guard let viewModel = viewModels[safe: indexPath.row] else {
+            return cell
+        }
+        cell.configure(with: viewModel)
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         indexPaths.forEach { indexPath in
-            viewModels[indexPath.row].loadImage()
+            viewModels[safe: indexPath.row]?.prefetchImage()
         }
     }
 }

@@ -27,10 +27,10 @@ class ContentSquareCell: UICollectionViewCell {
         }
     }
     
-    let imageView: UIImageView = {
-        let view = UIImageView()
-        view.backgroundColor = .gray
+    let imageView: RemoteImageView = {
+        let view = RemoteImageView()
         view.clipsToBounds = true
+        view.contentMode = .scaleAspectFill
         return view
     }()
     
@@ -49,29 +49,8 @@ class ContentSquareCell: UICollectionViewCell {
         view.textColor = .appTextSecondary
         return view
     }()
-    
-    private var cancellables = [AnyCancellable]()
-    var viewModel: ContentSquareViewModel? {
-        didSet {
-            if oldValue === viewModel {
-                return
-            }
-            cancellables = []
-            
-            if let image = viewModel?.image {
-                imageView.image = image
-            } else {
-                imageView.image = nil
-                viewModel?.$image.sink(receiveValue: { [unowned self] image in
-                    UIView.transition(with: imageView, duration: 0.2, options: [.transitionCrossDissolve]) {
-                        imageView.image = image
-                    }
-                }).store(in: &cancellables)
-            }
-            setText(title: viewModel?.title, subtitle: viewModel?.subtitle ?? "")
-            updateCornerRadius()
-        }
-    }
+
+    private var viewModel: ContentSquareViewModel?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -107,24 +86,32 @@ class ContentSquareCell: UICollectionViewCell {
     required init(coder: NSCoder) {
         fatalError()
     }
-    
-    func setText(title: String?, subtitle: String) {
-        if title == nil {
-            subtitleToTitleConstraint.isActive = false
-            subtitleToImageConstraint.isActive = true
-            titleLabel.isHidden = true
-        } else {
-            subtitleToImageConstraint.isActive = false
+
+    func configure(with viewModel: ContentSquareViewModel) {
+        self.viewModel = viewModel
+
+        imageView.configure(with: viewModel.imageURL)
+
+        subtitleToTitleConstraint.isActive = false
+        subtitleToImageConstraint.isActive = false
+
+        if let title = viewModel.title {
             subtitleToTitleConstraint.isActive = true
             titleLabel.text = title
             titleLabel.isHidden = false
+        } else {
+            subtitleToImageConstraint.isActive = true
+            titleLabel.isHidden = true
         }
+
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.25
-        subtitleLabel.attributedText = NSAttributedString(string: subtitle, attributes: [.paragraphStyle: paragraphStyle])
+        subtitleLabel.attributedText = NSAttributedString(string: viewModel.subtitle, attributes: [.paragraphStyle: paragraphStyle])
         // explicitly set again so attributedTest is affected
         // https://developer.apple.com/documentation/uikit/uilabel/1620525-linebreakmode
         subtitleLabel.lineBreakMode = .byTruncatingTail
+
+        updateCornerRadius()
     }
     
     override func layoutSubviews() {
@@ -133,7 +120,7 @@ class ContentSquareCell: UICollectionViewCell {
     }
     
     func updateCornerRadius() {
-        imageView.layer.cornerRadius = viewModel?.circular ?? false ? imageView.bounds.width / 2 : 0
+        imageView.layer.cornerRadius = viewModel?.circular == true ? imageView.bounds.width / 2 : 0
     }
     
 }

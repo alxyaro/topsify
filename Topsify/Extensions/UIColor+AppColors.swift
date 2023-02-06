@@ -1,9 +1,5 @@
-//
-//  UIColorExtensions.swift
-//  Topsify
-//
 //  Created by Alex Yaro on 2022-04-05.
-//
+
 import UIKit
 
 extension UIColor {
@@ -11,4 +7,6 @@ extension UIColor {
     static let appCardBackground = UIColor(named: "CardBackgroundColor")!
     static let appTextPrimary = UIColor(named: "TextPrimaryColor")!
     static let appTextSecondary = UIColor(named: "TextSecondaryColor")!
+    static let loadingGlimmerFirst = UIColor(named: "LoadingGlimmerFirstColor")!
+    static let loadingGlimmerSecond = UIColor(named: "LoadingGlimmerSecondColor")!
 }

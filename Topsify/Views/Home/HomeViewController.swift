@@ -173,8 +173,7 @@ extension HomeViewController: UICollectionViewDataSource {
             return cell
         case .moreLike(let user, let content):
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeSpotlightMoreLikeCell.identifier, for: indexPath) as! HomeSpotlightMoreLikeCell
-            cell.viewModel = HomeSpotlightMoreLikeViewModel(user: user, contentObjects: content)
-            cell.viewModel?.loadUserAvatar()
+            cell.configure(with: HomeSpotlightMoreLikeViewModel(user: user, contentObjects: content))
             cell.setNeedsLayout()
             cell.layoutIfNeeded()
             return cell

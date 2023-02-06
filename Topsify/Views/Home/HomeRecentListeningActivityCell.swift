@@ -48,42 +48,45 @@ class HomeRecentListeningActivityCell: UICollectionViewCell {
     }
 
     func configure(with viewModel: HomeRecentListeningActivityViewModel, onSizeUpdate: @escaping () -> Void) {
-        guard self.viewModel !== viewModel else { return }
         self.viewModel = viewModel
 
         cancellables = []
-        viewModel.$recentActivity.sink { [unowned self] recentActivity in
 
-            collectionViewLayout.invalidateLayout()
-            collectionView.reloadData()
+        viewModel.reloadCells
+            .sink { [weak self] in
+                guard let self else { return }
 
-            setNeedsLayout()
-            layoutIfNeeded()
+                self.collectionViewLayout.invalidateLayout()
+                self.collectionView.reloadData()
 
-            let lastHeight = heightConstraint.constant
-            // height must remain at least 1 (non-zero frame), as otherwise collectionViewContentSize
-            // seems to always be zero (assuming it's calculation for a zero-frame collection view?)
-            heightConstraint.constant = max(1, collectionViewLayout.collectionViewContentSize.height)
+                self.setNeedsLayout()
+                self.layoutIfNeeded()
 
-            if lastHeight != heightConstraint.constant {
-                onSizeUpdate()
+                let lastHeight = self.heightConstraint.constant
+                // height must remain at least 1 (non-zero frame), as otherwise collectionViewContentSize
+                // seems to always be zero (assuming it's calculation for a zero-frame collection view?)
+                self.heightConstraint.constant = max(1, self.collectionViewLayout.collectionViewContentSize.height)
+
+                if lastHeight != self.heightConstraint.constant {
+                    onSizeUpdate()
+                }
             }
-        }.store(in: &cancellables)
+            .store(in: &cancellables)
     }
 }
 
 extension HomeRecentListeningActivityCell: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel?.recentActivity.count ?? 0
+        return viewModel?.cellViewModels.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeRecentListeningActivityItemCell.identifier, for: indexPath) as! HomeRecentListeningActivityItemCell
 
-        let viewModel = HomeRecentListeningActivityItemViewModel(contentObject: viewModel!.recentActivity[indexPath.row])
-        viewModel.loadThumbnail()
+        guard let viewModel = viewModel?.cellViewModels[safe: indexPath.row] else {
+            return cell
+        }
         cell.configure(with: viewModel)
-
         return cell
     }
 }

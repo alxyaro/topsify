@@ -9,9 +9,8 @@ import UIKit
 import Combine
 
 class HomeRecentListeningActivityItemCell: UICollectionViewCell {
-    private let imageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.backgroundColor = .systemGray
+    private let imageView: RemoteImageView = {
+        let imageView = RemoteImageView()
         imageView.contentMode = .scaleAspectFill
         return imageView
     }()
@@ -24,9 +23,6 @@ class HomeRecentListeningActivityItemCell: UICollectionViewCell {
         label.textAlignment = .left
         return label
     }()
-    
-    private var cancellables = [AnyCancellable]()
-    private var viewModel: HomeRecentListeningActivityItemViewModel?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -58,16 +54,13 @@ class HomeRecentListeningActivityItemCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(with viewModel: HomeRecentListeningActivityItemViewModel) {
-        self.viewModel = viewModel
-        cancellables = []
-        label.text = viewModel.title
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageView.reset()
+    }
 
-        viewModel.$thumbnail.sink(receiveValue: { [weak self] image in
-            guard let imageView = self?.imageView else { return }
-            UIView.transition(with: imageView, duration: 0.2, options: [.transitionCrossDissolve]) {
-                imageView.image = image
-            }
-        }).store(in: &cancellables)
+    func configure(with viewModel: HomeRecentListeningActivityItemViewModel) {
+        label.text = viewModel.title
+        imageView.configure(with: viewModel.imageURL)
     }
 }
