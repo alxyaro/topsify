@@ -24,25 +24,34 @@ extension UIView {
         constrainEdges(to: view)
     }
     
-    func constrainEdges(to view: UIView, excluding excludedEdges: EdgeSet = [], withInsets insets: NSDirectionalEdgeInsets = .zero) {
+    func constrainEdges(
+        to view: UIView,
+        excluding excludedEdges: EdgeSet = [],
+        withInsets insets: NSDirectionalEdgeInsets = .zero,
+        withPriorities priorities: EdgePriorities = .init()
+    ) {
         useAutoLayout()
         if !excludedEdges.contains(.leading) {
-            leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: insets.leading).isActive = true
+            leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: insets.leading).priority(priorities.leading).isActive = true
         }
         if !excludedEdges.contains(.trailing) {
-            trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -insets.trailing).isActive = true
+            trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -insets.trailing).priority(priorities.trailing).isActive = true
         }
         if !excludedEdges.contains(.top) {
-            topAnchor.constraint(equalTo: view.topAnchor, constant: insets.top).isActive = true
+            topAnchor.constraint(equalTo: view.topAnchor, constant: insets.top).priority(priorities.top).isActive = true
         }
         if !excludedEdges.contains(.bottom) {
-            bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: insets.bottom).isActive = true
+            bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -insets.bottom).priority(priorities.bottom).isActive = true
         }
     }
 
-    func constrainEdgesToSuperview(excluding excludedEdges: EdgeSet = [], withInsets insets: NSDirectionalEdgeInsets = .zero) {
+    func constrainEdgesToSuperview(
+        excluding excludedEdges: EdgeSet = [],
+        withInsets insets: NSDirectionalEdgeInsets = .zero,
+        withPriorities priorities: EdgePriorities = .init()
+    ) {
         guard let superview else { return }
-        constrainEdges(to: superview, excluding: excludedEdges, withInsets: insets)
+        constrainEdges(to: superview, excluding: excludedEdges, withInsets: insets, withPriorities: priorities)
     }
 
     func constrainInCenter(of view: UIView) {
@@ -64,4 +73,15 @@ struct EdgeSet: OptionSet {
     static let bottom = EdgeSet(rawValue: 1 << 3)
 
     var rawValue: Int
+}
+
+struct EdgePriorities {
+    /// Useful for composition layout cells. This avoids the `UIView-Encapsulated-Layout-` unsatisfiable constrains spam
+    /// that happens during initial layout (seems to be when using estimated cell sizing that clashes with actual size).
+    static let forCellSizing = Self(trailing: .justLessThanRequired, bottom: .justLessThanRequired)
+
+    var leading: UILayoutPriority = .required
+    var trailing: UILayoutPriority = .required
+    var top: UILayoutPriority = .required
+    var bottom: UILayoutPriority = .required
 }
