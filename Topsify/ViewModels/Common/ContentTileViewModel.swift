@@ -8,49 +8,42 @@
 import UIKit
 import Combine
 
-struct ContentTileViewModel {
+struct ContentTileViewModel: Equatable {
+    let imageURL: URL
+    let title: String?
+    let subtitle: String
+    let isCircular: Bool
 
-    var imageURL: URL {
-        content.imageURL
-    }
+    @IgnoreEquality private(set) var onTap: () -> Void
+}
 
-    var title: String? {
-        if case .playlist(let playlist) = content, playlist.isOfficial && playlist.isCoverSelfDescriptive {
-            return nil
-        }
-        return content.textValue
-    }
-    
-    var subtitle: String {
+extension ContentTileViewModel {
+    init(
+        from content: ContentObject,
+        onTap: @escaping () -> Void = {}
+    ) {
+        imageURL = content.imageURL
+
         if case .playlist(let playlist) = content {
             if playlist.isOfficial && playlist.isCoverSelfDescriptive {
-                return playlist.description
+                title = nil
+                subtitle = playlist.description
             } else {
-                return content.typeName+(playlist.description.count > 0 ? " \u{00B7} "+playlist.description : "")
+                title = playlist.title
+                subtitle = playlist.description.isEmpty ? content.typeName : [content.typeName, playlist.description].joinedBySpacedDot()
             }
+        } else {
+            title = content.textValue
+            subtitle = [content.typeName, content.attribution].joinedBySpacedDot()
         }
-        return content.typeName+" \u{00B7} "+content.attribution
-    }
-    
-    var isCircular: Bool {
+
         switch content {
-        case .user: return true
-        default: return false
+        case .user:
+            isCircular = true
+        default:
+            isCircular = false
         }
-    }
 
-    private let content: ContentObject
-    private let imageProvider: ImageProviderType
-    
-    init(
-        content: ContentObject,
-        imageProvider: ImageProviderType = Environment.current.imageProvider
-    ) {
-        self.content = content
-        self.imageProvider = imageProvider
-    }
-
-    func prefetchImage() {
-        imageProvider.prefetchImage(for: imageURL)
+        self.onTap = onTap
     }
 }

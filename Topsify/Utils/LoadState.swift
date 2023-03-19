@@ -49,6 +49,22 @@ enum LoadState<E: Error & Equatable>: Equatable {
     }
 }
 
+extension LoadState: CustomDebugStringConvertible {
+
+    var debugDescription: String {
+        switch self {
+        case .initial:
+            return "\(LoadState.self).initial"
+        case .loading:
+            return "\(LoadState.self).loading"
+        case .loaded:
+            return "\(LoadState.self).loaded"
+        case .error(let error):
+            return "\(LoadState.self).error(\(error))"
+        }
+    }
+}
+
 extension Array {
     func combined<E>() -> LoadState<E> where Element == LoadState<E> {
         if let element = first(where: \.isError), let error = element.error {

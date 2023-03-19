@@ -1,14 +1,12 @@
-//
-//  HomeRecentListeningActivityItemCell.swift
-//  Topsify
-//
-//  Created by Alex Yaro on 2022-04-16.
-//
+// Created by Alex Yaro on 2022-04-16.
 
-import UIKit
 import Combine
+import Reusable
+import UIKit
 
-class HomeRecentListeningActivityItemCell: UICollectionViewCell {
+final class RecentActivityItemCell: UICollectionViewCell, Reusable {
+    static let height: CGFloat = 55
+
     private let imageView: RemoteImageView = {
         let imageView = RemoteImageView()
         imageView.contentMode = .scaleAspectFill
@@ -59,7 +57,7 @@ class HomeRecentListeningActivityItemCell: UICollectionViewCell {
         imageView.reset()
     }
 
-    func configure(with viewModel: HomeRecentListeningActivityItemViewModel) {
+    func configure(with viewModel: RecentActivityItemViewModel) {
         label.text = viewModel.title
         imageView.configure(with: viewModel.imageURL)
     }

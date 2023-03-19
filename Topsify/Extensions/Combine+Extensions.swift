@@ -1,13 +1,46 @@
 // Created by Alex Yaro on 2023-01-29.
 
 import Combine
+import CombineExt
+
+typealias DisposeBag = Set<AnyCancellable>
 
 extension Publisher {
-
     func ignoreFailure() -> AnyPublisher<Output, Never> {
         self.catch { _ in
             Empty(completeImmediately: true)
         }.eraseToAnyPublisher()
+    }
+
+    func ignoreCompletion() -> AnyPublisher<Output, Never> {
+       ignoreFailure()
+            .append(Empty(completeImmediately: false))
+            .eraseToAnyPublisher()
+    }
+
+    func mapToConstant<C>(_ constant: C) -> AnyPublisher<C, Failure> {
+        map { _ in constant }.eraseToAnyPublisher()
+    }
+
+    func mapToVoid() -> AnyPublisher<Void, Failure> {
+        mapToConstant(())
+    }
+
+    func mapOptional() -> AnyPublisher<Output?, Failure> {
+        map { Optional($0) }.eraseToAnyPublisher()
+    }
+
+    func mapError<E: Error>(_ constant: E) -> AnyPublisher<Output, E> {
+        mapError { _ in constant }.eraseToAnyPublisher()
+    }
+
+    func assignWeakly<O: AnyObject>(to keyPath: ReferenceWritableKeyPath<O, Output>, on object: O) -> AnyCancellable {
+        self.sink(
+            receiveCompletion: { _ in },
+            receiveValue: { [weak object] output in
+                object?[keyPath: keyPath] = output
+            }
+        )
     }
 }
 
@@ -71,45 +104,32 @@ extension Publishers {
 
 // MARK: - Load State
 
-extension Publisher where Output: EventConvertible, Failure == Never {
-    func mapToLoadState<E: Error & Equatable>() -> AnyPublisher<LoadState<E>, Never> where Output.Failure == E {
-        map {
-            switch $0.event {
-            case .failure(let error):
-                return LoadState.error(error)
-            default:
-                return LoadState.loaded
-            }
+extension Publisher where Output == Void, Failure == Never {
+
+    func dataWithLoadState<P: Publisher>(_ fetchData: @escaping () -> P) -> (AnyPublisher<P.Output, Never>, AnyPublisher<LoadState<P.Failure>, Never>) {
+        let loadStateRelay = CurrentValueRelay<LoadState<P.Failure>>(.initial)
+
+        let data = self.map {
+            loadStateRelay.accept(.loading)
+            return fetchData().materialize()
         }
-        .eraseToAnyPublisher()
-    }
-}
-
-extension Publisher where Failure == Never {
-    func mapToCombined<E: Error & Equatable>() -> AnyPublisher<LoadState<E>, Never> where Output == [LoadState<E>] {
-        map { $0.combined() }.eraseToAnyPublisher()
-    }
-}
-
-extension Publishers {
-    static func loadStatePublisher<T: Publisher, S: Publisher, F: Error & Equatable>(reloadTrigger: T, sources: [S]) -> AnyPublisher<LoadState<F>, Never>
-    where S.Output: EventConvertible, S.Output.Failure == F, S.Failure == Never, T.Failure == Never {
-        let values = sources.map { $0.values() }
-        let failures = sources.map { $0.failures() }
-
-        return reloadTrigger
-            .map { _ in
-                Publishers.Merge(
-                    Just(LoadState.loading),
-                    Publishers.Merge(
-                        Publishers.combineLatest(values).map { _ in LoadState.loaded },
-                        Publishers.MergeMany(failures).map { LoadState.error($0) }
-                    ).prefix(1)
-                )
-            }
             .switchToLatest()
-            .prepend(.initial)
-            .removeDuplicates()
-            .eraseToAnyPublisher()
+            .handleEvents(
+                receiveOutput: { event in
+                    switch event {
+                    case .value:
+                        loadStateRelay.accept(.loaded)
+                    case .failure(let error):
+                        loadStateRelay.accept(.error(error))
+                    default: break
+                    }
+                }
+            )
+            .share()
+
+        return (
+            data.values().eraseToAnyPublisher(),
+            loadStateRelay.removeDuplicates().eraseToAnyPublisher()
+        )
     }
 }

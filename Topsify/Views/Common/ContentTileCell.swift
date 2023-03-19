@@ -7,34 +7,24 @@
 
 import UIKit
 import Combine
+import Reusable
 
-class ContentSquareCell: UICollectionViewCell {
+final class ContentTileCell: UICollectionViewCell, Reusable {
+    static let defaultFixedWidth: CGFloat = 140
+    static let estimatedHeight: CGFloat = 160
+
     private var imageViewWidthConstraint: NSLayoutConstraint!
     private var subtitleToTitleConstraint: NSLayoutConstraint!
     private var subtitleToImageConstraint: NSLayoutConstraint!
     
-    var imageFixedSize: CGFloat? {
-        get {
-            imageViewWidthConstraint.isActive ? imageViewWidthConstraint.constant : nil
-        }
-        set {
-            if let newValue = newValue {
-                imageViewWidthConstraint.isActive = true
-                imageViewWidthConstraint.constant = newValue
-            } else {
-                imageViewWidthConstraint.isActive = false
-            }
-        }
-    }
-    
-    let imageView: RemoteImageView = {
+    private let imageView: RemoteImageView = {
         let view = RemoteImageView()
         view.clipsToBounds = true
         view.contentMode = .scaleAspectFill
         return view
     }()
     
-    let titleLabel: UILabel = {
+    private let titleLabel: UILabel = {
         let view = UILabel()
         view.font = .appFont(ofSize: 14, weight: .bold)
         view.numberOfLines = 1
@@ -42,7 +32,7 @@ class ContentSquareCell: UICollectionViewCell {
         return view
     }()
     
-    let subtitleLabel: UILabel = {
+    private let subtitleLabel: UILabel = {
         let view = UILabel()
         view.font = .appFont(ofSize: 14)
         view.numberOfLines = 2
@@ -50,30 +40,31 @@ class ContentSquareCell: UICollectionViewCell {
         return view
     }()
 
-    private var viewModel: ContentSquareViewModel?
+    private var viewModel: ContentTileViewModel?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         
         let button = AppButton()
         contentView.addSubview(button)
-        button.constrain(into: contentView)
-        
-        button.addSubview(imageView)
+        button.constrainEdgesToSuperview()
+
+        button.contentView.addSubview(imageView)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.topAnchor.constraint(equalTo: button.contentView.topAnchor).isActive = true
         imageView.leadingAnchor.constraint(equalTo: button.contentView.leadingAnchor).isActive = true
-        imageView.trailingAnchor.constraint(equalTo: button.contentView.trailingAnchor).priorityAdjustment(-1).isActive = true
-        imageViewWidthConstraint = imageView.widthAnchor.constraint(equalToConstant: 140).isActive(true)
+        imageView.trailingAnchor.constraint(equalTo: button.contentView.trailingAnchor).isActive = true
         imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor).isActive = true
+
+        imageViewWidthConstraint = imageView.widthAnchor.constraint(equalToConstant: 0)
         
-        button.addSubview(titleLabel)
+        button.contentView.addSubview(titleLabel)
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.firstBaselineAnchor.constraint(equalToSystemSpacingBelow: imageView.bottomAnchor, multiplier: 1.2).isActive = true
         titleLabel.leadingAnchor.constraint(equalTo: button.contentView.leadingAnchor).isActive = true
         titleLabel.trailingAnchor.constraint(equalTo: button.contentView.trailingAnchor).isActive = true
         
-        button.addSubview(subtitleLabel)
+        button.contentView.addSubview(subtitleLabel)
         subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
         subtitleLabel.leadingAnchor.constraint(equalTo: button.contentView.leadingAnchor).isActive = true
         subtitleLabel.trailingAnchor.constraint(equalTo: button.contentView.trailingAnchor).isActive = true
@@ -87,7 +78,10 @@ class ContentSquareCell: UICollectionViewCell {
         fatalError()
     }
 
-    func configure(with viewModel: ContentSquareViewModel) {
+    func configure(
+        with viewModel: ContentTileViewModel,
+        fixedWidth: CGFloat? = defaultFixedWidth
+    ) {
         self.viewModel = viewModel
 
         imageView.configure(with: viewModel.imageURL)
@@ -111,6 +105,13 @@ class ContentSquareCell: UICollectionViewCell {
         // https://developer.apple.com/documentation/uikit/uilabel/1620525-linebreakmode
         subtitleLabel.lineBreakMode = .byTruncatingTail
 
+        if let fixedWidth {
+            imageViewWidthConstraint.constant = fixedWidth
+            imageViewWidthConstraint.isActive = true
+        } else {
+            imageViewWidthConstraint.isActive = false
+        }
+
         updateCornerRadius()
     }
     
@@ -120,7 +121,7 @@ class ContentSquareCell: UICollectionViewCell {
     }
     
     func updateCornerRadius() {
-        imageView.layer.cornerRadius = viewModel?.circular == true ? imageView.bounds.width / 2 : 0
+        imageView.layer.cornerRadius = viewModel?.isCircular == true ? imageView.bounds.width / 2 : 0
     }
     
 }
