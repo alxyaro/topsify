@@ -22,7 +22,7 @@ class AppNavigationBarButton: UIView {
         button.addTarget(self, action: #selector(handleTap), for: .touchUpInside)
         
         addSubview(button)
-        button.constrain(into: self)
+        button.constrainEdgesToSuperview()
     }
     
     required init?(coder: NSCoder) {

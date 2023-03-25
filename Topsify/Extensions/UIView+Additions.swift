@@ -36,11 +36,6 @@ extension UIView {
         translatesAutoresizingMaskIntoConstraints = false
         return self
     }
-
-    @available(*, deprecated, renamed: "constrainEdges(to:)")
-    func constrain(into view: UIView) {
-        constrainEdges(to: view)
-    }
     
     func constrainEdges(
         to view: UIView,

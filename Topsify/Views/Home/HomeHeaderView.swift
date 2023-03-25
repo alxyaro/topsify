@@ -51,7 +51,7 @@ class HomeHeaderView: UIView {
         mainStackView.heightAnchor.constraint(equalToConstant: 50).isActive = true
         
         addSubview(mainStackView)
-        mainStackView.constrain(into: self)
+        mainStackView.constrainEdgesToSuperview()
     }
     
     required init(coder: NSCoder) {
@@ -74,7 +74,7 @@ class HeadingButton: UIView {
         button.addTarget(self, action: #selector(handleTap), for: .touchUpInside)
         
         addSubview(button)
-        button.constrain(into: self)
+        button.constrainEdgesToSuperview()
     }
     
     required init?(coder: NSCoder) {

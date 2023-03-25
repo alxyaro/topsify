@@ -42,7 +42,7 @@ class RootViewController: UIViewController {
         addChild(tabBarController)
         tabBarController.didMove(toParent: self)
         view.addSubview(tabBarController.view)
-        tabBarController.view.constrain(into: view)
+        tabBarController.view.constrainEdgesToSuperview()
     }
 
 }
