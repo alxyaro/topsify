@@ -11,7 +11,7 @@ class OverhangingView<InnerView: UIView>: UIView {
     let horizontalOverhang, verticalOverhang: CGFloat
     let innerView: InnerView
     
-    init(_ innerView: InnerView, horizontalOverhang: CGFloat = 10, verticalOverhang: CGFloat = 0) {
+    init(_ innerView: InnerView, horizontalOverhang: CGFloat = 0, verticalOverhang: CGFloat = 0) {
         self.horizontalOverhang = horizontalOverhang
         self.verticalOverhang = verticalOverhang
         self.innerView = innerView

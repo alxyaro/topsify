@@ -28,7 +28,7 @@ class AppNavigationBar: UIView {
         button.heightAnchor.constraint(equalToConstant: 40).isActive = true
         button.contentMode = .center
         button.addTarget(self, action: #selector(handleBackButtonTap), for: .touchUpInside)
-        return OverhangingView(button)
+        return OverhangingView(button, horizontalOverhang: 10)
     }()
     
     private let titleLabel: UILabel = {

@@ -58,6 +58,27 @@ extension UIView {
         }
     }
 
+    func constrainEdges(
+        to layoutGuide: UILayoutGuide,
+        excluding excludedEdges: EdgeSet = [],
+        withInsets insets: NSDirectionalEdgeInsets = .zero,
+        withPriorities priorities: EdgePriorities = .init()
+    ) {
+        useAutoLayout()
+        if !excludedEdges.contains(.leading) {
+            leadingAnchor.constraint(equalTo: layoutGuide.leadingAnchor, constant: insets.leading).priority(priorities.leading).isActive = true
+        }
+        if !excludedEdges.contains(.trailing) {
+            trailingAnchor.constraint(equalTo: layoutGuide.trailingAnchor, constant: -insets.trailing).priority(priorities.trailing).isActive = true
+        }
+        if !excludedEdges.contains(.top) {
+            topAnchor.constraint(equalTo: layoutGuide.topAnchor, constant: insets.top).priority(priorities.top).isActive = true
+        }
+        if !excludedEdges.contains(.bottom) {
+            bottomAnchor.constraint(equalTo: layoutGuide.bottomAnchor, constant: -insets.bottom).priority(priorities.bottom).isActive = true
+        }
+    }
+
     func constrainEdgesToSuperview(
         excluding excludedEdges: EdgeSet = [],
         withInsets insets: NSDirectionalEdgeInsets = .zero,
@@ -76,6 +97,16 @@ extension UIView {
     func constrainInCenterOfSuperview() {
         guard let superview else { return }
         constrainInCenter(of: superview)
+    }
+
+    func constrainDimensions(width: CGFloat, height: CGFloat) {
+        useAutoLayout()
+        widthAnchor.constraint(equalToConstant: width).isActive = true
+        heightAnchor.constraint(equalToConstant: height).isActive = true
+    }
+
+    func constrainDimensions(uniform value: CGFloat) {
+        constrainDimensions(width: value, height: value)
     }
 }
 

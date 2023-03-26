@@ -85,8 +85,8 @@ final class HomeViewController: AppNavigableController {
             AppNavigationBarButton(iconName: "clock.arrow.circlepath", onTap: {
 
             }),
-            AppNavigationBarButton(iconName: "gear", onTap: {
-                self.navigationController?.pushViewController(HomeViewController(), animated: true)
+            AppNavigationBarButton(iconName: "gear", onTap: { [weak self] in
+                self?.navigationController?.pushViewController(HomeViewController(), animated: true)
             })
         ]
     }

@@ -57,7 +57,6 @@ extension HomeViewController {
 
 private extension HomeViewController.CollectionManager {
 
-    // TODO: verify this is correct:
     static func createRecentActivitySection() -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(0.5),
@@ -78,7 +77,6 @@ private extension HomeViewController.CollectionManager {
         return section
     }
 
-    // TODO: verify this is correct:
     static func createContentTileSection() -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .absolute(ContentTileCell.defaultFixedWidth),
