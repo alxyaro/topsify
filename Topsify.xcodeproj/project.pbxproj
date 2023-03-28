@@ -73,6 +73,8 @@
 		6B9B44C929D0B11F00F6BA94 /* UIAxisPanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9B44C829D0B11F00F6BA94 /* UIAxisPanGestureRecognizer.swift */; };
 		6B9B44CB29D0BE0400F6BA94 /* Geometry+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9B44CA29D0BE0400F6BA94 /* Geometry+Extensions.swift */; };
 		6B9B44CD29D0CC4F00F6BA94 /* PlayerSliderContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9B44CC29D0CC4F00F6BA94 /* PlayerSliderContainerView.swift */; };
+		6B9B44CF29D2242300F6BA94 /* MarqueeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9B44CE29D2242300F6BA94 /* MarqueeView.swift */; };
+		6B9B44D129D28C6E00F6BA94 /* PlayerTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9B44D029D28C6E00F6BA94 /* PlayerTitleView.swift */; };
 		6BAE1B61298721110092E53E /* RemoteImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAE1B60298721110092E53E /* RemoteImageView.swift */; };
 		6BAE1B63298726EA0092E53E /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAE1B62298726EA0092E53E /* Environment.swift */; };
 		6BAE1B6529872CE90092E53E /* Combine+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAE1B6429872CE90092E53E /* Combine+Extensions.swift */; };
@@ -200,6 +202,8 @@
 		6B9B44C829D0B11F00F6BA94 /* UIAxisPanGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIAxisPanGestureRecognizer.swift; sourceTree = "<group>"; };
 		6B9B44CA29D0BE0400F6BA94 /* Geometry+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Geometry+Extensions.swift"; sourceTree = "<group>"; };
 		6B9B44CC29D0CC4F00F6BA94 /* PlayerSliderContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerSliderContainerView.swift; sourceTree = "<group>"; };
+		6B9B44CE29D2242300F6BA94 /* MarqueeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarqueeView.swift; sourceTree = "<group>"; };
+		6B9B44D029D28C6E00F6BA94 /* PlayerTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerTitleView.swift; sourceTree = "<group>"; };
 		6BAE1B60298721110092E53E /* RemoteImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteImageView.swift; sourceTree = "<group>"; };
 		6BAE1B62298726EA0092E53E /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		6BAE1B6429872CE90092E53E /* Combine+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Combine+Extensions.swift"; sourceTree = "<group>"; };
@@ -460,6 +464,7 @@
 			children = (
 				6B3571FB27FBA880007CBDF6 /* ContentTileCell.swift */,
 				6B35721E27FE4DC2007CBDF6 /* AppButton.swift */,
+				6B9B44CE29D2242300F6BA94 /* MarqueeView.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -527,6 +532,7 @@
 				6B9B44C429CF745100F6BA94 /* PlayerControlsView.swift */,
 				6B9B44CC29D0CC4F00F6BA94 /* PlayerSliderContainerView.swift */,
 				6B9B44C629CFB3DC00F6BA94 /* PlayerSlider.swift */,
+				6B9B44D029D28C6E00F6BA94 /* PlayerTitleView.swift */,
 			);
 			path = Player;
 			sourceTree = "<group>";
@@ -760,6 +766,7 @@
 				6B9B44CB29D0BE0400F6BA94 /* Geometry+Extensions.swift in Sources */,
 				6B35724B280C8E15007CBDF6 /* Playlist.swift in Sources */,
 				6BAE1B61298721110092E53E /* RemoteImageView.swift in Sources */,
+				6B9B44CF29D2242300F6BA94 /* MarqueeView.swift in Sources */,
 				6B357240280B2E47007CBDF6 /* OverhangingView.swift in Sources */,
 				6B5AAE6329BF7C0B00348B1D /* IgnoreEquality.swift in Sources */,
 				6B005C1927F3F1910064929C /* Song.swift in Sources */,
@@ -767,6 +774,7 @@
 				6B9A535A29B016BF001D4C2A /* HomeArtistHeaderCell.swift in Sources */,
 				6BFAA33729ABD4F30017E807 /* LoadStateView.swift in Sources */,
 				6BAE1B802990B8040092E53E /* LibraryFetcher.swift in Sources */,
+				6B9B44D129D28C6E00F6BA94 /* PlayerTitleView.swift in Sources */,
 				6B46C22128EA0E2B00E2B80B /* UIViewImplicitlyAnimating+Extensions.swift in Sources */,
 				6B0C39D228209CCE00B59313 /* ContentTileViewModel.swift in Sources */,
 				6BFAA33B29ABDB830017E807 /* UILayoutPriority+Additions.swift in Sources */,

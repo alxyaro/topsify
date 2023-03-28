@@ -8,6 +8,10 @@ extension CGRect {
         Self.init(x: minX - left, y: minY - top, width: width + left + right, height: height + top + bottom)
     }
 
+    func expanded(horizontal: CGFloat, vertical: CGFloat) -> CGRect {
+        expanded(top: vertical, bottom: vertical, left: horizontal, right: horizontal)
+    }
+
     func expanded(by uniformValue: CGFloat) -> CGRect {
         expanded(top: uniformValue, bottom: uniformValue, left: uniformValue, right: uniformValue)
     }

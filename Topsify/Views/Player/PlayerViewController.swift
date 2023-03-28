@@ -3,6 +3,7 @@
 import UIKit
 
 final class PlayerViewController: UIViewController {
+    private let titleView = PlayerTitleView()
     private let controlsView = PlayerControlsView()
 
     init() {
@@ -22,5 +23,9 @@ final class PlayerViewController: UIViewController {
     private func setupView() {
         view.addSubview(controlsView)
         controlsView.constrainEdges(to: view.safeAreaLayoutGuide, excluding: .top)
+
+        view.addSubview(titleView)
+        titleView.constrainEdges(to: view.safeAreaLayoutGuide, excluding: [.top, .bottom])
+        titleView.bottomAnchor.constraint(equalTo: controlsView.topAnchor, constant: -10).isActive = true
     }
 }
