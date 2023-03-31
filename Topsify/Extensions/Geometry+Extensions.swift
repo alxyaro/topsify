@@ -15,4 +15,8 @@ extension CGRect {
     func expanded(by uniformValue: CGFloat) -> CGRect {
         expanded(top: uniformValue, bottom: uniformValue, left: uniformValue, right: uniformValue)
     }
+
+    func expanded(by insets: UIEdgeInsets) -> CGRect {
+        expanded(top: insets.top, bottom: insets.bottom, left: insets.left, right: insets.right)
+    }
 }

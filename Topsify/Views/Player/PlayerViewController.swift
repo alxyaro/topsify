@@ -5,6 +5,7 @@ import UIKit
 final class PlayerViewController: UIViewController {
     private let titleView = PlayerTitleView()
     private let controlsView = PlayerControlsView()
+    private let subMenuView = PlayerSubMenuView()
 
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -21,14 +22,19 @@ final class PlayerViewController: UIViewController {
     }
 
     private func setupView() {
+        let wrappedControlsView = OverhangingView(controlsView, horizontalOverhang: PlayerControlsView.inset)
+        let wrappedSubMenuView = OverhangingView(subMenuView, horizontalOverhang: PlayerSubMenuView.horizontalInset)
+
         let mainStackView = UIStackView(arrangedSubviews: [
             titleView,
-            OverhangingView(controlsView, horizontalOverhang: PlayerControlsView.inset)
+            wrappedControlsView,
+            wrappedSubMenuView
         ])
         mainStackView.axis = .vertical
         mainStackView.directionalLayoutMargins = .init(horizontal: 24, vertical: 0)
         mainStackView.isLayoutMarginsRelativeArrangement = true
-        mainStackView.setCustomSpacing(16, after: titleView)
+        mainStackView.spacing = 16
+        mainStackView.setCustomSpacing(18, after: wrappedControlsView)
 
         view.addSubview(mainStackView)
         mainStackView.constrainEdges(to: view.safeAreaLayoutGuide, excluding: .top)
