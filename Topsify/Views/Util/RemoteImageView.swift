@@ -56,7 +56,12 @@ final class RemoteImageView: UIImageView {
 
     private func applyImage(_ image: UIImage) {
         layer.removeAllAnimations()
-        UIView.transition(with: self, duration: 0.2, options: .transitionCrossDissolve) {
+        if UIView.areAnimationsEnabled {
+            /// `UIView.transition` doesn't seem to respect `performWithoutAnimation` on it's own.
+            UIView.transition(with: self, duration: 0.2, options: .transitionCrossDissolve) {
+                self.image = image
+            }
+        } else {
             self.image = image
         }
     }
