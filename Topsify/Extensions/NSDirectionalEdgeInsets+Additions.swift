@@ -36,4 +36,13 @@ extension NSDirectionalEdgeInsets {
             trailing: lhs.trailing + rhs.trailing
         )
     }
+
+    func toNonDirectionalInsets(using trailCollection: UITraitCollection = .current) -> UIEdgeInsets {
+        UIEdgeInsets(
+            top: top,
+            left: trailCollection.layoutDirection == .rightToLeft ? trailing : leading,
+            bottom: bottom,
+            right: trailCollection.layoutDirection == .rightToLeft ? leading : trailing
+        )
+    }
 }

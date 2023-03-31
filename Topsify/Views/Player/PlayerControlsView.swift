@@ -3,8 +3,8 @@
 import UIKit
 
 final class PlayerControlsView: UIView {
-    private static let buttonPadding: CGFloat = 10
-    static let insets = NSDirectionalEdgeInsets(horizontal: PlayerSliderContainerView.inset, vertical: buttonPadding)
+    static let insets = PlayerSliderContainerView.insets
+    private static let buttonPadding = NSDirectionalEdgeInsets(uniform: 10)
 
     private let slider = PlayerSliderContainerView()
 
@@ -30,30 +30,28 @@ final class PlayerControlsView: UIView {
             playPauseButton,
             nextButton,
             repeatButton
-        ].map {
-            ExpandedTouchView($0, expandedBy: .init(uniform: Self.buttonPadding))
-        }
+        ]
 
         let buttonsStackView = UIStackView(arrangedSubviews: buttonViews)
         buttonsStackView.axis = .horizontal
         buttonsStackView.distribution = .equalSpacing
         buttonsStackView.alignment = .center
-        buttonsStackView.directionalLayoutMargins = .init(uniform: Self.buttonPadding)
+        buttonsStackView.directionalLayoutMargins = Self.buttonPadding
         buttonsStackView.isLayoutMarginsRelativeArrangement = true
 
         // In case spacing is tight, we want to arrange subviews for better hit testing
         // (given that we're using the ExpandedTouchView-s)
-        buttonsStackView.bringSubviewToFront(buttonViews[1]) // previousButton
-        buttonsStackView.bringSubviewToFront(buttonViews[3]) // nextButton
-        buttonsStackView.bringSubviewToFront(buttonViews[2]) // playPauseButton
+        buttonsStackView.bringSubviewToFront(previousButton)
+        buttonsStackView.bringSubviewToFront(nextButton)
+        buttonsStackView.bringSubviewToFront(playPauseButton)
 
         let mainStackView = UIStackView(arrangedSubviews: [
-            OverhangingView(slider, horizontalOverhang: PlayerSliderContainerView.inset),
-            OverhangingView(buttonsStackView, overhang: .init(uniform: Self.buttonPadding))
+            OverhangingView(slider, overhang: PlayerSliderContainerView.insets),
+            OverhangingView(buttonsStackView, overhang: Self.buttonPadding)
         ])
         mainStackView.axis = .vertical
         mainStackView.spacing = 10
-        mainStackView.directionalLayoutMargins = Self.insets
+        mainStackView.directionalLayoutMargins = PlayerSliderContainerView.insets
         mainStackView.isLayoutMarginsRelativeArrangement = true
 
         addSubview(mainStackView)
@@ -63,9 +61,6 @@ final class PlayerControlsView: UIView {
     }
 
     private static func createButton(icon: String, size: CGFloat) -> AppButton {
-        let button = AppButton(icon: icon, size: size)
-        button.constrainDimensions(uniform: size + 8)
-        button.tintColor = .primaryIcon
-        return button
+        AppButton(icon: icon, size: size, expandedTouchBoundary: buttonPadding.toNonDirectionalInsets())
     }
 }

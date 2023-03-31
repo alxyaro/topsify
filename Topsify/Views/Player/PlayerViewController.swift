@@ -22,19 +22,16 @@ final class PlayerViewController: UIViewController {
     }
 
     private func setupView() {
-        let wrappedControlsView = OverhangingView(controlsView, overhang: PlayerControlsView.insets)
-        let wrappedSubMenuView = OverhangingView(subMenuView, horizontalOverhang: PlayerSubMenuView.horizontalInset)
-
         let mainStackView = UIStackView(arrangedSubviews: [
-            titleView,
-            wrappedControlsView,
-            wrappedSubMenuView
+            OverhangingView(titleView, overhang: PlayerTitleView.insets),
+            OverhangingView(controlsView, overhang: PlayerControlsView.insets),
+            OverhangingView(subMenuView, overhang: PlayerSubMenuView.insets)
         ])
         mainStackView.axis = .vertical
-        mainStackView.directionalLayoutMargins = .init(horizontal: 24, vertical: 0)
+        mainStackView.directionalLayoutMargins = .init(horizontal: 24, vertical: 16)
         mainStackView.isLayoutMarginsRelativeArrangement = true
         mainStackView.spacing = 16
-        mainStackView.setCustomSpacing(18, after: wrappedControlsView)
+        mainStackView.setCustomSpacing(24, after: controlsView.superview ?? UIView())
 
         view.addSubview(mainStackView)
         mainStackView.constrainEdges(to: view.safeAreaLayoutGuide, excluding: .top)

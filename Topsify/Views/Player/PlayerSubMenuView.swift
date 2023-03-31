@@ -3,7 +3,7 @@
 import UIKit
 
 final class PlayerSubMenuView: UIView {
-    static let horizontalInset: CGFloat = 12
+    static let insets = NSDirectionalEdgeInsets(uniform: 10)
 
     private let outputDeviceButton = createButton(icon: "hifispeaker")
     private let shareButton = createButton(icon: "square.and.arrow.up")
@@ -13,19 +13,18 @@ final class PlayerSubMenuView: UIView {
         super.init(frame: .zero)
 
         let mainStackView = UIStackView(arrangedSubviews: [
-            outsetButton(outputDeviceButton),
+            outputDeviceButton,
             SpacerView(),
-            outsetButton(shareButton),
-            outsetButton(queueButton)
+            shareButton,
+            queueButton
         ])
-        mainStackView.directionalLayoutMargins = .init(horizontal: Self.horizontalInset, vertical: 0)
-        mainStackView.isLayoutMarginsRelativeArrangement = true
         mainStackView.axis = .horizontal
         mainStackView.spacing = 32
+        mainStackView.directionalLayoutMargins = Self.insets
+        mainStackView.isLayoutMarginsRelativeArrangement = true
 
         addSubview(mainStackView)
         mainStackView.constrainEdgesToSuperview()
-        mainStackView.heightAnchor.constraint(equalToConstant: 36).isActive = true
     }
 
     required init?(coder: NSCoder) {
@@ -33,10 +32,6 @@ final class PlayerSubMenuView: UIView {
     }
 
     private static func createButton(icon: String) -> AppButton {
-        AppButton(icon: icon, size: 20)
-    }
-
-    private func outsetButton(_ button: AppButton) -> UIView {
-        ExpandedTouchView(button, expandedBy: .init(horizontal: Self.horizontalInset, vertical: 0))
+        AppButton(icon: icon, size: 20, expandedTouchBoundary: Self.insets.toNonDirectionalInsets())
     }
 }

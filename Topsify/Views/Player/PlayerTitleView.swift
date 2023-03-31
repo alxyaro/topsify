@@ -3,6 +3,7 @@
 import UIKit
 
 final class PlayerTitleView: UIView {
+    static let insets = NSDirectionalEdgeInsets(uniform: 10)
 
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -47,6 +48,8 @@ final class PlayerTitleView: UIView {
         mainStackView.axis = .horizontal
         mainStackView.alignment = .center
         mainStackView.spacing = 20
+        mainStackView.directionalLayoutMargins = Self.insets
+        mainStackView.isLayoutMarginsRelativeArrangement = true
 
         addSubview(mainStackView)
         mainStackView.constrainEdgesToSuperview()

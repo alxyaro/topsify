@@ -28,7 +28,8 @@ class OverhangingView<InnerView: UIView>: UIView {
     convenience init(_ innerView: InnerView, horizontalOverhang: CGFloat = 0, verticalOverhang: CGFloat = 0) {
         self.init(innerView, overhang: .init(horizontal: horizontalOverhang, vertical: verticalOverhang))
     }
-    
+
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

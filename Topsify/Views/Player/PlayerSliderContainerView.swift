@@ -3,7 +3,7 @@
 import UIKit
 
 final class PlayerSliderContainerView: UIView {
-    static let inset = PlayerSlider.inset
+    static let insets = NSDirectionalEdgeInsets(uniform: PlayerSlider.inset)
 
     private let slider = PlayerSlider()
 
@@ -37,15 +37,17 @@ final class PlayerSliderContainerView: UIView {
         timeLabelsStackView.axis = .horizontal
         timeLabelsStackView.distribution = .equalSpacing
         timeLabelsStackView.alignment = .center
-        timeLabelsStackView.isUserInteractionEnabled = false
-        timeLabelsStackView.directionalLayoutMargins = .init(horizontal: PlayerSlider.inset, vertical: 0)
-        timeLabelsStackView.isLayoutMarginsRelativeArrangement = true
 
-        let mainStackView = UIStackView(arrangedSubviews: [slider, timeLabelsStackView])
+        let mainStackView = UIStackView(arrangedSubviews: [
+            OverhangingView(slider, horizontalOverhang: PlayerSlider.inset),
+            timeLabelsStackView
+        ])
         mainStackView.axis = .vertical
         mainStackView.alignment = .fill
         mainStackView.spacing = 3 - PlayerSlider.inset
         mainStackView.bringSubviewToFront(slider)
+        mainStackView.directionalLayoutMargins = Self.insets
+        mainStackView.isLayoutMarginsRelativeArrangement = true
 
         addSubview(mainStackView)
         mainStackView.constrainEdgesToSuperview()
