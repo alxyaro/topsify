@@ -8,12 +8,9 @@
 import UIKit
 
 class OverhangingView<InnerView: UIView>: UIView {
-    let horizontalOverhang, verticalOverhang: CGFloat
     let innerView: InnerView
     
-    init(_ innerView: InnerView, horizontalOverhang: CGFloat = 0, verticalOverhang: CGFloat = 0) {
-        self.horizontalOverhang = horizontalOverhang
-        self.verticalOverhang = verticalOverhang
+    init(_ innerView: InnerView, overhang: NSDirectionalEdgeInsets) {
         self.innerView = innerView
         
         super.init(frame: .zero)
@@ -22,10 +19,14 @@ class OverhangingView<InnerView: UIView>: UIView {
         
         addSubview(innerView)
         innerView.translatesAutoresizingMaskIntoConstraints = false
-        innerView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: -horizontalOverhang).isActive = true
-        innerView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: horizontalOverhang).isActive = true
-        innerView.topAnchor.constraint(equalTo: topAnchor, constant: -verticalOverhang).isActive = true
-        innerView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: verticalOverhang).isActive = true
+        innerView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: -overhang.leading).isActive = true
+        innerView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: overhang.trailing).isActive = true
+        innerView.topAnchor.constraint(equalTo: topAnchor, constant: -overhang.top).isActive = true
+        innerView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: overhang.bottom).isActive = true
+    }
+
+    convenience init(_ innerView: InnerView, horizontalOverhang: CGFloat = 0, verticalOverhang: CGFloat = 0) {
+        self.init(innerView, overhang: .init(horizontal: horizontalOverhang, vertical: verticalOverhang))
     }
     
     required init?(coder: NSCoder) {

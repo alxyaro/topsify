@@ -21,7 +21,7 @@ final class ExpandedTouchView<WrappedView: UIView>: UIView {
     }
 
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
-        wrappedView.bounds.expanded(by: expansion).contains(convert(point, to: wrappedView))
+        bounds.expanded(by: expansion).contains(point)
     }
 
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {

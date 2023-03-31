@@ -22,7 +22,7 @@ final class PlayerViewController: UIViewController {
     }
 
     private func setupView() {
-        let wrappedControlsView = OverhangingView(controlsView, horizontalOverhang: PlayerControlsView.inset)
+        let wrappedControlsView = OverhangingView(controlsView, overhang: PlayerControlsView.insets)
         let wrappedSubMenuView = OverhangingView(subMenuView, horizontalOverhang: PlayerSubMenuView.horizontalInset)
 
         let mainStackView = UIStackView(arrangedSubviews: [

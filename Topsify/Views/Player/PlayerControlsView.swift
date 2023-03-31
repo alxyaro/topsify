@@ -3,7 +3,8 @@
 import UIKit
 
 final class PlayerControlsView: UIView {
-    static let inset = PlayerSliderContainerView.inset
+    private static let buttonPadding: CGFloat = 10
+    static let insets = NSDirectionalEdgeInsets(horizontal: PlayerSliderContainerView.inset, vertical: buttonPadding)
 
     private let slider = PlayerSliderContainerView()
 
@@ -23,24 +24,36 @@ final class PlayerControlsView: UIView {
     }
 
     private func setupView() {
-        let buttonsStackView = UIStackView(arrangedSubviews: [
+        let buttonViews = [
             shuffleButton,
             previousButton,
             playPauseButton,
             nextButton,
             repeatButton
-        ])
+        ].map {
+            ExpandedTouchView($0, expandedBy: .init(uniform: Self.buttonPadding))
+        }
+
+        let buttonsStackView = UIStackView(arrangedSubviews: buttonViews)
         buttonsStackView.axis = .horizontal
         buttonsStackView.distribution = .equalSpacing
         buttonsStackView.alignment = .center
+        buttonsStackView.directionalLayoutMargins = .init(uniform: Self.buttonPadding)
+        buttonsStackView.isLayoutMarginsRelativeArrangement = true
+
+        // In case spacing is tight, we want to arrange subviews for better hit testing
+        // (given that we're using the ExpandedTouchView-s)
+        buttonsStackView.bringSubviewToFront(buttonViews[1]) // previousButton
+        buttonsStackView.bringSubviewToFront(buttonViews[3]) // nextButton
+        buttonsStackView.bringSubviewToFront(buttonViews[2]) // playPauseButton
 
         let mainStackView = UIStackView(arrangedSubviews: [
             OverhangingView(slider, horizontalOverhang: PlayerSliderContainerView.inset),
-            buttonsStackView
+            OverhangingView(buttonsStackView, overhang: .init(uniform: Self.buttonPadding))
         ])
         mainStackView.axis = .vertical
         mainStackView.spacing = 10
-        mainStackView.directionalLayoutMargins = .init(horizontal: PlayerSliderContainerView.inset, vertical: 0)
+        mainStackView.directionalLayoutMargins = Self.insets
         mainStackView.isLayoutMarginsRelativeArrangement = true
 
         addSubview(mainStackView)
