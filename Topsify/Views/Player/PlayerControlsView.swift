@@ -3,17 +3,14 @@
 import UIKit
 
 final class PlayerControlsView: UIView {
+    static let inset = PlayerSliderContainerView.inset
 
     private let slider = PlayerSliderContainerView()
 
     private let shuffleButton = createButton(icon: "shuffle", size: 24)
-
     private let previousButton = createButton(icon: "backward.end.fill", size: 30)
-
     private let playPauseButton = createButton(icon: "play.circle.fill", size: 65)
-
     private let nextButton = createButton(icon: "forward.end.fill", size: 30)
-
     private let repeatButton = createButton(icon: "repeat", size: 24)
 
     init() {
@@ -47,16 +44,13 @@ final class PlayerControlsView: UIView {
         mainStackView.isLayoutMarginsRelativeArrangement = true
 
         addSubview(mainStackView)
-        mainStackView.constrainEdgesToSuperview(withInsets: .init(horizontal: 24 - PlayerSliderContainerView.inset, vertical: 0))
+        mainStackView.constrainEdgesToSuperview()
+
+        semanticContentAttribute = .playback
     }
 
     private static func createButton(icon: String, size: CGFloat) -> AppButton {
-        let button = AppButton(
-            icon: UIImage(
-                systemName: icon,
-                withConfiguration: UIImage.SymbolConfiguration(pointSize: size)
-            )
-        )
+        let button = AppButton(icon: icon, size: size)
         button.constrainDimensions(uniform: size + 8)
         button.tintColor = .primaryIcon
         return button

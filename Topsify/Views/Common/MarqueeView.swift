@@ -124,7 +124,7 @@ final class MarqueeView: UIView {
 
         layoutIfNeeded()
 
-        let animation = UIViewPropertyAnimator(duration: distanceToTravel / max(1, speedFactor * 30), curve: .linear)
+        let animation = UIViewPropertyAnimator(duration: distanceToTravel / max(1, speedFactor * 40), curve: .linear)
         animation.addAnimations { [weak self] in
             guard let self else { return }
             self.offsetConstraint.constant = targetOffset

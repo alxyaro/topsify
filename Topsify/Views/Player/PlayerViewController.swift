@@ -21,11 +21,16 @@ final class PlayerViewController: UIViewController {
     }
 
     private func setupView() {
-        view.addSubview(controlsView)
-        controlsView.constrainEdges(to: view.safeAreaLayoutGuide, excluding: .top)
+        let mainStackView = UIStackView(arrangedSubviews: [
+            titleView,
+            OverhangingView(controlsView, horizontalOverhang: PlayerControlsView.inset)
+        ])
+        mainStackView.axis = .vertical
+        mainStackView.directionalLayoutMargins = .init(horizontal: 24, vertical: 0)
+        mainStackView.isLayoutMarginsRelativeArrangement = true
+        mainStackView.setCustomSpacing(16, after: titleView)
 
-        view.addSubview(titleView)
-        titleView.constrainEdges(to: view.safeAreaLayoutGuide, excluding: [.top, .bottom])
-        titleView.bottomAnchor.constraint(equalTo: controlsView.topAnchor, constant: -10).isActive = true
+        view.addSubview(mainStackView)
+        mainStackView.constrainEdges(to: view.safeAreaLayoutGuide, excluding: .top)
     }
 }

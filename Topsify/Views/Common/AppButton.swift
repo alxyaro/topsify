@@ -43,10 +43,18 @@ class AppButton: UIControl {
         addTarget(self, action: #selector(handleTap), for: .touchUpInside)
     }
 
-    convenience init(icon: UIImage?, contentMode: UIView.ContentMode = .center) {
-        let imageView = UIImageView(image: icon)
+    convenience init(icon: String, size: CGFloat, contentMode: UIView.ContentMode = .center) {
+        let imageView = UIImageView(
+            image: UIImage(
+                systemName: icon,
+                withConfiguration: UIImage.SymbolConfiguration(pointSize: size)
+            )
+        )
+        imageView.setContentHuggingPriority(.required, for: .horizontal)
+        imageView.setContentCompressionResistancePriority(.required, for: .horizontal)
         imageView.contentMode = contentMode
         self.init(contentView: imageView)
+        tintColor = .primaryIcon
     }
     
     required init(coder: NSCoder) {
