@@ -33,7 +33,7 @@ extension HomeViewController {
         }()
 
         private(set) lazy var collectionView: UICollectionView = {
-            let collectionView = BetterScrollCollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
+            let collectionView = AppCollectionView(collectionViewLayout: collectionViewLayout)
 
             collectionView.backgroundColor = .clear
             collectionView.dataSource = self
@@ -163,14 +163,5 @@ private extension NSCollectionLayoutBoundarySupplementaryItem {
             elementKind: UICollectionView.elementKindSectionHeader,
             alignment: .top
         )
-    }
-}
-
-private class BetterScrollCollectionView: UICollectionView {
-
-    override func touchesShouldCancel(in view: UIView) -> Bool {
-        /// As per docs, by default this method returns false for `UIControl`s.
-        /// We don't want that, so you can press down on a button and keep scrolling after, much like in real app.
-        return true
     }
 }
