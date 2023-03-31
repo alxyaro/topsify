@@ -11,13 +11,17 @@ class AppButton: UIControl {
     let scaleOnTap: Bool
     typealias TapHandler = () -> Void
     var onTap: TapHandler?
-    
+
     override var isHighlighted: Bool {
         didSet {
             if oldValue != isHighlighted {
-                UIView.animate(withDuration: isHighlighted ? 0.02 : 0.2, delay: 0, options: [.allowUserInteraction, .beginFromCurrentState]) { [unowned self] in
-                    wrapperView.alpha = isHighlighted ? 0.75 : 1.0
-                    let scale = self.isHighlighted && scaleOnTap ? 0.95 : 1
+                UIView.animate(
+                    withDuration: isHighlighted ? 0.04 : 0.2,
+                    delay: 0,
+                    options: isHighlighted ? [.curveEaseOut, .beginFromCurrentState] : [.curveEaseOut]
+                ) { [unowned self] in
+                    wrapperView.alpha = isHighlighted ? 0.55 : 1.0
+                    let scale = isHighlighted && scaleOnTap ? 0.95 : 1
                     wrapperView.transform = CGAffineTransform(scaleX: scale, y: scale)
                 }
             }
