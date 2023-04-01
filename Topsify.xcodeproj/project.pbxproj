@@ -97,6 +97,7 @@
 		6BED243F29D7564F002D51C2 /* SpacerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BED243E29D7564F002D51C2 /* SpacerView.swift */; };
 		6BED244129D75B87002D51C2 /* ExpandedTouchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BED244029D75B87002D51C2 /* ExpandedTouchView.swift */; };
 		6BED244329D75E0A002D51C2 /* UIEdgeInsets+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BED244229D75E0A002D51C2 /* UIEdgeInsets+Additions.swift */; };
+		6BED244529D7CDFD002D51C2 /* CALayer+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BED244429D7CDFD002D51C2 /* CALayer+Additions.swift */; };
 		6BF64F0529C65534003C04CA /* Combine+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF64F0429C65534003C04CA /* Combine+Additions.swift */; };
 		6BF64F0729C6661B003C04CA /* TestPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF64F0629C6661B003C04CA /* TestPublisher.swift */; };
 		6BF9690229D726A300EA8B6F /* AppCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF9690129D726A300EA8B6F /* AppCollectionView.swift */; };
@@ -229,6 +230,7 @@
 		6BED243E29D7564F002D51C2 /* SpacerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpacerView.swift; sourceTree = "<group>"; };
 		6BED244029D75B87002D51C2 /* ExpandedTouchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpandedTouchView.swift; sourceTree = "<group>"; };
 		6BED244229D75E0A002D51C2 /* UIEdgeInsets+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIEdgeInsets+Additions.swift"; sourceTree = "<group>"; };
+		6BED244429D7CDFD002D51C2 /* CALayer+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CALayer+Additions.swift"; sourceTree = "<group>"; };
 		6BF64F0429C65534003C04CA /* Combine+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Combine+Additions.swift"; sourceTree = "<group>"; };
 		6BF64F0629C6661B003C04CA /* TestPublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPublisher.swift; sourceTree = "<group>"; };
 		6BF9690129D726A300EA8B6F /* AppCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCollectionView.swift; sourceTree = "<group>"; };
@@ -455,6 +457,7 @@
 				6B9A536529B2BB47001D4C2A /* NSDirectionalEdgeInsets+Additions.swift */,
 				6B9B44CA29D0BE0400F6BA94 /* Geometry+Extensions.swift */,
 				6BED244229D75E0A002D51C2 /* UIEdgeInsets+Additions.swift */,
+				6BED244429D7CDFD002D51C2 /* CALayer+Additions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -810,6 +813,7 @@
 				6BFE668A282F262700566BED /* AppTabBarButton.swift in Sources */,
 				6BFE668E283851A000566BED /* TabTransitionController.swift in Sources */,
 				6B0C39BA281A03DF00B59313 /* TestModelData.swift in Sources */,
+				6BED244529D7CDFD002D51C2 /* CALayer+Additions.swift in Sources */,
 				6B357247280BB999007CBDF6 /* RecentActivityItemViewModel.swift in Sources */,
 				6BAE1B6529872CE90092E53E /* Combine+Extensions.swift in Sources */,
 				6BAE1B63298726EA0092E53E /* Environment.swift in Sources */,

@@ -8,7 +8,6 @@
 import UIKit
 import Combine
 import CombineExt
-import CombineCocoa
 
 final class HomeViewController: AppNavigableController {
     
@@ -53,28 +52,32 @@ final class HomeViewController: AppNavigableController {
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        backgroundGradient.anchorPoint = .zero
-        backgroundGradient.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 200)
+        CALayer.performWithoutAnimation {
+            backgroundGradient.anchorPoint = .zero
+            backgroundGradient.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 200)
+            updateGradientPosition()
+        }
     }
     
     // MARK: - Helpers
+
+    private func updateGradientPosition() {
+        let collectionView = collectionManager.collectionView
+        CALayer.performWithoutAnimation {
+            backgroundGradient.position.y = min(0, -(collectionView.contentOffset.y + collectionView.adjustedContentInset.top) / 2)
+        }
+    }
 
     private func configureViews() {
         view.addSubview(collectionManager.collectionView)
         collectionManager.collectionView.constrainEdgesToSuperview()
 
+        view.layer.insertSublayer(backgroundGradient, at: 0)
         collectionManager.collectionView.didScrollPublisher
             .sink { [weak self] in
-                guard let self else { return }
-                let collectionView = self.collectionManager.collectionView
-                CATransaction.begin()
-                CATransaction.setDisableActions(true)
-                self.backgroundGradient.position.y = min(0, -(collectionView.contentOffset.y + collectionView.adjustedContentInset.top) / 2)
-                CATransaction.commit()
+                self?.updateGradientPosition()
             }
             .store(in: &disposeBag)
-
-        view.layer.insertSublayer(backgroundGradient, at: 0)
     }
 
     private func configureNavigation() {
@@ -115,19 +118,5 @@ final class HomeViewController: AppNavigableController {
                 collectionManager?.updateSections($0)
             }
             .store(in: &disposeBag)
-    }
-}
-
-// MARK: - UICollectionViewDelegate
-
-extension HomeViewController: UICollectionViewDelegate {
-    
-    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        super.scrollViewDidScroll(scrollView)
-        
-        CATransaction.begin()
-        CATransaction.setDisableActions(true)
-        backgroundGradient.position.y = min(0, -(scrollView.contentOffset.y + scrollView.adjustedContentInset.top) / 2)
-        CATransaction.commit()
     }
 }

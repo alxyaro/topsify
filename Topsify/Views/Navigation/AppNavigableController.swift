@@ -6,11 +6,13 @@
 //
 
 import UIKit
+import Combine
 
 class AppNavigableController: UIViewController {
     var isNavBarSticky = false
     var navBarButtons = [AppNavigationBarButton]()
     var mainScrollView: UIScrollView?
+    var scrollCancellable: AnyCancellable?
     
 	private var appNavigationController: AppNavigationController? {
 		navigationController as? AppNavigationController
@@ -38,7 +40,9 @@ class AppNavigableController: UIViewController {
         
         if mainScrollView == nil, let mainScrollView = view.subviews.first(where: { $0 is UIScrollView }) as? UIScrollView {
             self.mainScrollView = mainScrollView
-            mainScrollView.delegate = self
+            scrollCancellable = mainScrollView.didScrollPublisher.sink { [weak self] in
+                self?.appNavigationController?.updateNavigationBarPosition()
+            }
         }
     }
 }
