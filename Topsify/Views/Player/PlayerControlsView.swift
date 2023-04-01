@@ -50,7 +50,7 @@ final class PlayerControlsView: UIView {
             OverhangingView(buttonsStackView, overhang: Self.buttonPadding)
         ])
         mainStackView.axis = .vertical
-        mainStackView.spacing = 10
+        mainStackView.spacing = 8
         mainStackView.directionalLayoutMargins = PlayerSliderContainerView.insets
         mainStackView.isLayoutMarginsRelativeArrangement = true
 

@@ -30,10 +30,10 @@ final class PlayerViewController: UIViewController {
         mainStackView.axis = .vertical
         mainStackView.directionalLayoutMargins = .init(horizontal: 24, vertical: 16)
         mainStackView.isLayoutMarginsRelativeArrangement = true
-        mainStackView.spacing = 16
-        mainStackView.setCustomSpacing(24, after: controlsView.superview ?? UIView())
+        mainStackView.spacing = 12
+        mainStackView.setCustomSpacing(20, after: controlsView.superview ?? UIView())
 
         view.addSubview(mainStackView)
-        mainStackView.constrainEdges(to: view.safeAreaLayoutGuide, excluding: .top)
+        mainStackView.constrainEdges(to: view.safeAreaLayoutGuide, excluding: .top, withInsets: .bottom(24))
     }
 }
