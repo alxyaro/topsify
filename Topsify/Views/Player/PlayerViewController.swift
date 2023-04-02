@@ -3,9 +3,14 @@
 import UIKit
 
 final class PlayerViewController: UIViewController {
+
+    private lazy var stageView = PlayerStageView(contentAreaLayoutGuide: stageContentAreaLayoutGuide)
+
     private let titleView = PlayerTitleView()
     private let controlsView = PlayerControlsView()
     private let subMenuView = PlayerSubMenuView()
+
+    private let stageContentAreaLayoutGuide = UILayoutGuide()
 
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -22,6 +27,9 @@ final class PlayerViewController: UIViewController {
     }
 
     private func setupView() {
+        view.addSubview(stageView)
+        stageView.constrainEdgesToSuperview()
+
         let mainStackView = UIStackView(arrangedSubviews: [
             OverhangingView(titleView, overhang: PlayerTitleView.insets),
             OverhangingView(controlsView, overhang: PlayerControlsView.insets),
@@ -35,5 +43,11 @@ final class PlayerViewController: UIViewController {
 
         view.addSubview(mainStackView)
         mainStackView.constrainEdges(to: view.safeAreaLayoutGuide, excluding: .top, withInsets: .bottom(24))
+
+        stageView.addLayoutGuide(stageContentAreaLayoutGuide)
+        stageContentAreaLayoutGuide.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        stageContentAreaLayoutGuide.bottomAnchor.constraint(equalTo: mainStackView.topAnchor, constant: mainStackView.directionalLayoutMargins.top).isActive = true
+        stageContentAreaLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        stageContentAreaLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
 }

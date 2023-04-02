@@ -42,14 +42,6 @@ class TestUsers {
     
     static let topsify = User(id: UUID(), avatarURL: TestImages.getURL(name: "user_topsify"), name: "Topsify", isArtist: false)
     static let alexYaro = User(id: UUID(), avatarURL: TestImages.getURL(name: "user_alex-yaro"), name: "Alex Yaro", isArtist: false)
-    
-    static var all: [User] {
-        Mirror(reflecting: Self.self).children.filter { child in
-            child.value is User
-        }.map { child in
-            child.value as! User
-        }
-    }
 }
 
 class TestAlbums {
@@ -69,14 +61,8 @@ class TestAlbums {
     static let stoneyDeluxe = Album(id: UUID(), artists: [TestUsers.postMalone], imageURL: TestImages.getURL(name: "album_stoney-deluxe"), title: "Stoney (Deluxe)")
     static let views = Album(id: UUID(), artists: [TestUsers.drake], imageURL: TestImages.getURL(name: "album_views"), title: "Views")
     static let wunna = Album(id: UUID(), artists: [TestUsers.gunna], imageURL: TestImages.getURL(name: "album_wunna"), title: "Wunna")
-    
-    static var all: [Album] {
-        Mirror(reflecting: Self.self).children.filter { child in
-            child.value is Album
-        }.map { child in
-            child.value as! Album
-        }
-    }
+
+    static let sampleList = [twoAlive, catchTheseVibes, equals, eternalAtake, goodbyeAndGoodRiddance, gttm, legendsNeverDie, lilBoat2, nav, perfectTiming, plutoXBabyPluto]
 }
 
 class TestPlaylists {
@@ -103,14 +89,6 @@ class TestPlaylists {
     static let moody = create(title: "Moody", desc: "Tracks that make you think.", image: "sample2", creator: TestUsers.alexYaro)
     static let asmr = create(title: "ASMR", desc: "The ones that give you goosebumps.", image: "sample3", creator: TestUsers.alexYaro)
     static let goosebumpRap = create(title: "Goosebump Rap", desc: "", image: "sample4", creator: TestUsers.alexYaro)
-    
-    static var all: [Playlist] {
-        Mirror(reflecting: Self.self).children.filter { child in
-            child.value is Playlist
-        }.map { child in
-            child.value as! Playlist
-        }
-    }
 }
 
 class TestSongs {
@@ -118,12 +96,6 @@ class TestSongs {
     static let loveMusic = Song(id: UUID(), artists: [TestUsers.lilYachty], albumId: nil, imageURL: TestImages.getURL(name: "single_love-music"), title: "Love Music")
     static let turks = Song(id: UUID(), artists: [TestUsers.nav, TestUsers.gunna], albumId: nil, imageURL: TestImages.getURL(name: "single_turks"), title: "Turks")
     static let wantedYou = Song(id: UUID(), artists: [TestUsers.nav, TestUsers.lilUziVert], albumId: nil, imageURL: TestImages.getURL(name: "single_wanted-you"), title: "Wanted You")
-    
-    static var all: [Song] {
-        Mirror(reflecting: Self.self).children.filter { child in
-            child.value is Song
-        }.map { child in
-            child.value as! Song
-        }
-    }
+
+    static let sampleList = [capToMe, loveMusic, turks, wantedYou]
 }

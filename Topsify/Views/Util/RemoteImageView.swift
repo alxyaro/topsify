@@ -11,6 +11,7 @@ final class RemoteImageView: UIImageView {
     init(imageProvider: ImageProviderType = Environment.current.imageProvider) {
         self.imageProvider = imageProvider
         super.init(frame: .zero)
+        contentMode = .scaleAspectFill
         reset()
     }
 
