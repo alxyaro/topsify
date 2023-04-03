@@ -101,25 +101,49 @@ final class PlayerStageView: AppCollectionView {
         dataSourceSubsetStartIndex = newData[0]
 
         let targetContentOffset = bounds.width * CGFloat(selectedItemIndex - dataSourceSubsetStartIndex)
-        contentOffset.x = targetContentOffset + offsetAdjustment
+        setContentOffset(.init(x: targetContentOffset + offsetAdjustment, y: 0), animated: false)
+    }
+
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        let result = super.hitTest(point, with: event)
+        if result != nil {
+            /// Using `setContentOffset` inside `scrollViewWillBeginDragging` does not seem to work, as it's overriden
+            /// following the continued drag. As a result, calling `updateCollectionData`, which may potentially shift around the
+            /// cells and require content offset changes, is problematic within that delegate method. Setting `contentOffset` directly
+            /// seems to work better, but it's still buggy for certain edge cases (e.g. dragging near the end of the collection while removing
+            /// the last cell). As a result, we need to update the collection data *before* the delegate method is called, and doing it
+            /// here in `hitTest` seems to work well.
+            updateCollectionData(snapToExactPage: false)
+        }
+        return result
     }
 }
 
 extension PlayerStageView: UICollectionViewDelegate {
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        // FIXME: resulting content offset is a little buggy when this is called as we're
-        // about to enter (decelerating into) the last cell
-        updateCollectionData(snapToExactPage: false)
+        /// Do not call anything here that tries to update `contentOffset` - see comment in `hitTest` above.
     }
 
-    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-        selectedItemIndex = dataSourceSubsetStartIndex + pageIndex(for: targetContentOffset.pointee)
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocityPerMs: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        var targetIndex = dataSourceSubsetStartIndex + pageIndex(for: targetContentOffset.pointee)
+
+        if targetIndex == selectedItemIndex && abs(velocityPerMs.x) > 0.5 {
+            targetIndex += velocityPerMs.x > 0 ? 1 : -1
+            targetIndex = targetIndex.clamped(to: 0...items.count-1)
+        }
+
+        selectedItemIndex = targetIndex
+        targetContentOffset.pointee.x = CGFloat(selectedItemIndex - dataSourceSubsetStartIndex) * bounds.width
     }
 
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
             updateCollectionData()
         }
+    }
+
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        updateCollectionData()
     }
 }
