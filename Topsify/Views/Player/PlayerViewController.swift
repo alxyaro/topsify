@@ -37,6 +37,7 @@ final class PlayerViewController: UIViewController {
         ])
         mainStackView.axis = .vertical
         mainStackView.directionalLayoutMargins = .init(horizontal: 24, vertical: 16)
+        mainStackView.directionalLayoutMargins.top = 0 // to improve stage swiping
         mainStackView.isLayoutMarginsRelativeArrangement = true
         mainStackView.spacing = 12
         mainStackView.setCustomSpacing(20, after: controlsView.superview ?? UIView())
