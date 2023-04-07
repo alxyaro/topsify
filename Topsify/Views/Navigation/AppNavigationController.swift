@@ -17,9 +17,10 @@ class AppNavigationController: UINavigationController {
     let customNavBar = AppNavigationBar()
     var animationActive = false {
         didSet {
-            // this is just for good measure
-            // if UIVIewPropertyAnimator.isUserInteractionEnabled is not explicitly set to true,
-            // the user can click on buttons in the nav bar before animation completes
+            /// Prevent the user from tapping the buttons during animation.
+            /// This is technically not required here, but kept for good measure, as the `NavigationTransitionCoordinator`
+            /// sets it's `UIViewPropertyAnimator`'s `isUserInteractionEnabled` property to `false`, which
+            /// should prevent interaction with the nav bar buttons on its own.
             customNavBar.isUserInteractionEnabled = !animationActive
         }
     }
