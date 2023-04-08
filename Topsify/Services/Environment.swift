@@ -9,22 +9,15 @@ struct Environment {
 // MARK: - Current
 
 extension Environment {
-    static var current: Environment = .mock()
+    static var current: Environment = .live()
 }
 
 // MARK: - Live
 
 extension Environment {
-    /// For a live app, the following could be used:
-    // static func live() -> Environment {}
-}
-
-// MARK: - Mock
-
-extension Environment {
-    static func mock() -> Environment {
+    static func live() -> Environment {
         .init(
-            imageProvider: MockImageProvider()
+            imageProvider: FakeImageProvider()
         )
     }
 }

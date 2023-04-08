@@ -25,13 +25,13 @@ struct HomeViewModel {
             .share()
 
         let fetchRecentActivity = {
-            dependencies.accountFetcher.recentActivity()
+            dependencies.accountDataService.recentActivity()
                 .replaceError(with: [])
                 .setFailureType(to: HomeError.self)
         }
 
         let fetchSpotlight = {
-            dependencies.libraryFetcher.spotlightEntries()
+            dependencies.contentService.spotlightEntries()
                 .mapError(HomeError.failedToLoadSpotlight)
         }
 
@@ -93,8 +93,8 @@ extension HomeViewModel {
     }
 
     struct Dependencies {
-        let accountFetcher: AccountFetching
-        let libraryFetcher: LibraryFetching
+        let accountDataService: AccountDataService
+        let contentService: ContentService
         let scheduler: AnySchedulerOfDQ
         let calendar: Calendar
         let now: () -> Date
@@ -176,8 +176,8 @@ extension HomeViewModel {
 extension HomeViewModel.Dependencies {
     static func live() -> Self {
         .init(
-            accountFetcher: AccountFetcher(),
-            libraryFetcher: LibraryFetcher(),
+            accountDataService: AccountDataService(),
+            contentService: ContentService(),
             scheduler: .main,
             calendar: .current,
             now: Date.init

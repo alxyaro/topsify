@@ -38,7 +38,7 @@ final class PlayerStageView: AppCollectionView {
         }
     }()
 
-    private var items = TestAlbums.sampleList.map(\.imageURL).map { TEMPItemModel(artworkURL: $0) }
+    private var items = FakeAlbums.sampleList.map(\.imageURL).map { TEMPItemModel(artworkURL: $0) }
     private var dataSourceSubsetStartIndex: ItemIndex = 0
     private var selectedItemIndex: ItemIndex = 0
 
