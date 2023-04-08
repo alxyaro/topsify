@@ -26,7 +26,7 @@ final class PlaybackQueue {
         sourceSubject.eraseToAnyPublisher()
     }
 
-    var state: AnyPublisher<State, Never> {
+    var state: AnyPublisher<some PlaybackQueueState, Never> {
         stateSubject.eraseToAnyPublisher()
     }
 
@@ -65,12 +65,28 @@ final class PlaybackQueue {
     }
 }
 
-extension PlaybackQueue {
-    struct State {
-        private(set) var history: [Item] = []
-        private(set) var activeItem: Item?
-        private(set) var userQueue: Deque<Item> = Deque<Item>(minimumCapacity: 20)
-        private(set) var upNext: Deque<Item> = Deque<Item>(minimumCapacity: 80)
+protocol PlaybackQueueState {
+    associatedtype HistoryCollection: Collection<PlaybackQueue.Item>
+    associatedtype UserQueueCollection: Collection<PlaybackQueue.Item>
+    associatedtype UpNextCollection: Collection<PlaybackQueue.Item>
+
+    var history: HistoryCollection { get }
+    var activeItem: PlaybackQueue.Item? { get }
+    var userQueue: UserQueueCollection { get }
+    var upNext: UpNextCollection { get }
+
+    var count: Int { get }
+    var activeItemIndex: Int { get }
+
+    subscript (itemAt index: Int) -> PlaybackQueue.Item? { get }
+}
+
+private extension PlaybackQueue {
+    struct State: PlaybackQueueState {
+        var history: [Item] = []
+        var activeItem: Item?
+        var userQueue: Deque<Item> = Deque<Item>(minimumCapacity: 20)
+        var upNext: Deque<Item> = Deque<Item>(minimumCapacity: 80)
 
         var count: Int {
             history.count +

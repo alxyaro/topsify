@@ -70,13 +70,13 @@ final class PlaybackQueueTests: XCTestCase {
 
     // MARK: - Helpers
 
-    private func assertState(
-        _ testSubscriber: TestSubscriber<PlaybackQueue.State, Never>,
+    private func assertState<State: PlaybackQueueState>(
+        _ testSubscriber: TestSubscriber<State, Never>,
         history: [Song],
         activeItemSong: Song?,
         userQueue: [Song],
         upNext: [Song],
-        extraAssertions: (PlaybackQueue.State) -> Void = { _ in },
+        extraAssertions: (State) -> Void = { _ in },
         line: UInt = #line
     ) {
         let list = testSubscriber.pollValues()
@@ -95,13 +95,13 @@ final class PlaybackQueueTests: XCTestCase {
         }
     }
 
-    private func assertState(
-        _ state: PlaybackQueue.State?,
+    private func assertState<State: PlaybackQueueState>(
+        _ state: State?,
         history: [Song],
         activeItemSong: Song?,
         userQueue: [Song],
         upNext: [Song],
-        extraAssertions: (PlaybackQueue.State) -> Void = { _ in },
+        extraAssertions: (State) -> Void = { _ in },
         line: UInt = #line
     ) {
         if let state {
