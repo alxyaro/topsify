@@ -60,7 +60,7 @@ final class PlaybackQueueTests: XCTestCase {
             upNext: []
         ) { state in
             XCTAssertEqual(state[itemAt: -1], nil)
-            // TODO: XCTAssertEqual(state[itemAt: 0]?.song, song)
+            XCTAssertEqual(state[itemAt: 0]?.song, song)
             XCTAssertEqual(state[itemAt: 1], nil)
         }
 

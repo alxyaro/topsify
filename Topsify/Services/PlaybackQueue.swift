@@ -25,11 +25,9 @@ final class PlaybackQueue {
     var source: AnyPublisher<ContentObject?, Never> {
         sourceSubject.eraseToAnyPublisher()
     }
-
     var state: AnyPublisher<some PlaybackQueueState, Never> {
         stateSubject.eraseToAnyPublisher()
     }
-
     var hasPreviousItem: AnyPublisher<Bool, Never> {
         state
             .map { $0.history.count > 0 }
@@ -44,7 +42,6 @@ final class PlaybackQueue {
     // MARK: - Private State
 
     private let sourceSubject = CurrentValueSubject<ContentObject?, Never>(nil)
-
     private let stateSubject = CurrentValueSubject<State, Never>(.init(
         history: [],
         userQueue: .init(),
@@ -100,7 +97,17 @@ private extension PlaybackQueue {
         }
 
         subscript (itemAt index: Int) -> Item? {
-            nil
+            var index = index
+            if index < history.count {
+                return history[safe: index]
+            }
+            index -= history.count
+            if index == 0 {
+                return activeItem
+            }
+            index -= 1
+            // TODO: finish cases
+            return nil
         }
     }
 }

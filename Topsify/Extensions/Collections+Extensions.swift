@@ -2,9 +2,9 @@
 
 import Foundation
 
-extension Array {
-    subscript(safe index: Int) -> Element? {
-        guard index >= 0 && index < count else {
+extension Collection {
+    subscript(safe index: Index) -> Element? {
+        guard index >= self.startIndex && index < self.endIndex else {
             return nil
         }
         return self[index]
@@ -23,7 +23,7 @@ extension Array {
     }
 }
 
-extension Array where Element == String {
+extension Sequence where Element == String {
     func joinedBySpacedDot() -> String {
         self.joined(separator: " \u{00B7} ")
     }
