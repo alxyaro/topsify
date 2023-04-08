@@ -44,6 +44,17 @@ extension Publisher {
     }
 }
 
+extension AnyPublisher {
+
+    static func just(_ o: Output) -> AnyPublisher<Output, Failure> {
+        Just(o).setFailureType(to: Failure.self).eraseToAnyPublisher()
+    }
+
+    static func never() -> AnyPublisher<Output, Failure> {
+        Empty(completeImmediately: false).eraseToAnyPublisher()
+    }
+}
+
 // MARK: - Optional
 
 protocol OptionalType {

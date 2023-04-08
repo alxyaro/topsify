@@ -4,17 +4,6 @@ import Combine
 import CombineExt
 import XCTest
 
-public extension AnyPublisher {
-
-    static func just(_ o: Output) -> AnyPublisher<Output, Failure> {
-        Empty<Output, Failure>().prepend(o).eraseToAnyPublisher()
-    }
-
-    static func never() -> AnyPublisher<Output, Failure> {
-        Empty(completeImmediately: false).eraseToAnyPublisher()
-    }
-}
-
 public extension Publisher {
 
     func toFuture(

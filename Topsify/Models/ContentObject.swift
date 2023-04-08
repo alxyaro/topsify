@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum ContentObject {
+enum ContentObject: Identifiable, Equatable {
     case album(Album)
     case song(Song)
     case playlist(Playlist)

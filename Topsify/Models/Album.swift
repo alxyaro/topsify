@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Album: Identifiable, Codable {
+struct Album: Identifiable, Equatable {
     let id: UUID
     let artists: [User]
     let imageURL: URL
