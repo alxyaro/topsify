@@ -93,8 +93,8 @@ extension HomeViewModel {
     }
 
     struct Dependencies {
-        let accountDataService: AccountDataService
-        let contentService: ContentService
+        let accountDataService: AccountDataServiceType
+        let contentService: ContentServiceType
         let scheduler: AnySchedulerOfDQ
         let calendar: Calendar
         let now: () -> Date

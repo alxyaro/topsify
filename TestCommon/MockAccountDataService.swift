@@ -5,7 +5,7 @@ import Foundation
 import Combine
 import CombineSchedulers
 
-public struct MockAccountFetcher: AccountFetching {
+public struct MockAccountDataService: AccountDataServiceType {
     var recentActivityPublisher: AnyPublisher<[ContentObject], Error> = .just([])
 
     public func recentActivity() -> Future<[ContentObject], Error> {

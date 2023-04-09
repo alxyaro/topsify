@@ -5,7 +5,7 @@ import Foundation
 import Combine
 import TestHelpers
 
-public struct MockLibraryFetcher: LibraryFetching {
+public struct MockContentService: ContentServiceType {
     var spotlightEntriesPublisher: AnyPublisher<[SpotlightEntryModel], Error> = .just([])
 
     public func spotlightEntries() -> Future<[SpotlightEntryModel], Error> {

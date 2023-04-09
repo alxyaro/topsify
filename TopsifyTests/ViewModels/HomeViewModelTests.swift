@@ -13,10 +13,10 @@ final class HomeViewModelTests: XCTestCase {
         let spotlightEntries = TestPublisher<[SpotlightEntryModel], Error>()
 
         let viewModel = HomeViewModel(dependencies: .init(
-            accountFetcher: MockAccountFetcher(
+            accountDataService: MockAccountDataService(
                 recentActivityPublisher: recentActivity.eraseToAnyPublisher()
             ),
-            libraryFetcher: MockLibraryFetcher(
+            contentService: MockContentService(
                 spotlightEntriesPublisher: spotlightEntries.eraseToAnyPublisher()
             ),
             scheduler: .immediate,
@@ -42,14 +42,14 @@ final class HomeViewModelTests: XCTestCase {
         XCTAssertEqual(loadStateSubscriber.pollValues(), [.loading])
         XCTAssertEqual(sectionsSubscriber.pollValues(), [])
 
-        recentActivity.send([.song(TestSongs.loveMusic)])
-        spotlightEntries.send([.generic(title: "Test Section", content: [.album(TestAlbums.catchTheseVibes)])])
+        recentActivity.send([.song(FakeSongs.loveMusic)])
+        spotlightEntries.send([.generic(title: "Test Section", content: [.album(FakeAlbums.catchTheseVibes)])])
 
         XCTAssertEqual(loadStateSubscriber.pollValues(), [.loaded])
         XCTAssertEqual(sectionsSubscriber.pollValues(), [
             [
-                .recentActivity([.init(from: .song(TestSongs.loveMusic))]),
-                .generic(title: "Test Section", contentTiles: [.init(from: .album(TestAlbums.catchTheseVibes))])
+                .recentActivity([.init(from: .song(FakeSongs.loveMusic))]),
+                .generic(title: "Test Section", contentTiles: [.init(from: .album(FakeAlbums.catchTheseVibes))])
             ]
         ])
     }
@@ -58,8 +58,8 @@ final class HomeViewModelTests: XCTestCase {
         let spotlightEntries = TestPublisher<[SpotlightEntryModel], Error>()
 
         let viewModel = HomeViewModel(dependencies: .init(
-            accountFetcher: MockAccountFetcher(),
-            libraryFetcher: MockLibraryFetcher(
+            accountDataService: MockAccountDataService(),
+            contentService: MockContentService(
                 spotlightEntriesPublisher: spotlightEntries.eraseToAnyPublisher()
             ),
             scheduler: .immediate,
@@ -92,15 +92,15 @@ final class HomeViewModelTests: XCTestCase {
         XCTAssertEqual(loadStateSubscriber.pollValues(), [.loading, .error(.failedToLoadSpotlight)])
 
         reloadButtonRelay.accept()
-        spotlightEntries.send([.moreLike(user: TestUsers.alexYaro, content: [.playlist(TestPlaylists.vibey)])])
+        spotlightEntries.send([.moreLike(user: FakeUsers.alexYaro, content: [.playlist(FakePlaylists.vibey)])])
 
         XCTAssertEqual(loadStateSubscriber.pollValues(), [.loading, .loaded])
         XCTAssertEqual(sectionsSubscriber.pollValues(), [
             [
                 .moreLike(
-                    headerViewModel: .init(from: TestUsers.alexYaro, captionText: "More like"),
+                    headerViewModel: .init(from: FakeUsers.alexYaro, captionText: "More like"),
                     contentTiles: [
-                        .init(from: .playlist(TestPlaylists.vibey))
+                        .init(from: .playlist(FakePlaylists.vibey))
                     ]
                 )
             ]
@@ -111,8 +111,8 @@ final class HomeViewModelTests: XCTestCase {
         var hourOfDay: Int = 0
 
         let viewModel = HomeViewModel(dependencies: .init(
-            accountFetcher: MockAccountFetcher(),
-            libraryFetcher: MockLibraryFetcher(),
+            accountDataService: MockAccountDataService(),
+            contentService: MockContentService(),
             scheduler: .immediate,
             calendar: .testCalendar,
             now: {
