@@ -29,6 +29,7 @@
 		6B0D783227F0E4BE001BA64E /* TopsifyUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D783127F0E4BE001BA64E /* TopsifyUITests.swift */; };
 		6B0D783427F0E4BE001BA64E /* TopsifyUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D783327F0E4BE001BA64E /* TopsifyUITestsLaunchTests.swift */; };
 		6B0D784727F10B3E001BA64E /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D784627F10B3E001BA64E /* HomeViewController.swift */; };
+		6B21E39229E3A5E000BE2B99 /* Playlist+Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B21E39129E3A5E000BE2B99 /* Playlist+Mock.swift */; };
 		6B28625629BE3E9F00C8459B /* TestSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B28625529BE3E9F00C8459B /* TestSubscriber.swift */; };
 		6B3571FA27FBA669007CBDF6 /* HorizontalCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3571F927FBA669007CBDF6 /* HorizontalCollectionView.swift */; };
 		6B3571FC27FBA880007CBDF6 /* ContentTileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3571FB27FBA880007CBDF6 /* ContentTileCell.swift */; };
@@ -62,6 +63,7 @@
 		6B403C7B29E211D400CA6DE0 /* FakeImageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B403C7A29E211D400CA6DE0 /* FakeImageProvider.swift */; };
 		6B403C7F29E2154300CA6DE0 /* AccountDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B403C7E29E2154300CA6DE0 /* AccountDataService.swift */; };
 		6B403C8129E2156100CA6DE0 /* FakeAccountDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B403C8029E2156100CA6DE0 /* FakeAccountDataService.swift */; };
+		6B403C8429E39E0E00CA6DE0 /* Album+Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B403C8229E39DE100CA6DE0 /* Album+Mock.swift */; };
 		6B46C22128EA0E2B00E2B80B /* UIViewImplicitlyAnimating+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B46C22028EA0E2B00E2B80B /* UIViewImplicitlyAnimating+Extensions.swift */; };
 		6B47954729BE6DE2006AF142 /* MockAccountDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE368CF29A2ADEF00687D48 /* MockAccountDataService.swift */; };
 		6B47954829BE6DE2006AF142 /* MockContentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BD2EA6C29A2B37700D5F1AD /* MockContentService.swift */; };
@@ -196,6 +198,7 @@
 		6B0D783127F0E4BE001BA64E /* TopsifyUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopsifyUITests.swift; sourceTree = "<group>"; };
 		6B0D783327F0E4BE001BA64E /* TopsifyUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopsifyUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		6B0D784627F10B3E001BA64E /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		6B21E39129E3A5E000BE2B99 /* Playlist+Mock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Playlist+Mock.swift"; sourceTree = "<group>"; };
 		6B28625529BE3E9F00C8459B /* TestSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSubscriber.swift; sourceTree = "<group>"; };
 		6B3571F927FBA669007CBDF6 /* HorizontalCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalCollectionView.swift; sourceTree = "<group>"; };
 		6B3571FB27FBA880007CBDF6 /* ContentTileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentTileCell.swift; sourceTree = "<group>"; };
@@ -229,6 +232,7 @@
 		6B403C7A29E211D400CA6DE0 /* FakeImageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeImageProvider.swift; sourceTree = "<group>"; };
 		6B403C7E29E2154300CA6DE0 /* AccountDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDataService.swift; sourceTree = "<group>"; };
 		6B403C8029E2156100CA6DE0 /* FakeAccountDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeAccountDataService.swift; sourceTree = "<group>"; };
+		6B403C8229E39DE100CA6DE0 /* Album+Mock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Album+Mock.swift"; sourceTree = "<group>"; };
 		6B46C22028EA0E2B00E2B80B /* UIViewImplicitlyAnimating+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewImplicitlyAnimating+Extensions.swift"; sourceTree = "<group>"; };
 		6B5AAE6229BF7C0B00348B1D /* IgnoreEquality.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IgnoreEquality.swift; sourceTree = "<group>"; };
 		6B9A535729B01145001D4C2A /* HomeSimpleHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSimpleHeaderCell.swift; sourceTree = "<group>"; };
@@ -582,6 +586,8 @@
 				6B36C9C729E0CC8B00A1F8D9 /* URL+Mock.swift */,
 				6B36C9BF29E0CB4500A1F8D9 /* Song+Mock.swift */,
 				6B36C9C429E0CC3E00A1F8D9 /* User+Mock.swift */,
+				6B403C8229E39DE100CA6DE0 /* Album+Mock.swift */,
+				6B21E39129E3A5E000BE2B99 /* Playlist+Mock.swift */,
 			);
 			path = TestCommon;
 			sourceTree = "<group>";
@@ -904,11 +910,13 @@
 				6B36C9C629E0CC4B00A1F8D9 /* User+Mock.swift in Sources */,
 				6B36C9C929E0CC9200A1F8D9 /* URL+Mock.swift in Sources */,
 				6B0D782827F0E4BE001BA64E /* TopsifyTests.swift in Sources */,
+				6B21E39229E3A5E000BE2B99 /* Playlist+Mock.swift in Sources */,
 				6B47954829BE6DE2006AF142 /* MockContentService.swift in Sources */,
 				6BE368BB29A2AA8600687D48 /* HomeViewModelTests.swift in Sources */,
 				6B36C9B029E08F6100A1F8D9 /* PlaybackQueueTests.swift in Sources */,
 				6B36C9C229E0CB8200A1F8D9 /* Song+Mock.swift in Sources */,
 				6B47954729BE6DE2006AF142 /* MockAccountDataService.swift in Sources */,
+				6B403C8429E39E0E00CA6DE0 /* Album+Mock.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

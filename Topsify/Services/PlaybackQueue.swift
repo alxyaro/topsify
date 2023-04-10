@@ -17,7 +17,7 @@ final class PlaybackQueue {
     }
 
     struct Dependencies {
-
+        let contentService: ContentServiceType
     }
 
     // MARK: - Public Interface
@@ -42,23 +42,31 @@ final class PlaybackQueue {
     // MARK: - Private State
 
     private let sourceSubject = CurrentValueSubject<ContentObject?, Never>(nil)
-    private let stateSubject = CurrentValueSubject<State, Never>(.init(
-        history: [],
-        userQueue: .init(),
-        upNext: .init()
-    ))
+    private let stateSubject = CurrentValueSubject<State, Never>(.init())
+
+    private let dependencies: Dependencies
+    private var dataLoadCancellable: AnyCancellable?
 
     // MARK: - Initializer
 
     init(dependencies: Dependencies) {
-
+        self.dependencies = dependencies
     }
 
-    func load(with song: Song) {
-        sourceSubject.send(.song(song))
-        stateSubject.send(State(
-            activeItem: .init(song: song)
-        ))
+    func load(with content: ContentObject) {
+        guard sourceSubject.value != content else { return }
+        sourceSubject.send(content)
+
+        dataLoadCancellable?.cancel()
+        dataLoadCancellable = dependencies.contentService
+            .fetchSongs(for: content)
+            .sink(receiveCompletion: { [weak sourceSubject] in
+                if case .failure = $0 {
+                    sourceSubject?.send(nil)
+                }
+            }, receiveValue: { [weak stateSubject] in
+                stateSubject?.send(.init(from: $0))
+            })
     }
 }
 
@@ -84,6 +92,17 @@ private extension PlaybackQueue {
         var activeItem: Item?
         var userQueue: Deque<Item> = Deque<Item>(minimumCapacity: 20)
         var upNext: Deque<Item> = Deque<Item>(minimumCapacity: 80)
+
+        init(from songs: [Song] = []) {
+            history = []
+            activeItem = songs[safe: 0].map { .init(song: $0) }
+            userQueue = Deque<Item>(minimumCapacity: 20)
+            if songs.count > 1 {
+                upNext = Deque<Item>(songs[1...].map { .init(song: $0) })
+            } else {
+                upNext = Deque<Item>(minimumCapacity: 1)
+            }
+        }
 
         var count: Int {
             history.count +
@@ -114,6 +133,8 @@ private extension PlaybackQueue {
 
 extension PlaybackQueue.Dependencies {
     static func live() -> Self {
-        .init()
+        .init(
+            contentService: ContentService()
+        )
     }
 }

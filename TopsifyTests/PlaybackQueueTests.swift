@@ -33,9 +33,13 @@ final class PlaybackQueueTests: XCTestCase {
         XCTAssertEqual(hasNextItem.pollValues(), [false])
     }
 
-    func test_loadSong() {
-        let sut = PlaybackQueue(dependencies: .mock())
-        let song = Song.mock(id: UUID(uuidString: "3c121c55-9343-4f19-b90c-b616cdec7bdd")!)
+    func test_loadWithSingleSong() {
+        let song = Song.mock()
+        let sut = PlaybackQueue(dependencies: .mock(
+            contentService: .init(
+                fetchSongs: { _ in .just([song]) }
+            )
+        ))
 
         let source = TestSubscriber.subscribe(to: sut.source)
         let state = TestSubscriber.subscribe(to: sut.state)
@@ -47,10 +51,14 @@ final class PlaybackQueueTests: XCTestCase {
         XCTAssertEqual(hasPreviousItem.pollValues().count, 1)
         XCTAssertEqual(hasNextItem.pollValues().count, 1)
 
-        // load a song
-        sut.load(with: song)
+        let album = Album.mock()
 
-        XCTAssertEqual(source.pollValues(), [.song(song)])
+        // perform load
+        sut.load(with: .album(album))
+        // duplicates should be ignored
+        sut.load(with: .album(album))
+
+        XCTAssertEqual(source.pollValues(), [.album(album)])
 
         assertState(
             state,
@@ -66,6 +74,78 @@ final class PlaybackQueueTests: XCTestCase {
 
         XCTAssertEqual(hasPreviousItem.pollValues(), [false])
         XCTAssertEqual(hasNextItem.pollValues(), [false])
+    }
+
+    func test_loadWithMultipleSongs() {
+        let songs = [
+            Song.mock(),
+            Song.mock(),
+            Song.mock()
+        ]
+        let songsPublisher = TestPublisher<[Song], Error>()
+
+        let sut = PlaybackQueue(dependencies: .mock(
+            contentService: MockContentService(
+                fetchSongs: { _ in songsPublisher.eraseToAnyPublisher() }
+            )
+        ))
+
+        let source = TestSubscriber.subscribe(to: sut.source)
+        let state = TestSubscriber.subscribe(to: sut.state)
+        let hasPreviousItem = TestSubscriber.subscribe(to: sut.hasPreviousItem)
+        let hasNextItem = TestSubscriber.subscribe(to: sut.hasNextItem)
+
+        XCTAssertEqual(source.pollValues(), [nil])
+        XCTAssertEqual(state.pollValues().count, 1)
+        XCTAssertEqual(hasPreviousItem.pollValues().count, 1)
+        XCTAssertEqual(hasNextItem.pollValues().count, 1)
+
+        let album = Album.mock()
+
+        // perform load
+        sut.load(with: .album(album))
+        // duplicates should be ignored
+        sut.load(with: .album(album))
+
+        XCTAssertEqual(source.pollValues(), [.album(album)])
+        XCTAssertEqual(state.pollValues().isEmpty, true)
+        XCTAssertEqual(hasPreviousItem.pollValues(), [])
+        XCTAssertEqual(hasNextItem.pollValues(), [])
+
+        songsPublisher.send(songs)
+
+        XCTAssertEqual(source.pollValues(), [])
+        assertState(
+            state,
+            history: [],
+            activeItemSong: songs[0],
+            userQueue: [],
+            upNext: Array(songs[1...])
+        )
+        XCTAssertEqual(hasPreviousItem.pollValues(), [false])
+        XCTAssertEqual(hasNextItem.pollValues(), [true])
+    }
+
+    func test_load_clearsSource_whenErrorOccurs() {
+        let songsPublisher = TestPublisher<[Song], Error>()
+        let sut = PlaybackQueue(dependencies: .mock(
+            contentService: MockContentService(
+                fetchSongs: { _ in songsPublisher.eraseToAnyPublisher() }
+            )
+        ))
+
+        let source = TestSubscriber.subscribe(to: sut.source)
+
+        XCTAssertEqual(source.pollValues(), [nil])
+
+        let playlist = Playlist.mock()
+        sut.load(with: .playlist(playlist))
+
+        XCTAssertEqual(source.pollValues(), [.playlist(playlist)])
+
+        songsPublisher.send(failure: GenericError(message: "d'oh!"))
+
+        XCTAssertEqual(source.pollValues(), [nil])
     }
 
     // MARK: - Helpers
@@ -121,7 +201,11 @@ final class PlaybackQueueTests: XCTestCase {
 }
 
 private extension PlaybackQueue.Dependencies {
-    static func mock() -> Self {
-        .init()
+    static func mock(
+        contentService: MockContentService = .init()
+    ) -> Self {
+        .init(
+            contentService: contentService
+        )
     }
 }
