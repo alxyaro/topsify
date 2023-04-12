@@ -9,10 +9,12 @@ final class PlaybackQueue {
     struct Item: Identifiable, Equatable {
         let id: UUID
         let song: Song
+        let isUserQueueItem: Bool
 
-        init(id: UUID = .init(), song: Song) {
+        init(id: UUID = .init(), song: Song, isUserQueueItem: Bool = false) {
             self.id = id
             self.song = song
+            self.isUserQueueItem = isUserQueueItem
         }
     }
 
@@ -64,9 +66,19 @@ final class PlaybackQueue {
                 if case .failure = $0 {
                     sourceSubject?.send(nil)
                 }
-            }, receiveValue: { [weak stateSubject] in
-                stateSubject?.send(.init(from: $0))
+            }, receiveValue: { [weak self] in
+                guard let self else { return }
+                var state = stateSubject.value
+                state.load(with: $0)
+                stateSubject.send(state)
             })
+    }
+
+    func load(with songs: [Song], source: ContentObject?) {
+        sourceSubject.send(source)
+        var state = stateSubject.value
+        state.load(with: songs)
+        stateSubject.send(state)
     }
 
     func goToNextItem() {
@@ -76,7 +88,7 @@ final class PlaybackQueue {
             return
         }
 
-        if let activeItem = state.activeItem {
+        if let activeItem = state.activeItem, !activeItem.isUserQueueItem {
             state.history.append(activeItem)
         }
         state.activeItem = nextItem
@@ -91,13 +103,24 @@ final class PlaybackQueue {
             return
         }
 
-        if let activeItem = state.activeItem {
+        if let activeItem = state.activeItem, !activeItem.isUserQueueItem {
             state.upNext.prepend(activeItem)
         }
         state.activeItem = previousItem
 
         stateSubject.send(state)
     }
+
+    func addToQueue(_ song: Song) {
+        var state = stateSubject.value
+        let item = Item(song: song, isUserQueueItem: true)
+        state.userQueue.append(item)
+        stateSubject.send(state)
+    }
+
+    // TODO: func clearQueue()
+    // TODO: func goToItem(atUserQueueIndex index: Int)
+    // TODO: func goToItem(atUpNextIndex index: Int)
 }
 
 protocol PlaybackQueueState {
@@ -118,15 +141,20 @@ protocol PlaybackQueueState {
 
 private extension PlaybackQueue {
     struct State: PlaybackQueueState {
-        var history: [Item] = []
+        var history: [Item]
         var activeItem: Item?
-        var userQueue: Deque<Item> = Deque<Item>(minimumCapacity: 20)
-        var upNext: Deque<Item> = Deque<Item>(minimumCapacity: 80)
+        var userQueue: Deque<Item>
+        var upNext: Deque<Item>
 
-        init(from songs: [Song] = []) {
+        init() {
+            history = []
+            userQueue = .init(minimumCapacity: 20)
+            upNext = .init()
+        }
+
+        mutating func load(with songs: [Song]) {
             history = []
             activeItem = songs[safe: 0].map { .init(song: $0) }
-            userQueue = Deque<Item>(minimumCapacity: 20)
             if songs.count > 1 {
                 upNext = Deque<Item>(songs[1...].map { .init(song: $0) })
             } else {

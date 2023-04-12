@@ -62,9 +62,7 @@ final class PlaybackQueueTests: XCTestCase {
 
         assertState(
             state,
-            history: [],
             activeItemSong: song,
-            userQueue: [],
             upNext: []
         ) { state in
             XCTAssertEqual(state[itemAt: -1], nil)
@@ -117,9 +115,7 @@ final class PlaybackQueueTests: XCTestCase {
         XCTAssertEqual(source.pollValues(), [])
         assertState(
             state,
-            history: [],
             activeItemSong: songs[0],
-            userQueue: [],
             upNext: Array(songs[1...])
         )
         XCTAssertEqual(hasPreviousItem.pollValues(), [false])
@@ -166,7 +162,6 @@ final class PlaybackQueueTests: XCTestCase {
             state,
             history: [],
             activeItemSong: songs[0],
-            userQueue: [],
             upNext: Array(songs[1...])
         )
         XCTAssertEqual(hasPreviousItem.pollValues(), [false])
@@ -178,7 +173,6 @@ final class PlaybackQueueTests: XCTestCase {
             state,
             history: Array(songs[0..<1]),
             activeItemSong: songs[1],
-            userQueue: [],
             upNext: Array(songs[2...])
         )
         XCTAssertEqual(hasPreviousItem.pollValues(), [true])
@@ -190,7 +184,6 @@ final class PlaybackQueueTests: XCTestCase {
             state,
             history: Array(songs[0..<2]),
             activeItemSong: songs[2],
-            userQueue: [],
             upNext: []
         )
         XCTAssertEqual(hasPreviousItem.pollValues(), [true])
@@ -224,7 +217,6 @@ final class PlaybackQueueTests: XCTestCase {
             state,
             history: Array(songs[0..<2]),
             activeItemSong: songs[2],
-            userQueue: [],
             upNext: []
         )
         XCTAssertEqual(hasPreviousItem.pollValues(), [true])
@@ -236,7 +228,6 @@ final class PlaybackQueueTests: XCTestCase {
             state,
             history: Array(songs[0..<1]),
             activeItemSong: songs[1],
-            userQueue: [],
             upNext: Array(songs[2...])
         )
         XCTAssertEqual(hasPreviousItem.pollValues(), [true])
@@ -248,7 +239,6 @@ final class PlaybackQueueTests: XCTestCase {
             state,
             history: [],
             activeItemSong: songs[0],
-            userQueue: [],
             upNext: Array(songs[1...])
         )
         XCTAssertEqual(hasPreviousItem.pollValues(), [false])
@@ -261,14 +251,96 @@ final class PlaybackQueueTests: XCTestCase {
         XCTAssertEqual(hasNextItem.pollValues(), [])
     }
 
+    func test_addToQueue() {
+        let sut = PlaybackQueue(dependencies: .mock())
+
+        let state = TestSubscriber.subscribe(to: sut.state)
+
+        assertState(
+            state,
+            history: [],
+            activeItemSong: nil,
+            userQueue: [],
+            upNext: []
+        )
+
+        let song1 = Song.mock()
+        let song2 = Song.mock()
+
+        sut.addToQueue(song1)
+
+        assertState(state, userQueue: [song1])
+
+        sut.addToQueue(song2)
+
+        assertState(state, userQueue: [song1, song2])
+
+        sut.addToQueue(song1)
+
+        assertState(state, userQueue: [song1, song2, song1])
+    }
+
+    func test_goToNextItem_withItemInQueue() {
+        let sut = PlaybackQueue(dependencies: .mock())
+
+        let song = Song.mock()
+        sut.addToQueue(song)
+
+        let state = TestSubscriber.subscribe(to: sut.state)
+
+        assertState(state, activeItemSong: nil, userQueue: [song])
+
+        sut.goToNextItem()
+
+        assertState(state, activeItemSong: song, userQueue: [])
+    }
+
+    func test_goToNextItem_discardsUserQueueItems() {
+        let sut = PlaybackQueue(dependencies: .mock())
+
+        let song = Song.mock()
+        sut.addToQueue(song)
+        sut.addToQueue(song)
+
+        let state = TestSubscriber.subscribe(to: sut.state)
+
+        assertState(state, userQueue: [song, song])
+
+        sut.goToNextItem()
+
+        assertState(state, activeItemSong: song, userQueue: [song])
+
+        sut.goToNextItem()
+
+        assertState(state, history: [], activeItemSong: song, userQueue: [])
+    }
+
+    func test_goToPreviousItem_discardsUserQueueItems() {
+        let sut = PlaybackQueue(dependencies: .mock())
+
+        let song = Song.mock()
+        let queueSong = Song.mock()
+        sut.load(with: [song], source: nil)
+        sut.addToQueue(queueSong)
+        sut.goToNextItem()
+
+        let state = TestSubscriber.subscribe(to: sut.state)
+
+        assertState(state, history: [song], activeItemSong: queueSong)
+
+        sut.goToPreviousItem()
+
+        assertState(state, history: [], activeItemSong: song, userQueue: [])
+    }
+
     // MARK: - Helpers
 
     private func assertState<State: PlaybackQueueState>(
         _ testSubscriber: TestSubscriber<State, Never>,
-        history: [Song],
-        activeItemSong: Song?,
-        userQueue: [Song],
-        upNext: [Song],
+        history: [Song] = [],
+        activeItemSong: Song? = nil,
+        userQueue: [Song] = [],
+        upNext: [Song] = [],
         extraAssertions: (State) -> Void = { _ in },
         line: UInt = #line
     ) {
@@ -305,7 +377,7 @@ final class PlaybackQueueTests: XCTestCase {
 
             let expectedCount = history.count + (activeItemSong != nil ? 1 : 0) + userQueue.count + upNext.count
             XCTAssertEqual(state.count, expectedCount, "invalid count", line: line)
-            XCTAssertEqual(state.activeItemIndex, state.count == 0 ? -1 : history.count, "invalid activeItemIndex", line: line)
+            XCTAssertEqual(state.activeItemIndex, state.activeItem != nil ? history.count : -1, "invalid activeItemIndex", line: line)
             extraAssertions(state)
         } else {
             XCTFail("State is nil", line: line)
