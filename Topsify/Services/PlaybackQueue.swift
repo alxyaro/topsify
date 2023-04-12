@@ -68,6 +68,36 @@ final class PlaybackQueue {
                 stateSubject?.send(.init(from: $0))
             })
     }
+
+    func goToNextItem() {
+        var state = stateSubject.value
+
+        guard let nextItem = state.userQueue.popFirst() ?? state.upNext.popFirst() else {
+            return
+        }
+
+        if let activeItem = state.activeItem {
+            state.history.append(activeItem)
+        }
+        state.activeItem = nextItem
+
+        stateSubject.send(state)
+    }
+
+    func goToPreviousItem() {
+        var state = stateSubject.value
+
+        guard let previousItem = state.history.popLast() else {
+            return
+        }
+
+        if let activeItem = state.activeItem {
+            state.upNext.prepend(activeItem)
+        }
+        state.activeItem = previousItem
+
+        stateSubject.send(state)
+    }
 }
 
 protocol PlaybackQueueState {

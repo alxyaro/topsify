@@ -148,6 +148,119 @@ final class PlaybackQueueTests: XCTestCase {
         XCTAssertEqual(source.pollValues(), [nil])
     }
 
+    func test_goToNextItem() {
+        let songs = Array(repeating: (), count: 3).map { Song.mock() }
+        let sut = PlaybackQueue(dependencies: .mock(
+            contentService: MockContentService(
+                fetchSongs: { _ in .just(songs) }
+            )
+        ))
+
+        sut.load(with: .playlist(.mock()))
+
+        let state = TestSubscriber.subscribe(to: sut.state)
+        let hasPreviousItem = TestSubscriber.subscribe(to: sut.hasPreviousItem)
+        let hasNextItem = TestSubscriber.subscribe(to: sut.hasNextItem)
+
+        assertState(
+            state,
+            history: [],
+            activeItemSong: songs[0],
+            userQueue: [],
+            upNext: Array(songs[1...])
+        )
+        XCTAssertEqual(hasPreviousItem.pollValues(), [false])
+        XCTAssertEqual(hasNextItem.pollValues(), [true])
+
+        sut.goToNextItem()
+
+        assertState(
+            state,
+            history: Array(songs[0..<1]),
+            activeItemSong: songs[1],
+            userQueue: [],
+            upNext: Array(songs[2...])
+        )
+        XCTAssertEqual(hasPreviousItem.pollValues(), [true])
+        XCTAssertEqual(hasNextItem.pollValues(), [true])
+
+        sut.goToNextItem()
+
+        assertState(
+            state,
+            history: Array(songs[0..<2]),
+            activeItemSong: songs[2],
+            userQueue: [],
+            upNext: []
+        )
+        XCTAssertEqual(hasPreviousItem.pollValues(), [true])
+        XCTAssertEqual(hasNextItem.pollValues(), [false])
+
+        sut.goToNextItem()
+
+        XCTAssertEqual(state.pollValues().isEmpty, true)
+        XCTAssertEqual(hasPreviousItem.pollValues(), [])
+        XCTAssertEqual(hasNextItem.pollValues(), [])
+    }
+
+    func test_goToPreviousItem() {
+        let songs = Array(repeating: (), count: 3).map { Song.mock() }
+        let sut = PlaybackQueue(dependencies: .mock(
+            contentService: MockContentService(
+                fetchSongs: { _ in .just(songs) }
+            )
+        ))
+
+        sut.load(with: .playlist(.mock()))
+        sut.goToNextItem()
+        sut.goToNextItem()
+        sut.goToNextItem()
+
+        let state = TestSubscriber.subscribe(to: sut.state)
+        let hasPreviousItem = TestSubscriber.subscribe(to: sut.hasPreviousItem)
+        let hasNextItem = TestSubscriber.subscribe(to: sut.hasNextItem)
+
+        assertState(
+            state,
+            history: Array(songs[0..<2]),
+            activeItemSong: songs[2],
+            userQueue: [],
+            upNext: []
+        )
+        XCTAssertEqual(hasPreviousItem.pollValues(), [true])
+        XCTAssertEqual(hasNextItem.pollValues(), [false])
+
+        sut.goToPreviousItem()
+
+        assertState(
+            state,
+            history: Array(songs[0..<1]),
+            activeItemSong: songs[1],
+            userQueue: [],
+            upNext: Array(songs[2...])
+        )
+        XCTAssertEqual(hasPreviousItem.pollValues(), [true])
+        XCTAssertEqual(hasNextItem.pollValues(), [true])
+
+        sut.goToPreviousItem()
+
+        assertState(
+            state,
+            history: [],
+            activeItemSong: songs[0],
+            userQueue: [],
+            upNext: Array(songs[1...])
+        )
+        XCTAssertEqual(hasPreviousItem.pollValues(), [false])
+        XCTAssertEqual(hasNextItem.pollValues(), [true])
+
+        sut.goToPreviousItem()
+
+        XCTAssertEqual(state.pollValues().isEmpty, true)
+        XCTAssertEqual(hasPreviousItem.pollValues(), [])
+        XCTAssertEqual(hasNextItem.pollValues(), [])
+    }
+
     // MARK: - Helpers
 
     private func assertState<State: PlaybackQueueState>(
