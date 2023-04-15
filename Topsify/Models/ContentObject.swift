@@ -16,13 +16,21 @@ enum ContentObject: Identifiable, Equatable {
     var typeName: String {
         switch self {
         case .album:
-            return "Album"
+            return NSLocalizedString("Album", comment: "Content type")
         case .song(let song):
-            return song.albumId != nil ? "Track" : "Single"
+            if song.isSingle {
+                return NSLocalizedString("Single", comment: "Content type")
+            } else {
+                return NSLocalizedString("Track", comment: "Content type")
+            }
         case .playlist:
-            return "Playlist"
+            return NSLocalizedString("Playlist", comment: "Content type")
         case .user(let user):
-            return user.isArtist ? "Artist" : "User"
+            if user.isArtist {
+                return NSLocalizedString("Artist", comment: "Content type")
+            } else {
+                return NSLocalizedString("User", comment: "Content type")
+            }
         }
     }
     

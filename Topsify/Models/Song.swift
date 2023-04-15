@@ -14,3 +14,9 @@ struct Song: Identifiable, Equatable {
     let imageURL: URL
     let title: String
 }
+
+extension Song {
+    var isSingle: Bool {
+        albumId == nil
+    }
+}
