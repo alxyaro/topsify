@@ -111,6 +111,64 @@ final class PlaybackQueue {
         stateSubject.send(state)
     }
 
+    func goToItem(atIndex index: Int) {
+        var state = stateSubject.value
+        let activeIndex = state.activeItemIndex
+
+        let index = index.clamped(to: 0..<state.count)
+
+        guard index != activeIndex else {
+            return
+        }
+
+        if index > activeIndex {
+            var itemsToSkip = index - activeIndex
+
+            if let activeItem = state.activeItem {
+                if !activeItem.isUserQueueItem {
+                    state.history.append(activeItem)
+                }
+                itemsToSkip -= 1
+            }
+
+            let queueItemsToRemove = min(itemsToSkip, state.userQueue.count)
+            state.userQueue.removeFirst(queueItemsToRemove)
+
+            itemsToSkip -= queueItemsToRemove
+            let upNextItemsToRemove = min(itemsToSkip, state.upNext.count)
+            for _ in 0..<upNextItemsToRemove {
+                if let item = state.upNext.popFirst() {
+                    state.history.append(item)
+                }
+            }
+
+            if !state.userQueue.isEmpty {
+                state.activeItem = state.userQueue.popFirst()
+            } else {
+                state.activeItem = state.upNext.popFirst()
+            }
+        } else {
+            var itemsToBringBack = activeIndex - index
+
+            if let activeItem = state.activeItem {
+                if !activeItem.isUserQueueItem {
+                    state.upNext.prepend(activeItem)
+                }
+                itemsToBringBack -= 1
+            }
+
+            for _ in 0..<itemsToBringBack {
+                if let item = state.history.popLast() {
+                    state.upNext.prepend(item)
+                }
+            }
+
+            state.activeItem = state.history.popLast()
+        }
+
+        stateSubject.send(state)
+    }
+
     func addToQueue(_ song: Song) {
         var state = stateSubject.value
         let item = Item(song: song, isUserQueueItem: true)
@@ -183,8 +241,11 @@ private extension PlaybackQueue {
                 return activeItem
             }
             index -= 1
-            // TODO: finish cases
-            return nil
+            if index < userQueue.count {
+                return userQueue[safe: index]
+            }
+            index -= userQueue.count
+            return upNext[safe: index]
         }
     }
 }

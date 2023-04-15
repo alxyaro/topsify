@@ -36,3 +36,10 @@ extension Comparable {
         return self
     }
 }
+
+extension Comparable where Self == Int {
+
+    func clamped(to range: Range<Self>) -> Self {
+        return clamped(to: range.lowerBound...range.upperBound-1)
+    }
+}

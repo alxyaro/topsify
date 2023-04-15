@@ -20,3 +20,9 @@ extension Song {
         albumId == nil
     }
 }
+
+extension Song: CustomDebugStringConvertible {
+    var debugDescription: String {
+        "\(title) (\(id.uuidString))"
+    }
+}

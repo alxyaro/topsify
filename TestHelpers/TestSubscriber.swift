@@ -10,6 +10,11 @@ public final class TestSubscriber<Output, Failure: Error>: Subscriber {
 
     public typealias Input = Output
 
+    public enum Error: Swift.Error {
+        case tooManyEvents
+        case noValue
+    }
+
     deinit {
         subscription?.cancel()
     }
@@ -29,6 +34,20 @@ public final class TestSubscriber<Output, Failure: Error>: Subscriber {
             XCTFail("Expected values only yet completion event is present", file: file, line: line)
         }
         return values
+    }
+
+    /// A nice shortcut to `pollValues` if only one value event is expected.
+    /// This will throw an error if anything but a single value event is found in the queued events.
+    public func pollOnlyValue(file: StaticString = #file, line: UInt = #line) throws -> Output {
+        let events = pollEvents()
+        if events.count > 1 {
+            throw Error.tooManyEvents
+        }
+        let value = events.lazy.compactMap(\.value).first
+        guard let value else {
+            throw Error.noValue
+        }
+        return value
     }
 
     public func receive(_ input: Input) -> Subscribers.Demand {

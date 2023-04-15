@@ -20,3 +20,10 @@ extension Song {
         )
     }
 }
+
+extension Array where Element == Song {
+
+    static func mock(count: Int) -> [Song] {
+        (1...count).map { Song.mock(title: "Song #\($0)") }
+    }
+}
