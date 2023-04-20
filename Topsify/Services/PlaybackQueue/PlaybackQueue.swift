@@ -4,19 +4,38 @@ import Collections
 import Combine
 import Foundation
 
-final class PlaybackQueue {
+protocol PlaybackQueueType {
+    associatedtype State: PlaybackQueueState
 
-    struct Item: Identifiable, Equatable {
-        let id: UUID
-        let song: Song
-        let isUserQueueItem: Bool
+    var source: AnyPublisher<ContentObject?, Never> { get }
+    var state: AnyPublisher<State, Never> { get }
+    var hasPreviousItem: AnyPublisher<Bool, Never> { get }
+    var hasNextItem: AnyPublisher<Bool, Never> { get }
 
-        init(id: UUID = .init(), song: Song, isUserQueueItem: Bool = false) {
-            self.id = id
-            self.song = song
-            self.isUserQueueItem = isUserQueueItem
-        }
+    func load(with content: ContentObject)
+    func load(with songs: [Song], source: ContentObject?)
+    func addToQueue(_ song: Song)
+
+    func goToNextItem()
+    func goToPreviousItem()
+    func goToItem(atIndex index: Int)
+}
+
+extension PlaybackQueueType {
+    var hasPreviousItem: AnyPublisher<Bool, Never> {
+        state
+            .map { $0.history.count > 0 }
+            .eraseToAnyPublisher()
     }
+    var hasNextItem: AnyPublisher<Bool, Never> {
+        state
+            .map { $0.userQueue.count + $0.upNext.count > 0 }
+            .eraseToAnyPublisher()
+    }
+}
+
+final class PlaybackQueue: PlaybackQueueType {
+    typealias Item = PlaybackQueueItem
 
     struct Dependencies {
         let contentService: ContentServiceType
@@ -27,18 +46,8 @@ final class PlaybackQueue {
     var source: AnyPublisher<ContentObject?, Never> {
         sourceSubject.eraseToAnyPublisher()
     }
-    var state: AnyPublisher<some PlaybackQueueState, Never> {
+    var state: AnyPublisher<State, Never> {
         stateSubject.eraseToAnyPublisher()
-    }
-    var hasPreviousItem: AnyPublisher<Bool, Never> {
-        state
-            .map { $0.history.count > 0 }
-            .eraseToAnyPublisher()
-    }
-    var hasNextItem: AnyPublisher<Bool, Never> {
-        state
-            .map { $0.userQueue.count + $0.upNext.count > 0 }
-            .eraseToAnyPublisher()
     }
 
     // MARK: - Private State
@@ -181,24 +190,9 @@ final class PlaybackQueue {
     // TODO: func goToItem(atUpNextIndex index: Int)
 }
 
-protocol PlaybackQueueState {
-    associatedtype HistoryCollection: Collection<PlaybackQueue.Item>
-    associatedtype UserQueueCollection: Collection<PlaybackQueue.Item>
-    associatedtype UpNextCollection: Collection<PlaybackQueue.Item>
-
-    var history: HistoryCollection { get }
-    var activeItem: PlaybackQueue.Item? { get }
-    var userQueue: UserQueueCollection { get }
-    var upNext: UpNextCollection { get }
-
-    var count: Int { get }
-    var activeItemIndex: Int { get }
-
-    subscript (itemAt index: Int) -> PlaybackQueue.Item? { get }
-}
-
-private extension PlaybackQueue {
+extension PlaybackQueue {
     struct State: PlaybackQueueState {
+
         var history: [Item]
         var activeItem: Item?
         var userQueue: Deque<Item>
@@ -218,34 +212,6 @@ private extension PlaybackQueue {
             } else {
                 upNext = Deque<Item>(minimumCapacity: 1)
             }
-        }
-
-        var count: Int {
-            history.count +
-            (activeItem != nil ? 1 : 0) +
-            userQueue.count +
-            upNext.count
-        }
-
-        var activeItemIndex: Int {
-            activeItem != nil ? history.count : -1
-        }
-
-        subscript (itemAt index: Int) -> Item? {
-            var index = index
-            if index < history.count {
-                return history[safe: index]
-            }
-            index -= history.count
-            if index == 0 {
-                return activeItem
-            }
-            index -= 1
-            if index < userQueue.count {
-                return userQueue[safe: index]
-            }
-            index -= userQueue.count
-            return upNext[safe: index]
         }
     }
 }
