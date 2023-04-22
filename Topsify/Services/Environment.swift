@@ -4,6 +4,7 @@ import Foundation
 
 struct Environment {
     let imageProvider: ImageProviderType
+    let playbackQueue: any PlaybackQueueType
 }
 
 // MARK: - Current
@@ -17,7 +18,8 @@ extension Environment {
 extension Environment {
     static func live() -> Environment {
         .init(
-            imageProvider: FakeImageProvider()
+            imageProvider: ImageProvider(),
+            playbackQueue: PlaybackQueue(dependencies: .live())
         )
     }
 }

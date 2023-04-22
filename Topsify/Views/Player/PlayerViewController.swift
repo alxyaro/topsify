@@ -4,7 +4,10 @@ import UIKit
 
 final class PlayerViewController: UIViewController {
 
-    private lazy var stageView = PlayerStageView(contentAreaLayoutGuide: stageContentAreaLayoutGuide)
+    private lazy var stageView = PlayerStageView(
+        viewModel: .init(playbackQueue: Environment.current.playbackQueue),
+        contentAreaLayoutGuide: stageContentAreaLayoutGuide
+    )
 
     private let titleView = PlayerTitleView()
     private let controlsView = PlayerControlsView()

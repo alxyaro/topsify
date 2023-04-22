@@ -15,47 +15,47 @@ final class MockPlaybackQueue: PlaybackQueueType {
 
     // MARK: - Interface
 
-    let sourceRelay = CurrentValueRelay<ContentObject?>(nil)
-    let stateRelay = CurrentValueRelay<State>(.init())
+    let sourceSubject = CurrentValueSubject<ContentObject?, Never>(nil)
+    let stateSubject = CurrentValueSubject<State, Never>(.init())
 
-    let loadWithContentRelay = PassthroughRelay<ContentObject>()
-    let loadWithSongsRelay = PassthroughRelay<(songs: [Song], source: ContentObject?)>()
-    let addToQueueRelay = PassthroughRelay<Song>()
-    let goToNextItemRelay = PassthroughRelay<Void>()
-    let goToPreviousItemRelay = PassthroughRelay<Void>()
-    let goToItemAtIndexRelay = PassthroughRelay<PlaybackQueueIndex>()
+    let loadWithContentSubject = PassthroughSubject<ContentObject, Never>()
+    let loadWithSongsSubject = PassthroughSubject<(songs: [Song], source: ContentObject?), Never>()
+    let addToQueueSubject = PassthroughSubject<Song, Never>()
+    let goToNextItemSubject = PassthroughSubject<Void, Never>()
+    let goToPreviousItemSubject = PassthroughSubject<Void, Never>()
+    let goToItemAtIndexSubject = PassthroughSubject<PlaybackQueueIndex, Never>()
 
     // MARK: - Mocked Members
 
     var source: AnyPublisher<ContentObject?, Never> {
-        sourceRelay.eraseToAnyPublisher()
+        sourceSubject.eraseToAnyPublisher()
     }
 
     var state: AnyPublisher<State, Never> {
-        stateRelay.eraseToAnyPublisher()
+        stateSubject.eraseToAnyPublisher()
     }
 
     func load(with content: ContentObject) {
-        loadWithContentRelay.accept(content)
+        loadWithContentSubject.send(content)
     }
 
     func load(with songs: [Song], source: ContentObject?) {
-        loadWithSongsRelay.accept((songs, source))
+        loadWithSongsSubject.send((songs, source))
     }
 
     func addToQueue(_ song: Song) {
-        addToQueueRelay.accept(song)
+        addToQueueSubject.send(song)
     }
 
     func goToNextItem() {
-        goToNextItemRelay.accept()
+        goToNextItemSubject.send()
     }
 
     func goToPreviousItem() {
-        goToPreviousItemRelay.accept()
+        goToPreviousItemSubject.send()
     }
 
     func goToItem(atIndex index: PlaybackQueueIndex) {
-        goToItemAtIndexRelay.send(index)
+        goToItemAtIndexSubject.send(index)
     }
 }

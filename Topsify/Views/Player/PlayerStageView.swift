@@ -4,15 +4,6 @@ import Reusable
 import UIKit
 
 final class PlayerStageView: AppCollectionView {
-    typealias ItemIndex = Int
-    typealias DataSource = UICollectionViewDiffableDataSource<Int, ItemIndex>
-    typealias DataSourceSnapshot = NSDiffableDataSourceSnapshot<Int, ItemIndex>
-
-    struct TEMPItemModel {
-        let artworkURL: URL
-    }
-
-    private let contentAreaLayoutGuide: UILayoutGuide
 
     private let layout: UICollectionViewCompositionalLayout = {
         let size = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1))
@@ -26,23 +17,14 @@ final class PlayerStageView: AppCollectionView {
         return UICollectionViewCompositionalLayout(section: section, configuration: config)
     }()
 
-    private lazy var diffableDataSource: DataSource = {
-        .init(collectionView: self) { [weak self] collectionView, indexPath, itemIndex in
-            guard let self, let item = self.items[safe: itemIndex] else {
-                return collectionView.dequeueEmptyCell(for: indexPath)
-            }
-            let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: PlayerStageBasicItemCell.self)
-            cell.constrain(verticallyInside: self.contentAreaLayoutGuide)
-            cell.configure(tempImageURL: item.artworkURL)
-            return cell
-        }
-    }()
+    private let viewModel: PlayerStageViewModel
+    private let contentAreaLayoutGuide: UILayoutGuide
+    private var disposeBag = DisposeBag()
 
-    private var items = FakeAlbums.sampleList.map(\.imageURL).map { TEMPItemModel(artworkURL: $0) }
-    private var dataSourceSubsetStartIndex: ItemIndex = 0
-    private var selectedItemIndex: ItemIndex = 0
+    private var itemList: PlayerStageViewModel.ItemList?
 
-    init(contentAreaLayoutGuide: UILayoutGuide) {
+    init(viewModel: PlayerStageViewModel, contentAreaLayoutGuide: UILayoutGuide) {
+        self.viewModel = viewModel
         self.contentAreaLayoutGuide = contentAreaLayoutGuide
 
         super.init(collectionViewLayout: layout)
@@ -54,10 +36,18 @@ final class PlayerStageView: AppCollectionView {
         showsVerticalScrollIndicator = false
 
         delegate = self
+        dataSource = self
 
         register(cellType: PlayerStageBasicItemCell.self)
 
-        updateCollectionData()
+        viewModel.itemList
+            .sink { [weak self] itemList in
+                guard let self else { return }
+                self.itemList = itemList
+                reloadData()
+                setItemIndex(itemList?.activeItemIndex ?? 0)
+            }
+            .store(in: &disposeBag)
     }
 
     required init?(coder: NSCoder) {
@@ -68,43 +58,21 @@ final class PlayerStageView: AppCollectionView {
         contentAreaLayoutGuide.layoutFrame.contains(point)
     }
 
-    private func pageIndex(for contentOffset: CGPoint) -> Int {
+    private func itemIndex(for contentOffset: CGPoint) -> Int {
         Int(contentOffset.x / bounds.width)
     }
 
-    private func updateCollectionData(snapToExactPage: Bool = true) {
-        let previousItems = selectedItemIndex
-        let nextItems = items.count - selectedItemIndex - 1
-
-        let startIndex = selectedItemIndex - previousItems.clamped(max: 2)
-        let endIndex = selectedItemIndex + nextItems.clamped(max: 2)
-
-        let newData: [ItemIndex] = Array(startIndex...endIndex)
-
-        if diffableDataSource.snapshot().itemIdentifiers == newData {
-            // Current subset of indices matches what is expected, no need to update
-            return
-        }
-
-        let previousTargetContentOffset = bounds.width * CGFloat(selectedItemIndex - dataSourceSubsetStartIndex)
-        var offsetAdjustment: CGFloat = 0
-        if !snapToExactPage {
-            // This allows an update to the content offset to accomidate shifting cells without
-            // it being perceivable to the user mid-drag.
-            offsetAdjustment = contentOffset.x - previousTargetContentOffset
-        }
-
-        var snapshot = DataSourceSnapshot()
-        snapshot.appendSections([0])
-        snapshot.appendItems(newData)
-        diffableDataSource.apply(snapshot, animatingDifferences: false)
-        dataSourceSubsetStartIndex = newData[0]
-
-        let targetContentOffset = bounds.width * CGFloat(selectedItemIndex - dataSourceSubsetStartIndex)
-        setContentOffset(.init(x: targetContentOffset + offsetAdjustment, y: 0), animated: false)
+    private func setItemIndex(_ index: Int) {
+        setContentOffset(.init(x: CGFloat(index) * bounds.width, y: 0), animated: false)
     }
 
-    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+    private func scrollingDidStop() {
+        guard let itemList else { return }
+        viewModel.movedToItem(atIndex: itemIndex(for: contentOffset), itemList: itemList)
+    }
+
+    // Kept for future reference in case this is needed again:
+    /*override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         let result = super.hitTest(point, with: event)
         if result != nil {
             /// Using `setContentOffset` inside `scrollViewWillBeginDragging` does not seem to work, as it's overriden
@@ -116,6 +84,22 @@ final class PlayerStageView: AppCollectionView {
             updateCollectionData(snapToExactPage: false)
         }
         return result
+    }*/
+}
+
+extension PlayerStageView: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        itemList?.count ?? 0
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let item = itemList?[itemAt: indexPath.item] else {
+            return collectionView.dequeueEmptyCell(for: indexPath)
+        }
+        let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: PlayerStageBasicItemCell.self)
+        cell.constrain(verticallyInside: contentAreaLayoutGuide)
+        cell.configure(tempImageURL: item.artworkURL)
+        return cell
     }
 }
 
@@ -125,25 +109,13 @@ extension PlayerStageView: UICollectionViewDelegate {
         /// Do not call anything here that tries to update `contentOffset` - see comment in `hitTest` above.
     }
 
-    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocityPerMs: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-        var targetIndex = dataSourceSubsetStartIndex + pageIndex(for: targetContentOffset.pointee)
-
-        if targetIndex == selectedItemIndex && abs(velocityPerMs.x) > 0.5 {
-            targetIndex += velocityPerMs.x > 0 ? 1 : -1
-            targetIndex = targetIndex.clamped(to: 0...items.count-1)
-        }
-
-        selectedItemIndex = targetIndex
-        targetContentOffset.pointee.x = CGFloat(selectedItemIndex - dataSourceSubsetStartIndex) * bounds.width
-    }
-
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
-            updateCollectionData()
+            scrollingDidStop()
         }
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        updateCollectionData()
+        scrollingDidStop()
     }
 }
