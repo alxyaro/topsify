@@ -24,9 +24,10 @@ final class PlaybackQueueTests: XCTestCase {
             userQueue: [],
             upNext: []
         ) { state in
-            XCTAssertEqual(state[itemAt: -1], nil)
-            XCTAssertEqual(state[itemAt: 0], nil)
-            XCTAssertEqual(state[itemAt: 500], nil)
+            XCTAssertEqual(state[itemAt: .history(0)], nil)
+            XCTAssertEqual(state[itemAt: .activeItem], nil)
+            XCTAssertEqual(state[itemAt: .userQueue(0)], nil)
+            XCTAssertEqual(state[itemAt: .upNext(0)], nil)
         }
 
         XCTAssertEqual(hasPreviousItem.pollValues(), [false])
@@ -65,9 +66,10 @@ final class PlaybackQueueTests: XCTestCase {
             activeItemSong: song,
             upNext: []
         ) { state in
-            XCTAssertEqual(state[itemAt: -1], nil)
-            XCTAssertEqual(state[itemAt: 0]?.song, song)
-            XCTAssertEqual(state[itemAt: 1], nil)
+            XCTAssertEqual(state[itemAt: .history(0)], nil)
+            XCTAssertEqual(state[itemAt: .activeItem]?.song, song)
+            XCTAssertEqual(state[itemAt: .userQueue(0)], nil)
+            XCTAssertEqual(state[itemAt: .upNext(0)], nil)
         }
 
         XCTAssertEqual(hasPreviousItem.pollValues(), [false])
@@ -247,75 +249,28 @@ final class PlaybackQueueTests: XCTestCase {
         XCTAssertEqual(hasNextItem.pollValues(), [])
     }
 
-    func test_goToItemAtIndex_doesNothingIfIndexIsActive() {
+    func test_goToItemAtIndex_forActiveItemIndex() {
         let sut = PlaybackQueue(dependencies: .mock())
 
         let songs = [Song].mock(count: 5)
-        sut.load(with: songs, source: nil)
-
-        sut.goToNextItem()
-        sut.goToNextItem()
-
-        let state = TestSubscriber.subscribe(to: sut.state)
-
-        XCTAssertEqual(try state.pollOnlyValue().activeItemIndex, 2)
-
-        sut.goToItem(atIndex: 2)
-
-        XCTAssertTrue(state.pollValues().isEmpty)
-    }
-
-    func test_goToItemAtIndex_whenGoingForward() {
-        let sut = PlaybackQueue(dependencies: .mock())
-
-        let songs = [Song].mock(count: 10)
         sut.load(with: songs, source: nil)
 
         let state = TestSubscriber.subscribe(to: sut.state)
 
         XCTAssertEqual(try state.pollOnlyValue().activeItemIndex, 0)
 
-        sut.goToItem(atIndex: 2)
-
-        assertState(
-            state,
-            history: songs[..<2],
-            activeItemSong: songs[2],
-            upNext: songs[3...]
-        )
-
-        sut.goToItem(atIndex: 3)
-
-        assertState(
-            state,
-            history: songs[..<3],
-            activeItemSong: songs[3],
-            upNext: songs[4...]
-        )
-
-        sut.goToItem(atIndex: 100)
-
-        assertState(
-            state,
-            history: songs[..<9],
-            activeItemSong: songs[9],
-            upNext: []
-        )
-
-        sut.goToItem(atIndex: 50)
-        sut.goToItem(atIndex: 9)
+        sut.goToItem(atIndex: .activeItem)
 
         XCTAssertTrue(state.pollValues().isEmpty)
     }
 
-    func test_goToItemAtIndex_whenGoingForward_userQueueItemsArePrioritizedAndDontGetAddedToHistory() {
-        let songs = [Song].mock(count: 5)
-        let queueSongs = [Song].mock(count: 3)
-
+    func test_goToItemAtIndex_forHistoryIndex() {
         let sut = PlaybackQueue(dependencies: .mock())
+
+        let songs = [Song].mock(count: 5)
         sut.load(with: songs, source: nil)
-        sut.goToItem(atIndex: 2)
-        queueSongs.forEach(sut.addToQueue)
+        sut.goToNextItem()
+        sut.goToNextItem()
 
         let state = TestSubscriber.subscribe(to: sut.state)
 
@@ -323,88 +278,10 @@ final class PlaybackQueueTests: XCTestCase {
             state,
             history: songs[..<2],
             activeItemSong: songs[2],
-            userQueue: queueSongs,
             upNext: songs[3...]
-        ) {
-            XCTAssertEqual($0.activeItemIndex, 2)
-            XCTAssertEqual($0.count, 8)
-        }
-
-        // index of first queue item (activeIndex + 1)
-        sut.goToItem(atIndex: 2 + 1)
-
-        assertState(
-            state,
-            history: songs[..<3],
-            activeItemSong: queueSongs[0],
-            userQueue: queueSongs[1...],
-            upNext: songs[3...]
-        ) {
-            XCTAssertEqual($0.activeItemIndex, 3)
-            XCTAssertEqual($0.count, 8)
-        }
-
-        // index of next last queue item (activeIndex + 2)
-        sut.goToItem(atIndex: 3 + 2)
-
-        assertState(
-            state,
-            history: songs[..<3],
-            activeItemSong: queueSongs[2],
-            userQueue: [],
-            upNext: songs[3...]
-        ) {
-            // same index as before is expected, because userQueue items are not added to
-            // history, so the activeItemIndex doesn't change & instead total count shrinks
-            XCTAssertEqual($0.activeItemIndex, 3)
-            XCTAssertEqual($0.count, 6)
-        }
-
-        // index of next upNext item (activeIndex + 1)
-        sut.goToItem(atIndex: 3 + 1)
-
-        assertState(
-            state,
-            history: songs[..<3],
-            activeItemSong: songs[3],
-            userQueue: [],
-            upNext: songs[4...]
-        ) {
-            XCTAssertEqual($0.activeItemIndex, 3)
-            XCTAssertEqual($0.count, 5)
-        }
-    }
-
-    func test_goToItemAtIndex_whenGoingBackward() {
-        let sut = PlaybackQueue(dependencies: .mock())
-
-        let songs = [Song].mock(count: 10)
-        sut.load(with: songs, source: nil)
-        sut.goToItem(atIndex: 9)
-
-        let state = TestSubscriber.subscribe(to: sut.state)
-
-        XCTAssertEqual(try state.pollOnlyValue().activeItemIndex, 9)
-
-        sut.goToItem(atIndex: 7)
-
-        assertState(
-            state,
-            history: songs[..<7],
-            activeItemSong: songs[7],
-            upNext: songs[8...]
         )
 
-        sut.goToItem(atIndex: 6)
-
-        assertState(
-            state,
-            history: songs[..<6],
-            activeItemSong: songs[6],
-            upNext: songs[7...]
-        )
-
-        sut.goToItem(atIndex: -100)
+        sut.goToItem(atIndex: .history(0))
 
         assertState(
             state,
@@ -412,49 +289,58 @@ final class PlaybackQueueTests: XCTestCase {
             activeItemSong: songs[0],
             upNext: songs[1...]
         )
-
-        sut.goToItem(atIndex: -1)
-        sut.goToItem(atIndex: 0)
-
-        XCTAssertTrue(state.pollValues().isEmpty)
     }
 
-    func test_goToItemAtIndex_whenGoingBackward_activeUserQueueItemIsDiscarded() {
-        let songs = [Song].mock(count: 5)
-        let queueSong = Song.mock()
-
+    func test_goToItemAtIndex_forUserQueueIndex() {
         let sut = PlaybackQueue(dependencies: .mock())
+
+        let songs = [Song].mock(count: 5)
+        let queueSongs = [Song].mock(count: 3)
         sut.load(with: songs, source: nil)
-        sut.goToItem(atIndex: 2)
-        sut.addToQueue(queueSong)
-        sut.goToNextItem()
+        queueSongs.forEach(sut.addToQueue(_:))
 
         let state = TestSubscriber.subscribe(to: sut.state)
 
         assertState(
             state,
-            history: songs[..<3],
-            activeItemSong: queueSong,
-            userQueue: [],
-            upNext: songs[3...]
-        ) {
-            XCTAssertEqual($0.activeItemIndex, 3)
-            XCTAssertEqual($0.count, 6)
-        }
+            activeItemSong: songs[0],
+            userQueue: queueSongs,
+            upNext: songs[1...]
+        )
 
-        // going back by 2
-        sut.goToItem(atIndex: 3 - 2)
+        sut.goToItem(atIndex: .userQueue(1))
 
         assertState(
             state,
-            history: songs[..<1],
-            activeItemSong: songs[1],
-            userQueue: [],
-            upNext: songs[2...]
-        ) {
-            XCTAssertEqual($0.activeItemIndex, 1)
-            XCTAssertEqual($0.count, 5)
-        }
+            history: songs[0..<1],
+            activeItemSong: queueSongs[1],
+            userQueue: queueSongs[2...],
+            upNext: songs[1...]
+        )
+    }
+
+    func test_goToItemAtIndex_forUpNextIndex() {
+        let sut = PlaybackQueue(dependencies: .mock())
+
+        let songs = [Song].mock(count: 5)
+        sut.load(with: songs, source: nil)
+
+        let state = TestSubscriber.subscribe(to: sut.state)
+
+        assertState(
+            state,
+            activeItemSong: songs[0],
+            upNext: songs[1...]
+        )
+
+        sut.goToItem(atIndex: .upNext(2))
+
+        assertState(
+            state,
+            history: songs[..<3],
+            activeItemSong: songs[3],
+            upNext: songs[4...]
+        )
     }
 
     func test_addToQueue() {
@@ -486,22 +372,39 @@ final class PlaybackQueueTests: XCTestCase {
         assertState(state, userQueue: [song1, song2, song1])
     }
 
-    func test_goToNextItem_withItemInQueue() {
+    func test_goToNextItem_takesUserQueueItemIfAvailable() {
         let sut = PlaybackQueue(dependencies: .mock())
 
         let song = Song.mock()
-        sut.addToQueue(song)
+        let song2 = Song.mock()
+        sut.load(with: [song], source: nil)
+        sut.addToQueue(song2)
 
         let state = TestSubscriber.subscribe(to: sut.state)
 
-        assertState(state, activeItemSong: nil, userQueue: [song])
+        assertState(state, history: [], activeItemSong: song, userQueue: [song2])
 
         sut.goToNextItem()
 
-        assertState(state, activeItemSong: song, userQueue: [])
+        assertState(state, history: [song], activeItemSong: song2, userQueue: [])
     }
 
-    func test_goToNextItem_discardsUserQueueItems() {
+    func test_goToNextItem_takesUserQueueItemIfAvailable_whenNoActiveItem() {
+        let sut = PlaybackQueue(dependencies: .mock())
+
+        let songs = [Song].mock(count: 2)
+        songs.forEach(sut.addToQueue(_:))
+
+        let state = TestSubscriber.subscribe(to: sut.state)
+
+        assertState(state, activeItemSong: nil, userQueue: songs)
+
+        sut.goToNextItem()
+
+        assertState(state, activeItemSong: songs[0], userQueue: songs[1...])
+    }
+
+    func test_goToNextItem_doesNotAddUserQueueItemsToHistory() {
         let sut = PlaybackQueue(dependencies: .mock())
 
         let song = Song.mock()
@@ -521,7 +424,7 @@ final class PlaybackQueueTests: XCTestCase {
         assertState(state, history: [], activeItemSong: song, userQueue: [])
     }
 
-    func test_goToPreviousItem_discardsUserQueueItems() {
+    func test_goToPreviousItem_doesNotAddUserQueueItemsToHistory() {
         let sut = PlaybackQueue(dependencies: .mock())
 
         let song = Song.mock()
@@ -583,7 +486,7 @@ final class PlaybackQueueTests: XCTestCase {
 
             let expectedCount = history.count + (activeItemSong != nil ? 1 : 0) + userQueue.count + upNext.count
             XCTAssertEqual(state.count, expectedCount, "invalid count", line: line)
-            XCTAssertEqual(state.activeItemIndex, state.activeItem != nil ? history.count : -1, "invalid activeItemIndex", line: line)
+            XCTAssertEqual(state.activeItemIndex, state.activeItem != nil ? history.count : nil, "invalid activeItemIndex", line: line)
             extraAssertions(state)
         } else {
             XCTFail("State is nil", line: line)

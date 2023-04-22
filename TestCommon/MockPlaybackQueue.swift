@@ -23,7 +23,7 @@ final class MockPlaybackQueue: PlaybackQueueType {
     let addToQueueRelay = PassthroughRelay<Song>()
     let goToNextItemRelay = PassthroughRelay<Void>()
     let goToPreviousItemRelay = PassthroughRelay<Void>()
-    let goToItemAtIndexRelay = PassthroughRelay<Int>()
+    let goToItemAtIndexRelay = PassthroughRelay<PlaybackQueueIndex>()
 
     // MARK: - Mocked Members
 
@@ -55,7 +55,7 @@ final class MockPlaybackQueue: PlaybackQueueType {
         goToPreviousItemRelay.accept()
     }
 
-    func goToItem(atIndex index: Int) {
-        goToItemAtIndexRelay.accept(index)
+    func goToItem(atIndex index: PlaybackQueueIndex) {
+        goToItemAtIndexRelay.send(index)
     }
 }

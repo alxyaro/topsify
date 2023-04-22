@@ -13,9 +13,9 @@ protocol PlaybackQueueState {
     var upNext: UpNextCollection { get }
 
     var count: Int { get }
-    var activeItemIndex: Int { get }
+    var activeItemIndex: Int? { get }
 
-    subscript (itemAt index: Int) -> PlaybackQueueItem? { get }
+    subscript (itemAt index: PlaybackQueueIndex) -> PlaybackQueueItem? { get }
 }
 
 extension PlaybackQueueState {
@@ -26,24 +26,20 @@ extension PlaybackQueueState {
         upNext.count
     }
 
-    var activeItemIndex: Int {
-        activeItem != nil ? history.count : -1
+    var activeItemIndex: Int? {
+        activeItem != nil ? history.count : nil
     }
 
-    subscript (itemAt index: Int) -> PlaybackQueueItem? {
-        var index = index
-        if index < history.count {
-            return history[safe: index]
-        }
-        index -= history.count
-        if index == 0 {
+    subscript (itemAt index: PlaybackQueueIndex) -> PlaybackQueueItem? {
+        switch index {
+        case .history(let offset):
+            return history[safe: offset]
+        case .activeItem:
             return activeItem
+        case .userQueue(let offset):
+            return userQueue[safe: offset]
+        case .upNext(let offset):
+            return upNext[safe: offset]
         }
-        index -= 1
-        if index < userQueue.count {
-            return userQueue[safe: index]
-        }
-        index -= userQueue.count
-        return upNext[safe: index]
     }
 }

@@ -18,7 +18,7 @@ protocol PlaybackQueueType {
 
     func goToNextItem()
     func goToPreviousItem()
-    func goToItem(atIndex index: Int)
+    func goToItem(atIndex index: PlaybackQueueIndex)
 }
 
 extension PlaybackQueueType {
@@ -120,59 +120,45 @@ final class PlaybackQueue: PlaybackQueueType {
         stateSubject.send(state)
     }
 
-    func goToItem(atIndex index: Int) {
+    func goToItem(atIndex index: PlaybackQueueIndex) {
         var state = stateSubject.value
-        let activeIndex = state.activeItemIndex
 
-        let index = index.clamped(to: 0..<state.count)
-
-        guard index != activeIndex else {
+        guard index.isValid(for: state) else {
             return
         }
 
-        if index > activeIndex {
-            var itemsToSkip = index - activeIndex
+        switch index {
+        case .history(let offset):
+            if let activeItem = state.activeItem, !activeItem.isUserQueueItem {
+                state.upNext.prepend(activeItem)
+            }
+            let itemsToMoveToUpNext = (state.history.count - offset)-1
 
-            if let activeItem = state.activeItem {
-                if !activeItem.isUserQueueItem {
-                    state.history.append(activeItem)
-                }
-                itemsToSkip -= 1
+            for _ in 0..<itemsToMoveToUpNext {
+                state.upNext.prepend(state.history.removeLast())
             }
 
-            let queueItemsToRemove = min(itemsToSkip, state.userQueue.count)
-            state.userQueue.removeFirst(queueItemsToRemove)
+            state.activeItem = state.history.removeLast()
 
-            itemsToSkip -= queueItemsToRemove
-            let upNextItemsToRemove = min(itemsToSkip, state.upNext.count)
-            for _ in 0..<upNextItemsToRemove {
-                if let item = state.upNext.popFirst() {
-                    state.history.append(item)
-                }
+        case .activeItem:
+            // no-op
+            return
+
+        case .userQueue(let offset):
+            if let activeItem = state.activeItem, !activeItem.isUserQueueItem {
+                state.history.append(activeItem)
             }
+            state.userQueue.removeFirst(offset)
+            state.activeItem = state.userQueue.removeFirst()
 
-            if !state.userQueue.isEmpty {
-                state.activeItem = state.userQueue.popFirst()
-            } else {
-                state.activeItem = state.upNext.popFirst()
+        case .upNext(let offset):
+            if let activeItem = state.activeItem, !activeItem.isUserQueueItem {
+                state.history.append(activeItem)
             }
-        } else {
-            var itemsToBringBack = activeIndex - index
-
-            if let activeItem = state.activeItem {
-                if !activeItem.isUserQueueItem {
-                    state.upNext.prepend(activeItem)
-                }
-                itemsToBringBack -= 1
+            for _ in 0..<offset {
+                state.history.append(state.upNext.removeFirst())
             }
-
-            for _ in 0..<itemsToBringBack {
-                if let item = state.history.popLast() {
-                    state.upNext.prepend(item)
-                }
-            }
-
-            state.activeItem = state.history.popLast()
+            state.activeItem = state.upNext.removeFirst()
         }
 
         stateSubject.send(state)
