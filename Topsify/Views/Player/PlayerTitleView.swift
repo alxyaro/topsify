@@ -29,9 +29,14 @@ final class PlayerTitleView: UIView {
         return button
     }()
 
-    init() {
+    private let viewModel: PlayerTitleViewModel
+    private var disposeBag = DisposeBag()
+
+    init(viewModel: PlayerTitleViewModel) {
+        self.viewModel = viewModel
         super.init(frame: .zero)
         setupViews()
+        bindViewModel()
     }
 
     required init?(coder: NSCoder) {
@@ -53,5 +58,23 @@ final class PlayerTitleView: UIView {
 
         addSubview(mainStackView)
         mainStackView.constrainEdgesToSuperview()
+    }
+
+    private func bindViewModel() {
+        let outputs = viewModel.bind(inputs: ())
+
+        outputs.title
+            .sink { [weak self] in
+                self?.titleLabel.text = $0
+                self?.marqueeTitleLabel.reset()
+            }
+            .store(in: &disposeBag)
+
+        outputs.artists
+            .sink { [weak self] in
+                self?.artistsLabel.text = $0
+                self?.marqueeArtistsLabel.reset()
+            }
+            .store(in: &disposeBag)
     }
 }

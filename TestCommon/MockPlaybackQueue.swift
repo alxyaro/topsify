@@ -18,6 +18,15 @@ final class MockPlaybackQueue: PlaybackQueueType {
     let sourceSubject = CurrentValueSubject<ContentObject?, Never>(nil)
     let stateSubject = CurrentValueSubject<State, Never>(.init())
 
+    var stateValue: State {
+        get {
+            stateSubject.value
+        }
+        set {
+            stateSubject.send(newValue)
+        }
+    }
+
     let loadWithContentSubject = PassthroughSubject<ContentObject, Never>()
     let loadWithSongsSubject = PassthroughSubject<(songs: [Song], source: ContentObject?), Never>()
     let addToQueueSubject = PassthroughSubject<Song, Never>()

@@ -5,17 +5,22 @@ import UIKit
 final class PlayerViewController: UIViewController {
 
     private lazy var stageView = PlayerStageView(
-        viewModel: .init(playbackQueue: Environment.current.playbackQueue),
+        viewModel: viewModel.stageViewModel,
         contentAreaLayoutGuide: stageContentAreaLayoutGuide
     )
 
-    private let titleView = PlayerTitleView()
+    private lazy var titleView = PlayerTitleView(
+        viewModel: viewModel.titleViewModel
+    )
     private let controlsView = PlayerControlsView()
     private let subMenuView = PlayerSubMenuView()
 
     private let stageContentAreaLayoutGuide = UILayoutGuide()
 
-    init() {
+    private let viewModel: PlayerViewModel
+
+    init(viewModel: PlayerViewModel) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
 

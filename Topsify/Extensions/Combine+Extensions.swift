@@ -5,6 +5,12 @@ import CombineExt
 
 typealias DisposeBag = Set<AnyCancellable>
 
+extension DisposeBag {
+    mutating func insert(_ cancellables: [AnyCancellable]) {
+        cancellables.forEach { _ = insert($0) }
+    }
+}
+
 extension Publisher {
     func ignoreFailure() -> AnyPublisher<Output, Never> {
         self.catch { _ in
@@ -20,10 +26,6 @@ extension Publisher {
 
     func mapToConstant<C>(_ constant: C) -> AnyPublisher<C, Failure> {
         map { _ in constant }.eraseToAnyPublisher()
-    }
-
-    func mapToVoid() -> AnyPublisher<Void, Failure> {
-        mapToConstant(())
     }
 
     func mapOptional() -> AnyPublisher<Output?, Failure> {
