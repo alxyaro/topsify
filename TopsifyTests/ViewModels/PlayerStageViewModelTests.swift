@@ -63,6 +63,6 @@ final class PlayerStageViewModelTests: XCTestCase {
 
         sut.movedToItem(atIndex: 3, itemList: itemListObj)
 
-        XCTAssertEqual(try goToItemAtIndex.pollOnlyValue(), .from(rawIndex: 3, using: state)!)
+        XCTAssertEqual(try goToItemAtIndex.pollOnlyValue().index, .from(rawIndex: 3, using: state)!)
     }
 }

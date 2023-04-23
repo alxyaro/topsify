@@ -18,7 +18,7 @@ protocol PlaybackQueueType {
 
     func goToNextItem()
     func goToPreviousItem()
-    func goToItem(atIndex index: PlaybackQueueIndex)
+    func goToItem(atIndex index: PlaybackQueueIndex, emptyUserQueueIfUpNextIndex: Bool)
 }
 
 extension PlaybackQueueType {
@@ -31,6 +31,10 @@ extension PlaybackQueueType {
         state
             .map { $0.userQueue.count + $0.upNext.count > 0 }
             .eraseToAnyPublisher()
+    }
+
+    func goToItem(atIndex index: PlaybackQueueIndex) {
+        goToItem(atIndex: index, emptyUserQueueIfUpNextIndex: true)
     }
 }
 
@@ -120,7 +124,7 @@ final class PlaybackQueue: PlaybackQueueType {
         stateSubject.send(state)
     }
 
-    func goToItem(atIndex index: PlaybackQueueIndex) {
+    func goToItem(atIndex index: PlaybackQueueIndex, emptyUserQueueIfUpNextIndex: Bool) {
         var state = stateSubject.value
 
         guard index.isValid(for: state) else {
@@ -154,6 +158,9 @@ final class PlaybackQueue: PlaybackQueueType {
         case .upNext(let offset):
             if let activeItem = state.activeItem, !activeItem.isUserQueueItem {
                 state.history.append(activeItem)
+            }
+            if emptyUserQueueIfUpNextIndex {
+                state.userQueue.removeAll()
             }
             for _ in 0..<offset {
                 state.history.append(state.upNext.removeFirst())

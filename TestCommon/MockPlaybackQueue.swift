@@ -32,7 +32,7 @@ final class MockPlaybackQueue: PlaybackQueueType {
     let addToQueueSubject = PassthroughSubject<Song, Never>()
     let goToNextItemSubject = PassthroughSubject<Void, Never>()
     let goToPreviousItemSubject = PassthroughSubject<Void, Never>()
-    let goToItemAtIndexSubject = PassthroughSubject<PlaybackQueueIndex, Never>()
+    let goToItemAtIndexSubject = PassthroughSubject<(index: PlaybackQueueIndex, emptyUserQueueIfUpNextIndex: Bool), Never>()
 
     // MARK: - Mocked Members
 
@@ -64,7 +64,7 @@ final class MockPlaybackQueue: PlaybackQueueType {
         goToPreviousItemSubject.send()
     }
 
-    func goToItem(atIndex index: PlaybackQueueIndex) {
-        goToItemAtIndexSubject.send(index)
+    func goToItem(atIndex index: PlaybackQueueIndex, emptyUserQueueIfUpNextIndex: Bool) {
+        goToItemAtIndexSubject.send((index: index, emptyUserQueueIfUpNextIndex: emptyUserQueueIfUpNextIndex))
     }
 }

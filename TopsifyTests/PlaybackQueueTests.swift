@@ -323,13 +323,16 @@ final class PlaybackQueueTests: XCTestCase {
         let sut = PlaybackQueue(dependencies: .mock())
 
         let songs = [Song].mock(count: 5)
+        let queueSong = Song.mock()
         sut.load(with: songs, source: nil)
+        sut.addToQueue(queueSong)
 
         let state = TestSubscriber.subscribe(to: sut.state)
 
         assertState(
             state,
             activeItemSong: songs[0],
+            userQueue: [queueSong],
             upNext: songs[1...]
         )
 
@@ -339,6 +342,35 @@ final class PlaybackQueueTests: XCTestCase {
             state,
             history: songs[..<3],
             activeItemSong: songs[3],
+            userQueue: [],
+            upNext: songs[4...]
+        )
+    }
+
+    func test_goToItemAtIndex_forUpNextIndex_withoutEmptyUserQueueIfUpNextIndex() {
+        let sut = PlaybackQueue(dependencies: .mock())
+
+        let songs = [Song].mock(count: 5)
+        let queueSong = Song.mock()
+        sut.load(with: songs, source: nil)
+        sut.addToQueue(queueSong)
+
+        let state = TestSubscriber.subscribe(to: sut.state)
+
+        assertState(
+            state,
+            activeItemSong: songs[0],
+            userQueue: [queueSong],
+            upNext: songs[1...]
+        )
+
+        sut.goToItem(atIndex: .upNext(2), emptyUserQueueIfUpNextIndex: false)
+
+        assertState(
+            state,
+            history: songs[..<3],
+            activeItemSong: songs[3],
+            userQueue: [queueSong],
             upNext: songs[4...]
         )
     }
