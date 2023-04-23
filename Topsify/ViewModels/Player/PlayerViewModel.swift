@@ -7,12 +7,14 @@ final class PlayerViewModel {
 
     let stageViewModel: PlayerStageViewModel
     let titleViewModel: PlayerTitleViewModel
+    let controlsViewModel: PlayerControlsViewModel
 
     init(dependencies: Dependencies) {
         self.dependencies = dependencies
 
         self.stageViewModel = .init(playbackQueue: dependencies.playbackQueue)
         self.titleViewModel = .init(dependencies: .init(playbackQueue: dependencies.playbackQueue))
+        self.controlsViewModel = .init(dependencies: .init(playbackQueue: dependencies.playbackQueue))
     }
 }
 

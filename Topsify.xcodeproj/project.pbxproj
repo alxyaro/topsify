@@ -75,6 +75,8 @@
 		6B47956429BE90D3006AF142 /* CombineCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 6B47956329BE90D3006AF142 /* CombineCocoa */; };
 		6B47956629BE90F1006AF142 /* CombineCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 6B47956529BE90F1006AF142 /* CombineCocoa */; };
 		6B47956829BE90F5006AF142 /* CombineCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 6B47956729BE90F5006AF142 /* CombineCocoa */; };
+		6B4F864C29F5ACE5004625B8 /* PlayerControlsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4F864B29F5ACE5004625B8 /* PlayerControlsViewModel.swift */; };
+		6B4F864E29F5AEA5004625B8 /* PlayerControlsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4F864D29F5AEA5004625B8 /* PlayerControlsViewModelTests.swift */; };
 		6B5AAE6329BF7C0B00348B1D /* IgnoreEquality.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5AAE6229BF7C0B00348B1D /* IgnoreEquality.swift */; };
 		6B66FBBE29F32C5200CDC9B3 /* PlayerStageViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B66FBBD29F32C5200CDC9B3 /* PlayerStageViewModelTests.swift */; };
 		6B92DDFA29B3C01300C0231C /* Reusable in Frameworks */ = {isa = PBXBuildFile; productRef = 6B92DDF929B3C01300C0231C /* Reusable */; };
@@ -245,6 +247,8 @@
 		6B403C8229E39DE100CA6DE0 /* Album+Mock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Album+Mock.swift"; sourceTree = "<group>"; };
 		6B46C22028EA0E2B00E2B80B /* UIViewImplicitlyAnimating+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewImplicitlyAnimating+Extensions.swift"; sourceTree = "<group>"; };
 		6B46C8DE29E9E508006DEDBB /* PlayerStageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerStageViewModel.swift; sourceTree = "<group>"; };
+		6B4F864B29F5ACE5004625B8 /* PlayerControlsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerControlsViewModel.swift; sourceTree = "<group>"; };
+		6B4F864D29F5AEA5004625B8 /* PlayerControlsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerControlsViewModelTests.swift; sourceTree = "<group>"; };
 		6B5AAE6229BF7C0B00348B1D /* IgnoreEquality.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IgnoreEquality.swift; sourceTree = "<group>"; };
 		6B66FBBD29F32C5200CDC9B3 /* PlayerStageViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerStageViewModelTests.swift; sourceTree = "<group>"; };
 		6B9A535729B01145001D4C2A /* HomeSimpleHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSimpleHeaderCell.swift; sourceTree = "<group>"; };
@@ -606,6 +610,7 @@
 				6BBF4FD529F4722800CBA32D /* PlayerViewModel.swift */,
 				6B46C8DE29E9E508006DEDBB /* PlayerStageViewModel.swift */,
 				6BBF4FD729F4759600CBA32D /* PlayerTitleViewModel.swift */,
+				6B4F864B29F5ACE5004625B8 /* PlayerControlsViewModel.swift */,
 			);
 			path = Player;
 			sourceTree = "<group>";
@@ -646,6 +651,7 @@
 				6BE368BA29A2AA8600687D48 /* HomeViewModelTests.swift */,
 				6B66FBBD29F32C5200CDC9B3 /* PlayerStageViewModelTests.swift */,
 				6BBF4FD929F5A0C600CBA32D /* PlayerTitleViewModelTests.swift */,
+				6B4F864D29F5AEA5004625B8 /* PlayerControlsViewModelTests.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -926,6 +932,7 @@
 				6B357247280BB999007CBDF6 /* RecentActivityItemViewModel.swift in Sources */,
 				6BAE1B6529872CE90092E53E /* Combine+Extensions.swift in Sources */,
 				6BAE1B63298726EA0092E53E /* Environment.swift in Sources */,
+				6B4F864C29F5ACE5004625B8 /* PlayerControlsViewModel.swift in Sources */,
 				6B9B44C929D0B11F00F6BA94 /* UIAxisPanGestureRecognizer.swift in Sources */,
 				6B005C1027F29FF30064929C /* UIView+Additions.swift in Sources */,
 				6B35721B27FE4ADE007CBDF6 /* HomeHeaderView.swift in Sources */,
@@ -964,6 +971,7 @@
 				6BDC889329F1CE19003B7290 /* MockPlaybackQueue.swift in Sources */,
 				6B0D782827F0E4BE001BA64E /* TopsifyTests.swift in Sources */,
 				6BBF4FD429F4512500CBA32D /* PlaybackQueueIndexTests.swift in Sources */,
+				6B4F864E29F5AEA5004625B8 /* PlayerControlsViewModelTests.swift in Sources */,
 				6B21E39229E3A5E000BE2B99 /* Playlist+Mock.swift in Sources */,
 				6B47954829BE6DE2006AF142 /* MockContentService.swift in Sources */,
 				6BE368BB29A2AA8600687D48 /* HomeViewModelTests.swift in Sources */,

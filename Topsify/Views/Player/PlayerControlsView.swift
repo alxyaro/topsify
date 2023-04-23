@@ -14,9 +14,13 @@ final class PlayerControlsView: UIView {
     private let nextButton = createButton(icon: "forward.end.fill", size: 30)
     private let repeatButton = createButton(icon: "repeat", size: 24)
 
-    init() {
+    private let viewModel: PlayerControlsViewModel
+
+    init(viewModel: PlayerControlsViewModel) {
+        self.viewModel = viewModel
         super.init(frame: .zero)
         setupView()
+        bindViewModel()
     }
 
     required init?(coder: NSCoder) {
@@ -58,6 +62,13 @@ final class PlayerControlsView: UIView {
         mainStackView.constrainEdgesToSuperview()
 
         semanticContentAttribute = .playback
+    }
+
+    private func bindViewModel() {
+        viewModel.bind(inputs: .init(
+            tappedNextButton: nextButton.tapPublisher,
+            tappedPreviousButton: previousButton.tapPublisher
+        ))
     }
 
     private static func createButton(icon: String, size: CGFloat) -> AppButton {

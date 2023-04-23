@@ -12,7 +12,9 @@ final class PlayerViewController: UIViewController {
     private lazy var titleView = PlayerTitleView(
         viewModel: viewModel.titleViewModel
     )
-    private let controlsView = PlayerControlsView()
+    private lazy var controlsView = PlayerControlsView(
+        viewModel: viewModel.controlsViewModel
+    )
     private let subMenuView = PlayerSubMenuView()
 
     private let stageContentAreaLayoutGuide = UILayoutGuide()

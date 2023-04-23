@@ -11,7 +11,7 @@ final class PlayerTitleViewModelTests: XCTestCase {
         let playbackQueue = MockPlaybackQueue()
         let sut = PlayerTitleViewModel(dependencies: .init(playbackQueue: playbackQueue))
 
-        let outputs = sut.bind(inputs: .init())
+        let outputs = sut.bind(inputs: ())
 
         let title = TestSubscriber.subscribe(to: outputs.title)
 
@@ -26,7 +26,7 @@ final class PlayerTitleViewModelTests: XCTestCase {
         let playbackQueue = MockPlaybackQueue()
         let sut = PlayerTitleViewModel(dependencies: .init(playbackQueue: playbackQueue))
 
-        let outputs = sut.bind(inputs: .init())
+        let outputs = sut.bind(inputs: ())
 
         let artists = TestSubscriber.subscribe(to: outputs.artists)
 

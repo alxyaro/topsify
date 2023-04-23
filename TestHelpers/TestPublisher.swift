@@ -40,6 +40,12 @@ public final class TestPublisher<Output, Failure: Error>: Publisher {
     }
 }
 
+extension TestPublisher where Output == Void {
+    public func send() {
+        send(())
+    }
+}
+
 fileprivate class Subscription<Input, Failure: Error>: Combine.Subscription {
     let subscriber: AnySubscriber<Input, Failure>
     var isReady = false
