@@ -17,6 +17,7 @@ final class MarqueeView: UIView {
     }
 
     private let contentView: UIView
+    private var lastContentViewBounds = CGRect.zero
     private let speedFactor: CGFloat
     private let boundaryDelay: TimeInterval
     private var offsetConstraint: NSLayoutConstraint!
@@ -73,13 +74,21 @@ final class MarqueeView: UIView {
 
     // MARK: - Lifecycle
 
+    /// This will be called when `contentView` `bounds` or `intrinsicContentSize` changes.
+    /// Therefore, we can determine if the animation need to be restarted based on the last recorded bounds.
+    /// See https://stackoverflow.com/a/5330162 for context.
     override func layoutSubviews() {
         activeAnimation?.stopAnimation(true)
         super.layoutSubviews()
-        // If the animation was active when layout occurred, restart it
-        if activeAnimation != nil {
+
+        // If the bounds of the contentView changed, reset the animation.
+        // Otherwise, if the animation was active when layout occurred, resume it.
+        if lastContentViewBounds != contentView.bounds {
+            reset()
+        } else if activeAnimation != nil {
             animate()
         }
+        lastContentViewBounds = contentView.bounds
     }
 
     override func didMoveToSuperview() {
