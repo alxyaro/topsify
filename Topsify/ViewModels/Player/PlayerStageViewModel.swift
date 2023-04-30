@@ -138,7 +138,7 @@ extension PlayerStageViewModel {
             }
 
             if index > activeItemIndex {
-                if let extraItem = placeholderItemsAfterActiveItem[safe: index - activeItemIndex] {
+                if let extraItem = placeholderItemsAfterActiveItem[safe: index - (activeItemIndex + 1)] {
                     return extraItem
                 }
                 index -= placeholderItemsAfterActiveItem.count

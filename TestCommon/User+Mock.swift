@@ -6,7 +6,7 @@ import Foundation
 extension User {
     static func mock(
         id: UUID = .init(),
-        avatarURL: URL = .imageMock(),
+        avatarURL: URL = .imageMockWithRandomID(),
         name: String = "Alex Yaro",
         isArtist: Bool = false
     ) -> Self {

@@ -8,7 +8,7 @@ extension Song {
         id: UUID = .init(),
         artists: [User] = [.mock()],
         albumId: UUID? = .init(),
-        imageURL: URL = .imageMock(),
+        imageURL: URL = .imageMockWithRandomID(),
         title: String = "Test Song"
     ) -> Self {
         .init(

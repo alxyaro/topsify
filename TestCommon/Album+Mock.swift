@@ -7,7 +7,7 @@ extension Album {
     static func mock(
         id: UUID = .init(),
         artists: [User] = [.mock()],
-        imageURL: URL = .imageMock(token: "album_cover"),
+        imageURL: URL = .imageMockWithRandomID(),
         title: String = "Test Album"
     ) -> Self {
         .init(

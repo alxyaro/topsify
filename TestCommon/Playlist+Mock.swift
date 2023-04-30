@@ -7,7 +7,7 @@ extension Playlist {
     static func mock(
         id: UUID = .init(),
         creator: User = .mock(),
-        imageURL: URL = .imageMock(token: "playlist_cover"),
+        imageURL: URL = .imageMockWithRandomID(),
         title: String = "Test Playlist",
         description: String = "Just a test playlist",
         isOfficial: Bool = false,
