@@ -40,8 +40,8 @@ final class MockPlaybackQueue: PlaybackQueueType {
         sourceSubject.eraseToAnyPublisher()
     }
 
-    var state: AnyPublisher<State, Never> {
-        stateSubject.eraseToAnyPublisher()
+    var stateWithContext: AnyPublisher<StateWithContext, Never> {
+        stateSubject.map { (state: $0, context: nil) }.eraseToAnyPublisher()
     }
 
     func load(with content: ContentObject) {

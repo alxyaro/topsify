@@ -6,8 +6,10 @@ import Foundation
 
 protocol PlaybackQueueType {
     associatedtype State: PlaybackQueueState
+    typealias StateWithContext = (state: State, context: PlaybackQueueStateContext?)
 
     var source: AnyPublisher<ContentObject?, Never> { get }
+    var stateWithContext: AnyPublisher<StateWithContext, Never> { get }
     var state: AnyPublisher<State, Never> { get }
     var hasPreviousItem: AnyPublisher<Bool, Never> { get }
     var hasNextItem: AnyPublisher<Bool, Never> { get }
@@ -22,6 +24,9 @@ protocol PlaybackQueueType {
 }
 
 extension PlaybackQueueType {
+    var state: AnyPublisher<State, Never> {
+        stateWithContext.map(\.state).eraseToAnyPublisher()
+    }
     var hasPreviousItem: AnyPublisher<Bool, Never> {
         state
             .map { $0.history.count > 0 }
@@ -50,14 +55,23 @@ final class PlaybackQueue: PlaybackQueueType {
     var source: AnyPublisher<ContentObject?, Never> {
         sourceSubject.eraseToAnyPublisher()
     }
-    var state: AnyPublisher<State, Never> {
-        stateSubject.eraseToAnyPublisher()
+    var stateWithContext: AnyPublisher<StateWithContext, Never> {
+        _stateWithContextSubject.prepend((state: currentState, context: nil)).eraseToAnyPublisher()
     }
 
     // MARK: - Private State
 
     private let sourceSubject = CurrentValueSubject<ContentObject?, Never>(nil)
-    private let stateSubject = CurrentValueSubject<State, Never>(.init())
+
+    /// Don't emit to this directly; instead, update `currentState`!
+    private let _stateWithContextSubject = PassthroughSubject<StateWithContext, Never>()
+    private var contextForNextStateChange: PlaybackQueueStateContext?
+    private var currentState: State = .init() {
+        didSet {
+            _stateWithContextSubject.send((state: currentState, context: contextForNextStateChange))
+            contextForNextStateChange = nil
+        }
+    }
 
     private let dependencies: Dependencies
     private var dataLoadCancellable: AnyCancellable?
@@ -81,51 +95,59 @@ final class PlaybackQueue: PlaybackQueueType {
                 }
             }, receiveValue: { [weak self] in
                 guard let self else { return }
-                var state = stateSubject.value
-                state.load(with: $0)
-                stateSubject.send(state)
+                currentState.load(with: $0)
             })
     }
 
     func load(with songs: [Song], source: ContentObject?) {
         sourceSubject.send(source)
-        var state = stateSubject.value
-        state.load(with: songs)
-        stateSubject.send(state)
+        currentState.load(with: songs)
     }
 
     func goToNextItem() {
-        var state = stateSubject.value
+        var state = currentState
 
         guard let nextItem = state.userQueue.popFirst() ?? state.upNext.popFirst() else {
             return
         }
 
-        if let activeItem = state.activeItem, !activeItem.isUserQueueItem {
-            state.history.append(activeItem)
+        var removedItem: PlaybackQueueItem?
+        if let activeItem = state.activeItem {
+            if !activeItem.isUserQueueItem {
+                state.history.append(activeItem)
+            } else {
+                removedItem = activeItem
+            }
         }
         state.activeItem = nextItem
 
-        stateSubject.send(state)
+        contextForNextStateChange = .movedToNextItem(removedItem: removedItem)
+        currentState = state
     }
 
     func goToPreviousItem() {
-        var state = stateSubject.value
+        var state = currentState
 
         guard let previousItem = state.history.popLast() else {
             return
         }
 
-        if let activeItem = state.activeItem, !activeItem.isUserQueueItem {
-            state.upNext.prepend(activeItem)
+        var removedItem: PlaybackQueueItem?
+        if let activeItem = state.activeItem {
+            if !activeItem.isUserQueueItem {
+                state.upNext.prepend(activeItem)
+            } else {
+                removedItem = activeItem
+            }
         }
         state.activeItem = previousItem
 
-        stateSubject.send(state)
+        contextForNextStateChange = .movedToPreviousItem(removedItem: removedItem)
+        currentState = state
     }
 
     func goToItem(atIndex index: PlaybackQueueIndex, emptyUserQueueIfUpNextIndex: Bool) {
-        var state = stateSubject.value
+        var state = currentState
 
         guard index.isValid(for: state) else {
             return
@@ -168,14 +190,12 @@ final class PlaybackQueue: PlaybackQueueType {
             state.activeItem = state.upNext.removeFirst()
         }
 
-        stateSubject.send(state)
+        currentState = state
     }
 
     func addToQueue(_ song: Song) {
-        var state = stateSubject.value
         let item = Item(song: song, isUserQueueItem: true)
-        state.userQueue.append(item)
-        stateSubject.send(state)
+        currentState.userQueue.append(item)
     }
 
     // TODO: func clearQueue()

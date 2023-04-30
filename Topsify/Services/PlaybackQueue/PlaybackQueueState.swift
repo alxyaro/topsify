@@ -2,6 +2,11 @@
 
 import Foundation
 
+enum PlaybackQueueStateContext: Equatable {
+    case movedToNextItem(removedItem: PlaybackQueueItem?)
+    case movedToPreviousItem(removedItem: PlaybackQueueItem?)
+}
+
 protocol PlaybackQueueState {
     associatedtype HistoryCollection: Collection<PlaybackQueueItem> where HistoryCollection.Index == Int
     associatedtype UserQueueCollection: Collection<PlaybackQueueItem> where UserQueueCollection.Index == Int
