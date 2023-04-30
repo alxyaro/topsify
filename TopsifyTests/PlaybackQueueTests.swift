@@ -137,7 +137,7 @@ final class PlaybackQueueTests: XCTestCase {
 
         XCTAssertEqual(source.pollValues(), [.playlist(playlist)])
 
-        songsPublisher.send(failure: GenericError(message: "d'oh!"))
+        songsPublisher.send(completion: .failure(GenericError(message: "d'oh!")))
 
         XCTAssertEqual(source.pollValues(), [nil])
     }

@@ -11,6 +11,8 @@ final class MockPlaybackQueue: PlaybackQueueType {
         var activeItem: PlaybackQueueItem?
         var userQueue = [PlaybackQueueItem]()
         var upNext = [PlaybackQueueItem]()
+
+        var context: PlaybackQueueStateContext?
     }
 
     // MARK: - Interface
@@ -41,7 +43,7 @@ final class MockPlaybackQueue: PlaybackQueueType {
     }
 
     var stateWithContext: AnyPublisher<StateWithContext, Never> {
-        stateSubject.map { (state: $0, context: nil) }.eraseToAnyPublisher()
+        stateSubject.map { (state: $0, context: $0.context) }.eraseToAnyPublisher()
     }
 
     func load(with content: ContentObject) {

@@ -10,33 +10,33 @@ public final class TestPublisher<Output, Failure: Error>: Publisher {
     public typealias Output = Output
     public typealias Failure = Failure
 
-    private var queuedSubscriptions = [Subscription<Output, Failure>]()
+    private var subscriptions = [Subscription<Output, Failure>]()
 
     public init() {}
 
     public func receive<S>(subscriber: S) where S : Subscriber, Failure == S.Failure, Output == S.Input {
         let subscription = Subscription(subscriber: AnySubscriber(subscriber))
-        queuedSubscriptions.append(subscription)
+        subscription.onCancel = { [weak self, weak subscription] in
+            self?.subscriptions.removeAll(where: { $0 === subscription })
+        }
+        subscriptions.append(subscription)
         subscriber.receive(subscription: subscription)
     }
 
     public func send(_ value: Output) {
-        queuedSubscriptions.forEach {
-            if $0.isReady {
-                _ = $0.subscriber.receive(value)
-                $0.subscriber.receive(completion: .finished)
+        subscriptions.forEach {
+            if $0.totalDemand > 0 {
+                $0.totalDemand -= 1
+                $0.totalDemand += $0.subscriber.receive(value)
             }
         }
-        queuedSubscriptions = []
     }
 
-    public func send(failure: Failure) {
-        queuedSubscriptions.forEach {
-            if $0.isReady {
-                $0.subscriber.receive(completion: .failure(failure))
-            }
+    public func send(completion: Subscribers.Completion<Failure>) {
+        subscriptions.forEach {
+            $0.subscriber.receive(completion: completion)
         }
-        queuedSubscriptions = []
+        subscriptions = []
     }
 }
 
@@ -48,15 +48,19 @@ extension TestPublisher where Output == Void {
 
 fileprivate class Subscription<Input, Failure: Error>: Combine.Subscription {
     let subscriber: AnySubscriber<Input, Failure>
-    var isReady = false
+
+    var onCancel: () -> Void = {}
+    var totalDemand = Subscribers.Demand.none
 
     init(subscriber: AnySubscriber<Input, Failure>) {
         self.subscriber = subscriber
     }
 
     func request(_ demand: Subscribers.Demand) {
-        isReady = demand >= .max(1)
+        totalDemand += demand
     }
 
-    func cancel() {}
+    func cancel() {
+        onCancel()
+    }
 }

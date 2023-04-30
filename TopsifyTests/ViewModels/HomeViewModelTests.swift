@@ -82,12 +82,12 @@ final class HomeViewModelTests: XCTestCase {
         XCTAssertEqual(sectionsSubscriber.pollValues(), [])
 
         viewDidAppearRelay.accept()
-        spotlightEntries.send(failure: GenericError(message: "oh no"))
+        spotlightEntries.send(completion: .failure(GenericError(message: "oh no")))
 
         XCTAssertEqual(loadStateSubscriber.pollValues(), [.loading, .error(.failedToLoadSpotlight)])
 
         viewDidAppearRelay.accept()
-        spotlightEntries.send(failure: GenericError(message: "oh no again"))
+        spotlightEntries.send(completion: .failure(GenericError(message: "oh no again")))
 
         XCTAssertEqual(loadStateSubscriber.pollValues(), [.loading, .error(.failedToLoadSpotlight)])
 
