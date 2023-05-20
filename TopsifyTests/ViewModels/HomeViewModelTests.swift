@@ -133,38 +133,38 @@ final class HomeViewModelTests: XCTestCase {
         ))
 
         let navBarTitleSubscriber = TestSubscriber.subscribe(to: outputs.navBarTitle)
-        let backgroundTintSubscriber = TestSubscriber.subscribe(to: outputs.backgroundTint)
+        let backgroundTintStyleSubscriber = TestSubscriber.subscribe(to: outputs.backgroundTintStyle)
 
         XCTAssertEqual(navBarTitleSubscriber.pollValues(), [])
-        XCTAssertEqual(backgroundTintSubscriber.pollValues(), [])
+        XCTAssertEqual(backgroundTintStyleSubscriber.pollValues(), [])
 
         viewDidAppearRelay.accept()
 
         XCTAssertEqual(navBarTitleSubscriber.pollValues(), ["Good night"])
-        XCTAssertEqual(backgroundTintSubscriber.pollValues(), [UIColor(named: "HomeTimeTints/NightColor")])
+        XCTAssertEqual(backgroundTintStyleSubscriber.pollValues(), [.night])
 
         hourOfDay = 5
         viewDidAppearRelay.accept()
 
         XCTAssertEqual(navBarTitleSubscriber.pollValues(), ["Good morning"])
-        XCTAssertEqual(backgroundTintSubscriber.pollValues(), [UIColor(named: "HomeTimeTints/MorningColor")])
+        XCTAssertEqual(backgroundTintStyleSubscriber.pollValues(), [.morning])
 
         hourOfDay = 12
         viewDidAppearRelay.accept()
 
         XCTAssertEqual(navBarTitleSubscriber.pollValues(), ["Good afternoon"])
-        XCTAssertEqual(backgroundTintSubscriber.pollValues(), [UIColor(named: "HomeTimeTints/AfternoonColor")])
+        XCTAssertEqual(backgroundTintStyleSubscriber.pollValues(), [.afternoon])
 
         hourOfDay = 18
         viewDidAppearRelay.accept()
 
         XCTAssertEqual(navBarTitleSubscriber.pollValues(), ["Good evening"])
-        XCTAssertEqual(backgroundTintSubscriber.pollValues(), [UIColor(named: "HomeTimeTints/EveningColor")])
+        XCTAssertEqual(backgroundTintStyleSubscriber.pollValues(), [.evening])
 
         viewDidAppearRelay.accept()
 
         // should not re-emit duplicate values
         XCTAssertEqual(navBarTitleSubscriber.pollValues(), [])
-        XCTAssertEqual(backgroundTintSubscriber.pollValues(), [])
+        XCTAssertEqual(backgroundTintStyleSubscriber.pollValues(), [])
     }
 }

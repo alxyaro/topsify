@@ -51,8 +51,8 @@ struct HomeViewModel {
                 }
             }
 
-        let timeOfDay = inputs.viewDidAppear
-            .map { _ -> TimeOfDay in
+        let backgroundTintStyle = inputs.viewDidAppear
+            .map { _ -> BackgroundTintStyle in
                 let hour = dependencies.calendar.component(.hour, from: dependencies.now())
 
                 if hour < 5 {
@@ -67,10 +67,24 @@ struct HomeViewModel {
             }
             .removeDuplicates()
 
+        let navBarTitle = backgroundTintStyle
+            .map {
+                switch $0 {
+                case .night:
+                    return NSLocalizedString("Good night", comment: "Nav bar title for night time")
+                case .morning:
+                    return NSLocalizedString("Good morning", comment: "Nav bar title for morning time")
+                case .afternoon:
+                    return NSLocalizedString("Good afternoon", comment: "Nav bar title for afternoon time")
+                case .evening:
+                    return NSLocalizedString("Good evening", comment: "Nav bar title for evening time")
+                }
+            }
+
         return Outputs(
             loadState: loadState,
-            navBarTitle: timeOfDay.map(\.navBarTitle).eraseToAnyPublisher(),
-            backgroundTint: timeOfDay.map(\.backgroundTint).eraseToAnyPublisher(),
+            navBarTitle: navBarTitle.eraseToAnyPublisher(),
+            backgroundTintStyle: backgroundTintStyle.eraseToAnyPublisher(),
             sections: sections
         )
     }
@@ -88,7 +102,7 @@ extension HomeViewModel {
     struct Outputs {
         let loadState: AnyPublisher<LoadState<HomeError>, Never>
         let navBarTitle: AnyPublisher<String, Never>
-        let backgroundTint: AnyPublisher<UIColor, Never>
+        let backgroundTintStyle: AnyPublisher<BackgroundTintStyle, Never>
         let sections: AnyPublisher<[Section], Never>
     }
 
@@ -139,37 +153,11 @@ extension HomeViewModel {
         }
     }
 
-    private enum TimeOfDay {
+    enum BackgroundTintStyle {
         case night
         case morning
         case afternoon
         case evening
-
-        var navBarTitle: String {
-            switch self {
-            case .night:
-                return NSLocalizedString("Good night", comment: "Nav bar title for night time")
-            case .morning:
-                return NSLocalizedString("Good morning", comment: "Nav bar title for morning time")
-            case .afternoon:
-                return NSLocalizedString("Good afternoon", comment: "Nav bar title for afternoon time")
-            case .evening:
-                return NSLocalizedString("Good evening", comment: "Nav bar title for evening time")
-            }
-        }
-
-        var backgroundTint: UIColor {
-            switch self {
-            case .night:
-                return UIColor(named: "HomeTimeTints/NightColor")
-            case .morning:
-                return UIColor(named: "HomeTimeTints/MorningColor")
-            case .afternoon:
-                return UIColor(named: "HomeTimeTints/AfternoonColor")
-            case .evening:
-                return UIColor(named: "HomeTimeTints/EveningColor")
-            }
-        }
     }
 }
 

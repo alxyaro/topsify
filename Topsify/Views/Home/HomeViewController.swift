@@ -107,8 +107,20 @@ final class HomeViewController: AppNavigableController {
             .assignWeakly(to: \.title, on: self)
             .store(in: &disposeBag)
 
-        outputs.backgroundTint
-            .sink { [weak self] color in
+        outputs.backgroundTintStyle
+            .sink { [weak self] style in
+                let color: UIColor = {
+                    switch style {
+                    case .night:
+                        return UIColor(named: "HomeTimeTints/NightColor")
+                    case .morning:
+                        return UIColor(named: "HomeTimeTints/MorningColor")
+                    case .afternoon:
+                        return UIColor(named: "HomeTimeTints/AfternoonColor")
+                    case .evening:
+                        return UIColor(named: "HomeTimeTints/EveningColor")
+                    }
+                }()
                 self?.backgroundGradient.colors?[0] = color.cgColor
             }
             .store(in: &disposeBag)
