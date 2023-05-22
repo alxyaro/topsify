@@ -74,7 +74,7 @@ final class PlayerStageView: AppCollectionView {
                 guard let self else { return }
                 let lastItemList = itemList
 
-                let offsetFromPreviousActiveItem = contentOffset.x - contentOffset(forItemIndex: lastItemList?.activeItemIndex ?? 0).x
+                let contentOffsetPreReload = contentOffset.x
 
                 itemList = newItemList
 
@@ -82,6 +82,20 @@ final class PlayerStageView: AppCollectionView {
 
                 if let itemList {
                     if let transition = itemList.transition {
+                        /// It's important not to use `lastItemList.activeItemIndex` as the previous index, and rather
+                        /// calculate the last active item index using & based from the current one. If we were to calculate the offset using
+                        /// the `lastItemList.activeItemIndex`, we'd risk an invalid offset *if an item was removed*.
+                        /// In addition to the offset being wrong, the resulting animation could get glitched if the overall `contentOffset`
+                        /// is negative, due to poor interaction with UIKit's bounce-back animation (read other comment in `setItemIndex`):
+                        let deltaToLastActiveItemIndex: Int
+                        switch transition {
+                        case .movedForward:
+                            deltaToLastActiveItemIndex = -1
+                        case .movedBackward:
+                            deltaToLastActiveItemIndex = 1
+                        }
+                        let offsetFromPreviousActiveItem = contentOffsetPreReload - contentOffset(forItemIndex: itemList.activeItemIndex + deltaToLastActiveItemIndex).x
+
                         switch transition {
                         case .movedForward:
                             setItemIndex(itemList.activeItemIndex - 1, offset: offsetFromPreviousActiveItem, animated: false)
@@ -95,6 +109,7 @@ final class PlayerStageView: AppCollectionView {
                         /// the collection view states that we're not tracking/dragging. To work around this,
                         /// `justCalledWillBeginDragging` is additionally used to determine if we're dragging.
                         let isDragging = justCalledWillBeginDragging || isTracking || isDragging
+                        let offsetFromPreviousActiveItem = contentOffsetPreReload - contentOffset(forItemIndex: lastItemList?.activeItemIndex ?? 0).x
 
                         setItemIndex(
                             itemList.activeItemIndex,
@@ -130,6 +145,17 @@ final class PlayerStageView: AppCollectionView {
         contentOffset.x += offset
         if animated {
             expectedContentOffsetAfterAnimation = contentOffset
+        }
+        if contentOffset.x < 0 {
+            /// To avoid any weird animation interaction with the UIKit's `UIScrollView` bounce-back spring effect,
+            /// ensure we're not setting a negative `contentOffset`. If we do set a negative content offset,
+            /// say for example -253, what will happen is UIKit will try to animate from this offset back to `zero` as
+            /// part of the bounce-back effect. However, if we also start an animated offset change at the same time,
+            /// to e.g. 360, UIKit will perform the bounce-back effect simultaneously and we'll end up at 360 + 253 offset!
+            /// Previously it was possible for the `offset` param to result in a negative `contentOffset` due to
+            /// items being removed as part of a forward/backward transition. This is now accounted for, but keeping this
+            /// safeguard just in case.
+            contentOffset.x = 0
         }
         setContentOffset(contentOffset, animated: animated)
     }
