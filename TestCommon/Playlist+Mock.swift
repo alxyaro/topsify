@@ -11,7 +11,8 @@ extension Playlist {
         title: String = "Test Playlist",
         description: String = "Just a test playlist",
         isOfficial: Bool = false,
-        isCoverSelfDescriptive: Bool = false
+        isCoverSelfDescriptive: Bool = false,
+        accentColorHex: String = "#0011ee"
     ) -> Self {
         .init(
             id: id,
@@ -20,7 +21,8 @@ extension Playlist {
             title: title,
             description: description,
             isOfficial: isOfficial,
-            isCoverSelfDescriptive: isCoverSelfDescriptive
+            isCoverSelfDescriptive: isCoverSelfDescriptive,
+            accentColorHex: accentColorHex
         )
     }
 }

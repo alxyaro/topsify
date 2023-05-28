@@ -8,13 +8,15 @@ extension User {
         id: UUID = .init(),
         avatarURL: URL = .imageMockWithRandomID(),
         name: String = "Alex Yaro",
-        isArtist: Bool = false
+        isArtist: Bool = false,
+        accentColorHex: String = "#0011ee"
     ) -> Self {
         .init(
             id: id,
             avatarURL: avatarURL,
             name: name,
-            isArtist: isArtist
+            isArtist: isArtist,
+            accentColorHex: accentColorHex
         )
     }
 }

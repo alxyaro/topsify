@@ -12,4 +12,5 @@ struct Album: Identifiable, Equatable {
     let artists: [User]
     let imageURL: URL
     let title: String
+    let accentColorHex: String
 }

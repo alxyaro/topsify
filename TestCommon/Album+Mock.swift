@@ -8,13 +8,15 @@ extension Album {
         id: UUID = .init(),
         artists: [User] = [.mock()],
         imageURL: URL = .imageMockWithRandomID(),
-        title: String = "Test Album"
+        title: String = "Test Album",
+        accentColorHex: String = "#0011ee"
     ) -> Self {
         .init(
             id: id,
             artists: artists,
             imageURL: imageURL,
-            title: title
+            title: title,
+            accentColorHex: accentColorHex
         )
     }
 }

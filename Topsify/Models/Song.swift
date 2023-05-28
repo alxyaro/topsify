@@ -10,14 +10,15 @@ import Foundation
 struct Song: Identifiable, Equatable {
     let id: UUID
     let artists: [User]
-    let albumId: UUID?
+    let albumID: UUID?
     let imageURL: URL
     let title: String
+    let accentColorHex: String
 }
 
 extension Song {
     var isSingle: Bool {
-        albumId == nil
+        albumID == nil
     }
 }
 

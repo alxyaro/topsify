@@ -7,16 +7,18 @@ extension Song {
     static func mock(
         id: UUID = .init(),
         artists: [User] = [.mock()],
-        albumId: UUID? = .init(),
+        albumID: UUID? = .init(),
         imageURL: URL = .imageMockWithRandomID(),
-        title: String = "Test Song"
+        title: String = "Test Song",
+        accentColorHex: String = "#0011ee"
     ) -> Self {
         .init(
             id: .init(),
             artists: artists,
-            albumId: albumId,
+            albumID: albumID,
             imageURL: imageURL,
-            title: title
+            title: title,
+            accentColorHex: accentColorHex
         )
     }
 }
