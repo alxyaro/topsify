@@ -31,6 +31,8 @@
 		6B0D784727F10B3E001BA64E /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0D784627F10B3E001BA64E /* HomeViewController.swift */; };
 		6B21E39229E3A5E000BE2B99 /* Playlist+Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B21E39129E3A5E000BE2B99 /* Playlist+Mock.swift */; };
 		6B28625629BE3E9F00C8459B /* TestSubscriber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B28625529BE3E9F00C8459B /* TestSubscriber.swift */; };
+		6B294C412A23D70F009C37C7 /* PlayerTransitionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B294C402A23D70F009C37C7 /* PlayerTransitionController.swift */; };
+		6B294C432A23E380009C37C7 /* CACornerMask+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B294C422A23E380009C37C7 /* CACornerMask+Additions.swift */; };
 		6B3571FA27FBA669007CBDF6 /* HorizontalCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3571F927FBA669007CBDF6 /* HorizontalCollectionView.swift */; };
 		6B3571FC27FBA880007CBDF6 /* ContentTileCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3571FB27FBA880007CBDF6 /* ContentTileCell.swift */; };
 		6B35720327FBB0C8007CBDF6 /* UIFont+appFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B35720227FBB0C8007CBDF6 /* UIFont+appFont.swift */; };
@@ -212,6 +214,8 @@
 		6B0D784627F10B3E001BA64E /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
 		6B21E39129E3A5E000BE2B99 /* Playlist+Mock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Playlist+Mock.swift"; sourceTree = "<group>"; };
 		6B28625529BE3E9F00C8459B /* TestSubscriber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSubscriber.swift; sourceTree = "<group>"; };
+		6B294C402A23D70F009C37C7 /* PlayerTransitionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerTransitionController.swift; sourceTree = "<group>"; };
+		6B294C422A23E380009C37C7 /* CACornerMask+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CACornerMask+Additions.swift"; sourceTree = "<group>"; };
 		6B3571F927FBA669007CBDF6 /* HorizontalCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalCollectionView.swift; sourceTree = "<group>"; };
 		6B3571FB27FBA880007CBDF6 /* ContentTileCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentTileCell.swift; sourceTree = "<group>"; };
 		6B35720227FBB0C8007CBDF6 /* UIFont+appFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIFont+appFont.swift"; sourceTree = "<group>"; };
@@ -516,8 +520,17 @@
 				6BED244229D75E0A002D51C2 /* UIEdgeInsets+Additions.swift */,
 				6BED244429D7CDFD002D51C2 /* CALayer+Additions.swift */,
 				6BED244A29D9FBD6002D51C2 /* Comparable+Additions.swift */,
+				6B294C422A23E380009C37C7 /* CACornerMask+Additions.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		6B294C3F2A23D6EB009C37C7 /* Transitions */ = {
+			isa = PBXGroup;
+			children = (
+				6B294C402A23D70F009C37C7 /* PlayerTransitionController.swift */,
+			);
+			path = Transitions;
 			sourceTree = "<group>";
 		};
 		6B3571F827FBA5D2007CBDF6 /* Resources */ = {
@@ -633,6 +646,7 @@
 		6B9B44C129CF657C00F6BA94 /* Player */ = {
 			isa = PBXGroup;
 			children = (
+				6B294C3F2A23D6EB009C37C7 /* Transitions */,
 				6B9B44C229CF658700F6BA94 /* PlayerViewController.swift */,
 				6B9B44C429CF745100F6BA94 /* PlayerControlsView.swift */,
 				6B9B44CC29D0CC4F00F6BA94 /* PlayerSliderContainerView.swift */,
@@ -906,6 +920,7 @@
 				6B35721F27FE4DC3007CBDF6 /* AppButton.swift in Sources */,
 				6B9A535A29B016BF001D4C2A /* HomeArtistHeaderCell.swift in Sources */,
 				6BFAA33729ABD4F30017E807 /* LoadStateView.swift in Sources */,
+				6B294C412A23D70F009C37C7 /* PlayerTransitionController.swift in Sources */,
 				6BED244929D8BB47002D51C2 /* PlayerStageBasicItemCell.swift in Sources */,
 				6B9B44D129D28C6E00F6BA94 /* PlayerTitleView.swift in Sources */,
 				6B46C22128EA0E2B00E2B80B /* UIViewImplicitlyAnimating+Extensions.swift in Sources */,
@@ -943,6 +958,7 @@
 				6B403C6429E200DA00CA6DE0 /* FakeContentService.swift in Sources */,
 				6B0D781127F0E4BC001BA64E /* AppDelegate.swift in Sources */,
 				6B0D781327F0E4BC001BA64E /* SceneDelegate.swift in Sources */,
+				6B294C432A23E380009C37C7 /* CACornerMask+Additions.swift in Sources */,
 				6BBF4FD829F4759600CBA32D /* PlayerTitleViewModel.swift in Sources */,
 				6BBF4FD229F44BF100CBA32D /* PlaybackQueueIndex.swift in Sources */,
 				6B3571FA27FBA669007CBDF6 /* HorizontalCollectionView.swift in Sources */,

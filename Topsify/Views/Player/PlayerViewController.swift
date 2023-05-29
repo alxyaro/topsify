@@ -23,7 +23,11 @@ final class PlayerViewController: UIViewController {
 
     init(viewModel: PlayerViewModel) {
         self.viewModel = viewModel
+
         super.init(nibName: nil, bundle: nil)
+
+        modalPresentationStyle = .custom
+        transitioningDelegate = self
     }
 
     required init?(coder: NSCoder) {
@@ -60,5 +64,16 @@ final class PlayerViewController: UIViewController {
         stageContentAreaLayoutGuide.bottomAnchor.constraint(equalTo: mainStackView.topAnchor, constant: mainStackView.directionalLayoutMargins.top).isActive = true
         stageContentAreaLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         stageContentAreaLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+    }
+}
+
+extension PlayerViewController: UIViewControllerTransitioningDelegate {
+
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        PlayerTransitionController(animation: .appear)
+    }
+
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        PlayerTransitionController(animation: .disappear)
     }
 }
