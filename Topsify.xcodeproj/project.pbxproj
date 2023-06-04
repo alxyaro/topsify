@@ -89,7 +89,7 @@
 		6B9B44C329CF658700F6BA94 /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9B44C229CF658700F6BA94 /* PlayerViewController.swift */; };
 		6B9B44C529CF745100F6BA94 /* PlayerControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9B44C429CF745100F6BA94 /* PlayerControlsView.swift */; };
 		6B9B44C729CFB3DC00F6BA94 /* PlayerSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9B44C629CFB3DC00F6BA94 /* PlayerSlider.swift */; };
-		6B9B44C929D0B11F00F6BA94 /* UIAxisPanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9B44C829D0B11F00F6BA94 /* UIAxisPanGestureRecognizer.swift */; };
+		6B9B44C929D0B11F00F6BA94 /* DirectionalPanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9B44C829D0B11F00F6BA94 /* DirectionalPanGestureRecognizer.swift */; };
 		6B9B44CB29D0BE0400F6BA94 /* Geometry+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9B44CA29D0BE0400F6BA94 /* Geometry+Extensions.swift */; };
 		6B9B44CD29D0CC4F00F6BA94 /* PlayerSliderContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9B44CC29D0CC4F00F6BA94 /* PlayerSliderContainerView.swift */; };
 		6B9B44CF29D2242300F6BA94 /* MarqueeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9B44CE29D2242300F6BA94 /* MarqueeView.swift */; };
@@ -262,7 +262,7 @@
 		6B9B44C229CF658700F6BA94 /* PlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
 		6B9B44C429CF745100F6BA94 /* PlayerControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerControlsView.swift; sourceTree = "<group>"; };
 		6B9B44C629CFB3DC00F6BA94 /* PlayerSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerSlider.swift; sourceTree = "<group>"; };
-		6B9B44C829D0B11F00F6BA94 /* UIAxisPanGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIAxisPanGestureRecognizer.swift; sourceTree = "<group>"; };
+		6B9B44C829D0B11F00F6BA94 /* DirectionalPanGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionalPanGestureRecognizer.swift; sourceTree = "<group>"; };
 		6B9B44CA29D0BE0400F6BA94 /* Geometry+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Geometry+Extensions.swift"; sourceTree = "<group>"; };
 		6B9B44CC29D0CC4F00F6BA94 /* PlayerSliderContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerSliderContainerView.swift; sourceTree = "<group>"; };
 		6B9B44CE29D2242300F6BA94 /* MarqueeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarqueeView.swift; sourceTree = "<group>"; };
@@ -375,7 +375,7 @@
 				6B0C39C8281DD85E00B59313 /* LatePublished.swift */,
 				6BE368B429A2828E00687D48 /* LoadState.swift */,
 				6BD2EA6E29A3E7B900D5F1AD /* GenericError.swift */,
-				6B9B44C829D0B11F00F6BA94 /* UIAxisPanGestureRecognizer.swift */,
+				6B9B44C829D0B11F00F6BA94 /* DirectionalPanGestureRecognizer.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -948,7 +948,7 @@
 				6BAE1B6529872CE90092E53E /* Combine+Extensions.swift in Sources */,
 				6BAE1B63298726EA0092E53E /* Environment.swift in Sources */,
 				6B4F864C29F5ACE5004625B8 /* PlayerControlsViewModel.swift in Sources */,
-				6B9B44C929D0B11F00F6BA94 /* UIAxisPanGestureRecognizer.swift in Sources */,
+				6B9B44C929D0B11F00F6BA94 /* DirectionalPanGestureRecognizer.swift in Sources */,
 				6B005C1027F29FF30064929C /* UIView+Additions.swift in Sources */,
 				6B35721B27FE4ADE007CBDF6 /* HomeHeaderView.swift in Sources */,
 				6B35722F28036415007CBDF6 /* AppNavigableController.swift in Sources */,

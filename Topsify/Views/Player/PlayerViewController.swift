@@ -8,7 +8,6 @@ final class PlayerViewController: UIViewController {
         viewModel: viewModel.stageViewModel,
         contentAreaLayoutGuide: stageContentAreaLayoutGuide
     )
-
     private lazy var titleView = PlayerTitleView(
         viewModel: viewModel.titleViewModel
     )
@@ -18,6 +17,8 @@ final class PlayerViewController: UIViewController {
     private let subMenuView = PlayerSubMenuView()
 
     private let stageContentAreaLayoutGuide = UILayoutGuide()
+    private var interactionControllerForDismissal: UIPercentDrivenInteractiveTransition?
+    private let dismissalPanGestureRecognizer = DirectionalPanGestureRecognizer(direction: .down)
 
     private let viewModel: PlayerViewModel
 
@@ -38,6 +39,7 @@ final class PlayerViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .black
         setupView()
+        setupDismissalGesture()
     }
 
     private func setupView() {
@@ -65,6 +67,57 @@ final class PlayerViewController: UIViewController {
         stageContentAreaLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         stageContentAreaLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
     }
+
+    private func setupDismissalGesture() {
+        view.addGestureRecognizer(dismissalPanGestureRecognizer)
+        dismissalPanGestureRecognizer.addTarget(self, action: #selector(handleDismissalPan(sender:)))
+        dismissalPanGestureRecognizer.delegate = self
+    }
+
+    @objc private func handleDismissalPan(sender: DirectionalPanGestureRecognizer) {
+        let percentComplete = (sender.translation(in: view).y / view.frame.height).clamped(to: 0...1)
+
+        switch sender.state {
+        case .possible:
+            break
+        case .began:
+            if let controller = interactionControllerForDismissal {
+                controller.cancel()
+            }
+            guard let presentingViewController, presentingViewController.presentedViewController == self else {
+                return
+            }
+            interactionControllerForDismissal = UIPercentDrivenInteractiveTransition()
+            presentingViewController.dismiss(animated: true)
+        case .changed:
+            interactionControllerForDismissal?.update(percentComplete)
+        case .ended, .cancelled, .failed: fallthrough
+        @unknown default:
+            if let controller = interactionControllerForDismissal {
+                var shouldFinish = percentComplete >= 0.5
+                let velocity = sender.velocity(in: view).y
+                if abs(velocity) > 1000 {
+                    shouldFinish = velocity > 0
+                }
+
+                controller.completionCurve = .easeOut
+                controller.completionSpeed = max(0.95, abs(velocity) / 1500)
+                if shouldFinish {
+                    controller.finish()
+                } else {
+                    controller.cancel()
+                }
+            }
+            interactionControllerForDismissal = nil
+        }
+    }
+}
+
+extension PlayerViewController: UIGestureRecognizerDelegate {
+
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        !(touch.view is UIControl)
+    }
 }
 
 extension PlayerViewController: UIViewControllerTransitioningDelegate {
@@ -75,5 +128,14 @@ extension PlayerViewController: UIViewControllerTransitioningDelegate {
 
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         PlayerTransitionController(animation: .disappear)
+    }
+
+    func interactionControllerForPresentation(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        // TODO: implement, use optional value passed in init?
+        nil
+    }
+
+    func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        interactionControllerForDismissal
     }
 }

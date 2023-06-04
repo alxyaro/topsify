@@ -27,11 +27,18 @@ class PlayerTransitionController: NSObject, UIViewControllerAnimatedTransitionin
     }
 
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        2
+        0.4
     }
 
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        if activeAnimator != nil { return }
+        let animator = interruptibleAnimator(using: transitionContext)
+        if !animator.isRunning {
+            animator.startAnimation()
+        }
+    }
+
+    func interruptibleAnimator(using transitionContext: UIViewControllerContextTransitioning) -> UIViewImplicitlyAnimating {
+        if let activeAnimator { return activeAnimator }
         let animator = UIViewPropertyAnimator(duration: transitionDuration(using: transitionContext), curve: .easeOut)
         animator.isUserInteractionEnabled = false
 
@@ -39,31 +46,34 @@ class PlayerTransitionController: NSObject, UIViewControllerAnimatedTransitionin
         let containerView = transitionContext.containerView
 
         guard
-            let playerView = transitionContext.view(forKey: animation.isAppear ? .to : .from)
-        else { return }
+            let playerVC = transitionContext.viewController(forKey: animation.isAppear ? .to : .from),
+            let playerView = playerVC.view
+        else { return animator }
+
+        let finalPlayerFrame = transitionContext.finalFrame(for: playerVC)
 
         if animation.isAppear {
             containerView.addSubview(playerView)
-            playerView.frame = containerView.bounds
-            playerView.frame.origin.y = playerView.frame.height
+            playerView.frame = finalPlayerFrame
+            playerView.frame.origin.y = containerView.bounds.height
             playerView.layer.cornerRadius = Self.playerCornerRadius
             playerView.layer.maskedCorners = .top
         }
 
         animator.addAnimations {
-            playerView.frame.origin.y = animation.isAppear ? 0 : playerView.frame.height
+            playerView.frame.origin.y = animation.isAppear ? finalPlayerFrame.origin.y : containerView.bounds.height
         }
 
         animator.addAnimations {
             UIView.animateKeyframes(withDuration: UIView.inheritedAnimationDuration, delay: 0) {
                 if animation.isAppear {
                     // Remove corner radius near the end of the appear animation
-                    UIView.addKeyframe(withRelativeStartTime: 0.8, relativeDuration: 0.2) {
+                    UIView.addKeyframe(withRelativeStartTime: 0.9, relativeDuration: 0.1) {
                         playerView.layer.cornerRadius = 0
                     }
                 } else {
                     // Re-add corner radius at the start of the disappear animation
-                    UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.2) {
+                    UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.1) {
                         playerView.layer.cornerRadius = Self.playerCornerRadius
                     }
                 }
@@ -86,8 +96,8 @@ class PlayerTransitionController: NSObject, UIViewControllerAnimatedTransitionin
             transitionContext.completeTransition(didComplete)
         }
 
-        animator.startAnimation()
         activeAnimator = animator
+        return animator
     }
 
     func animationEnded(_ transitionCompleted: Bool) {
