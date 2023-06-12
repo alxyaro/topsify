@@ -18,19 +18,13 @@ class RootViewController: UIViewController {
         
         let homeTabController = AppNavigationController(rootViewController: HomeViewController())
         homeTabController.title = "Home"
-        homeTabController.tabBarItem.image = UIImage(systemName: "house", withConfiguration: symbolConfig)
-        homeTabController.tabBarItem.selectedImage = UIImage(systemName: "house.fill", withConfiguration: symbolConfig)
         
         let temp1 = UIViewController()
         temp1.title = "Search"
-        temp1.tabBarItem.image = UIImage(systemName: "magnifyingglass", withConfiguration: symbolConfig)
-        temp1.tabBarItem.selectedImage = UIImage(systemName: "magnifyingglass", withConfiguration: symbolConfig)
         temp1.view.backgroundColor = .yellow
         
         let temp2 = UIViewController()
         temp2.title = "Library"
-        temp2.tabBarItem.image = UIImage(systemName: "books.vertical", withConfiguration: symbolConfig)
-        temp2.tabBarItem.selectedImage = UIImage(systemName: "books.vertical.fill", withConfiguration: symbolConfig)
         temp2.view.backgroundColor = .cyan
         
         let bottomAreaViewController = BottomAreaViewController(

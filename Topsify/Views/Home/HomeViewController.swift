@@ -33,10 +33,6 @@ final class HomeViewController: AppNavigableController {
         self.viewModel = viewModel
         
         super.init()
-
-        configureViews()
-        configureNavigation()
-        bindViewModel()
     }
 
     required init?(coder: NSCoder) {
@@ -44,6 +40,14 @@ final class HomeViewController: AppNavigableController {
     }
     
     // MARK: - Lifecycle
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        setUpView()
+        setUpNavigationBar()
+        bindViewModel()
+    }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
@@ -61,14 +65,9 @@ final class HomeViewController: AppNavigableController {
     
     // MARK: - Helpers
 
-    private func updateGradientPosition() {
-        let collectionView = collectionManager.collectionView
-        CALayer.performWithoutAnimation {
-            backgroundGradient.position.y = min(0, -(collectionView.contentOffset.y + collectionView.adjustedContentInset.top) / 2)
-        }
-    }
+    private func setUpView() {
+        view.backgroundColor = .appBackground
 
-    private func configureViews() {
         view.addSubview(collectionManager.collectionView)
         collectionManager.collectionView.constrainEdgesToSuperview()
 
@@ -80,7 +79,7 @@ final class HomeViewController: AppNavigableController {
             .store(in: &disposeBag)
     }
 
-    private func configureNavigation() {
+    private func setUpNavigationBar() {
         navBarButtons += [
             AppNavigationBarButton(iconName: "bell", onTap: {
 
@@ -130,5 +129,12 @@ final class HomeViewController: AppNavigableController {
                 collectionManager?.updateSections($0)
             }
             .store(in: &disposeBag)
+    }
+
+    private func updateGradientPosition() {
+        let collectionView = collectionManager.collectionView
+        CALayer.performWithoutAnimation {
+            backgroundGradient.position.y = min(0, -(collectionView.contentOffset.y + collectionView.adjustedContentInset.top) / 2)
+        }
     }
 }
