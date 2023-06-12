@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 
+/// Animation controller for switching between app tabs, using a crossfade effect.
 class TabTransitionController: NSObject, UIViewControllerAnimatedTransitioning {
     private var animator: UIViewPropertyAnimator?
     

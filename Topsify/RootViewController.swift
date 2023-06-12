@@ -33,16 +33,16 @@ class RootViewController: UIViewController {
         temp2.tabBarItem.selectedImage = UIImage(systemName: "books.vertical.fill", withConfiguration: symbolConfig)
         temp2.view.backgroundColor = .cyan
         
-        let tabBarController = AppTabBarController(viewControllers: [
-            homeTabController,
-            temp1,
-            temp2
-        ])
+        let bottomAreaViewController = BottomAreaViewController(
+            homeViewController: homeTabController,
+            searchViewController: temp1,
+            libraryViewController: temp2
+        )
         
-        addChild(tabBarController)
-        tabBarController.didMove(toParent: self)
-        view.addSubview(tabBarController.view)
-        tabBarController.view.constrainEdgesToSuperview()
+        addChild(bottomAreaViewController)
+        view.addSubview(bottomAreaViewController.view)
+        bottomAreaViewController.view.constrainEdgesToSuperview()
+        bottomAreaViewController.didMove(toParent: self)
     }
 
 }
