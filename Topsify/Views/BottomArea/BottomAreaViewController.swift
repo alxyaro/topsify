@@ -79,7 +79,7 @@ final class BottomAreaViewController: UITabBarController {
 
         view.addSubview(gradientView)
         gradientView.constrainEdgesToSuperview(excluding: .top)
-        gradientView.heightAnchor.constraint(equalToConstant: 150).isActive = true
+        gradientView.heightAnchor.constraint(equalToConstant: 180).isActive = true
 
         // Empty view to prevent touches (e.g. scrolling) below the nav bar:
         let safeAreaTouchSwallowView = UIView()

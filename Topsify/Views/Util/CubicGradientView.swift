@@ -36,7 +36,7 @@ final class CubicGradientView: UIView {
 
         for stop in 1...stops {
             let pct = CGFloat(stop) / CGFloat(stops)
-            let alpha = 1 - cubic(pct)
+            let alpha = ease(pct)
 
             colors.append(color.withAlphaComponent(alpha).cgColor)
             locations.append(pct)
@@ -46,10 +46,14 @@ final class CubicGradientView: UIView {
             return
         }
 
-        context.drawLinearGradient(gradient, start: CGPoint(x: bounds.midX, y: bounds.maxY), end: CGPoint(x: bounds.midX, y: 0), options: [])
+        context.drawLinearGradient(gradient, start: CGPoint(x: bounds.midX, y: 0), end: CGPoint(x: bounds.midX, y: bounds.maxY), options: [])
     }
 
-    private func cubic(_ x: CGFloat) -> CGFloat {
-        x * x * x
+    private func ease(_ x: CGFloat) -> CGFloat {
+        if x < 0.5 {
+            return 4 * pow(x, 3)
+        } else {
+            return 1 - pow(-2 * x + 2, 3) / 2
+        }
     }
 }
