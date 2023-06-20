@@ -12,6 +12,14 @@ extension NSDirectionalEdgeInsets {
         self.init(top: value, leading: value, bottom: value, trailing: value)
     }
 
+    static func horizontal(_ value: CGFloat) -> Self {
+        .init(top: 0, leading: value, bottom: 0, trailing: value)
+    }
+
+    static func vertical(_ value: CGFloat) -> Self {
+        .init(top: value, leading: 0, bottom: value, trailing: 0)
+    }
+
     static func leading(_ value: CGFloat) -> Self {
         .init(top: 0, leading: value, bottom: 0, trailing: 0)
     }

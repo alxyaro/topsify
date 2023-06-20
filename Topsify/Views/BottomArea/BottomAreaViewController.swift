@@ -9,6 +9,9 @@ final class BottomAreaViewController: UITabBarController {
         tabs: [.home, .search, .library],
         activeTabPublisher: activeTabSubject.eraseToAnyPublisher()
     )
+
+    private let playBarView = PlayBarView()
+
     private let gradientView = CubicGradientView(color: .init(named: "BackgroundColor"))
 
     private let tabsToVCs: [TabBarView.Tab: UIViewController]
@@ -79,7 +82,7 @@ final class BottomAreaViewController: UITabBarController {
 
         view.addSubview(gradientView)
         gradientView.constrainEdgesToSuperview(excluding: .top)
-        gradientView.heightAnchor.constraint(equalToConstant: 180).isActive = true
+        gradientView.heightAnchor.constraint(equalToConstant: 220).isActive = true
 
         // Empty view to prevent touches (e.g. scrolling) below the nav bar:
         let safeAreaTouchSwallowView = UIView()
@@ -88,10 +91,14 @@ final class BottomAreaViewController: UITabBarController {
         safeAreaTouchSwallowView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
 
         view.addSubview(customTabBar)
-        customTabBar.constrainEdges(to: view.safeAreaLayoutGuide, excluding: [.top, .bottom])
+        customTabBar.constrainEdges(to: view.safeAreaLayoutGuide, excluding: .vertical)
         // Constrain the tab bar such that its bottom padding can extend outside the safe area if there is space:
         customTabBar.bottomAnchor.constraint(lessThanOrEqualTo: view.bottomAnchor).isActive = true
         customTabBar.insidePaddingLayoutGuide.bottomAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+
+        view.addSubview(playBarView)
+        playBarView.constrainEdges(to: view.safeAreaLayoutGuide, excluding: .vertical, withInsets: .horizontal(8))
+        playBarView.bottomAnchor.constraint(equalTo: customTabBar.topAnchor, constant: -6).isActive = true
     }
 
     private func updateSafeAreaInset(of viewController: UIViewController) {

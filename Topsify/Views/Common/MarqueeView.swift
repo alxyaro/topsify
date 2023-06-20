@@ -23,7 +23,8 @@ final class MarqueeView: UIView {
     private var offsetConstraint: NSLayoutConstraint!
 
     private let gradientSize: CGFloat
-    private let gradientMaskView: MaskView
+    /** The frame of this is expanded beyond the `MarqueeView`; see bounds `didSet` below. */
+    private let gradientMaskView: HorizontalGradientMaskView
 
     private var activeAnimation: UIViewPropertyAnimator?
     private var activeBoundaryDelay: DispatchWorkItem?
@@ -46,12 +47,12 @@ final class MarqueeView: UIView {
         self.speedFactor = speedFactor
         self.boundaryDelay = boundaryDelay
         self.gradientSize = gradientSize
-        self.gradientMaskView = MaskView(gradientSize: gradientSize)
+        self.gradientMaskView = .init(gradientSize: gradientSize)
 
         super.init(frame: .zero)
 
         addSubview(contentView)
-        contentView.constrainEdgesToSuperview(excluding: [.leading, .trailing])
+        contentView.constrainEdgesToSuperview(excluding: .horizontal)
         contentView.widthAnchor.constraint(greaterThanOrEqualTo: widthAnchor).isActive = true
         offsetConstraint = contentView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive(true)
 
@@ -149,71 +150,5 @@ final class MarqueeView: UIView {
         }
         animation.startAnimation()
         activeAnimation = animation
-    }
-
-    private static func createGradientMask(clearPos: CGFloat, solidPos: CGFloat) -> CAGradientLayer {
-        let gradient = CAGradientLayer()
-        gradient.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
-        gradient.startPoint = .init(x: clearPos, y: 0.5)
-        gradient.endPoint = .init(x: solidPos, y: 0.5)
-        return gradient
-    }
-}
-
-private extension MarqueeView {
-
-    final class MaskView: UIView {
-        let gradientSize: CGFloat
-
-        override var frame: CGRect {
-            didSet {
-                setNeedsDisplay()
-            }
-        }
-
-        init(gradientSize: CGFloat) {
-            self.gradientSize = gradientSize
-            super.init(frame: .zero)
-            backgroundColor = .clear
-        }
-
-        required init?(coder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
-
-        override func draw(_ rect: CGRect) {
-            guard let ctx = UIGraphicsGetCurrentContext() else { return }
-
-            /// For debugging, a clearly visible color
-            let solidColor = UIColor.purple.cgColor
-
-            guard let gradient = CGGradient(
-                colorsSpace: ctx.colorSpace,
-                colors: [solidColor, UIColor.green.withAlphaComponent(0.1).cgColor] as CFArray,
-                locations: [0.0, 1.0]
-            ) else { return }
-
-            let leftGradientPos = gradientSize
-            let rightGradientPos = rect.width - gradientSize
-
-            ctx.drawLinearGradient(
-                gradient,
-                start: .init(x: leftGradientPos, y: 0),
-                end: .init(x: 0, y: 0),
-                options: []
-            )
-
-            ctx.drawLinearGradient(
-                gradient,
-                start: .init(x: rightGradientPos, y: 0),
-                end: .init(x: rect.width, y: 0),
-                options: []
-            )
-
-            ctx.beginPath()
-            ctx.addRect(rect.expanded(horizontal: -gradientSize, vertical: 0))
-            ctx.setFillColor(solidColor)
-            ctx.fillPath()
-        }
     }
 }

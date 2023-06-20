@@ -9,6 +9,7 @@ extension UIColor {
     static let appTextSecondary = UIColor(named: "TextSecondaryColor")!
     static let loadingGlimmerFirst = UIColor(named: "LoadingGlimmerFirstColor")!
     static let loadingGlimmerSecond = UIColor(named: "LoadingGlimmerSecondColor")!
-    static let primaryIcon = UIColor(named: "Colors/PrimaryIcon")!
+    static let primaryIcon = UIColor(named: "Colors/primaryIcon")!
+    static let secondaryIcon = UIColor(named: "Colors/secondaryIcon")!
     static let seekSliderTrack = UIColor(named: "Colors/SeekSliderTrack")!
 }

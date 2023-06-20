@@ -42,7 +42,7 @@ final class CubicGradientView: UIView {
             locations.append(pct)
         }
 
-        guard let gradient = CGGradient(colorsSpace: context.colorSpace, colors: colors as CFArray, locations: locations) else {
+        guard let gradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: colors as CFArray, locations: locations) else {
             return
         }
 

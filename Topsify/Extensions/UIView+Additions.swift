@@ -116,6 +116,9 @@ struct EdgeSet: OptionSet {
     static let top = EdgeSet(rawValue: 1 << 2)
     static let bottom = EdgeSet(rawValue: 1 << 3)
 
+    static let horizontal: Self = [.leading, .trailing]
+    static let vertical: Self = [.top, .bottom]
+
     var rawValue: Int
 }
 
