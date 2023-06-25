@@ -7,7 +7,30 @@
 
 import UIKit
 
+enum AnimationPosition {
+    case start
+    case end
+}
+
 extension UIViewImplicitlyAnimating {
+
+    func addAnimations(relativeDuration: CGFloat, position: AnimationPosition, _ animations: @escaping () -> Void) {
+        let relativeDuration = relativeDuration.clamped(to: 0...1)
+        addAnimations? {
+            UIView.animateKeyframes(withDuration: UIView.inheritedAnimationDuration, delay: 0) {
+                switch position {
+                case .start:
+                    UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: relativeDuration) {
+                        animations()
+                    }
+                case .end:
+                    UIView.addKeyframe(withRelativeStartTime: 1 - relativeDuration, relativeDuration: relativeDuration) {
+                        animations()
+                    }
+                }
+            }
+        }
+    }
 
     func fade(removing: UIView? = nil, adding: UIView? = nil) {
         slideFade(removing: removing, adding: adding, slideAmount: 0, slideLeft: false)

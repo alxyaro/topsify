@@ -11,6 +11,10 @@ final class BottomAreaViewController: UITabBarController {
     )
 
     private let playBarView = PlayBarView()
+    private let playBarPanGestureRecognizer = DirectionalPanGestureRecognizer(direction: .up)
+    private let playBarTapGestureRecognizer = UITapGestureRecognizer()
+
+    private var playerTransitionHandler: TransitionPanGestureHandler?
 
     private let gradientView = CubicGradientView(color: .init(named: "BackgroundColor"))
 
@@ -51,6 +55,7 @@ final class BottomAreaViewController: UITabBarController {
         tabBar.isHidden = true
 
         setUpViews()
+        setUpPlayBarPanGestureRecognizers()
     }
 
     override func viewDidLayoutSubviews() {
@@ -101,6 +106,28 @@ final class BottomAreaViewController: UITabBarController {
         playBarView.bottomAnchor.constraint(equalTo: customTabBar.topAnchor, constant: -6).isActive = true
     }
 
+    private func setUpPlayBarPanGestureRecognizers() {
+        playBarView.addGestureRecognizer(playBarPanGestureRecognizer)
+        playerTransitionHandler = TransitionPanGestureHandler(
+            gestureRecognizer: playBarPanGestureRecognizer,
+            direction: .up,
+            delegate: self
+        )
+
+        playBarView.addGestureRecognizer(playBarTapGestureRecognizer)
+        playBarTapGestureRecognizer.delegate = self
+        playBarTapGestureRecognizer.addTarget(self, action: #selector(presentPlayer))
+    }
+
+    @objc private func presentPlayer() {
+        let playerVC = PlayerViewController(
+            viewModel: .init(dependencies: .live()),
+            playBarView: playBarView,
+            interactionControllerForPresentation: playerTransitionHandler?.interactionController
+        )
+        present(playerVC, animated: true)
+    }
+
     private func updateSafeAreaInset(of viewController: UIViewController) {
         viewController.additionalSafeAreaInsets.bottom = customTabBar.bounds.height + 16
     }
@@ -110,5 +137,31 @@ extension BottomAreaViewController: UITabBarControllerDelegate {
 
     func tabBarController(_ tabBarController: UITabBarController, animationControllerForTransitionFrom fromVC: UIViewController, to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         return TabTransitionController()
+    }
+}
+
+extension BottomAreaViewController: UIGestureRecognizerDelegate {
+
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        if gestureRecognizer == playBarTapGestureRecognizer {
+            return !(touch.view is UIControl)
+        }
+        return true
+    }
+}
+
+extension BottomAreaViewController: TransitionPanGestureHandlerDelegate {
+
+    func shouldBeginTransition(_ handler: TransitionPanGestureHandler) -> Bool {
+        presentedViewController == nil
+    }
+
+    func beginTransition(_ handler: TransitionPanGestureHandler) {
+        presentPlayer()
+    }
+
+    func completionPanDistance(_ handler: TransitionPanGestureHandler) -> CGFloat {
+        // from 0 to the top of the playBar
+        playBarView.frame.minY
     }
 }

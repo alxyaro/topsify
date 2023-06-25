@@ -17,13 +17,18 @@ final class PlayerViewController: UIViewController {
     private let subMenuView = PlayerSubMenuView()
 
     private let stageContentAreaLayoutGuide = UILayoutGuide()
-    private var interactionControllerForDismissal: UIPercentDrivenInteractiveTransition?
+
     private let dismissalPanGestureRecognizer = DirectionalPanGestureRecognizer(direction: .down)
+    private var dismissalPanGestureHandler: TransitionPanGestureHandler?
 
     private let viewModel: PlayerViewModel
+    private let playBarView: PlayBarView
+    private let interactionControllerForPresentation: UIPercentDrivenInteractiveTransition?
 
-    init(viewModel: PlayerViewModel) {
+    init(viewModel: PlayerViewModel, playBarView: PlayBarView, interactionControllerForPresentation: UIPercentDrivenInteractiveTransition? = nil) {
         self.viewModel = viewModel
+        self.playBarView = playBarView
+        self.interactionControllerForPresentation = interactionControllerForPresentation
 
         super.init(nibName: nil, bundle: nil)
 
@@ -70,46 +75,13 @@ final class PlayerViewController: UIViewController {
 
     private func setupDismissalGesture() {
         view.addGestureRecognizer(dismissalPanGestureRecognizer)
-        dismissalPanGestureRecognizer.addTarget(self, action: #selector(handleDismissalPan(sender:)))
         dismissalPanGestureRecognizer.delegate = self
-    }
 
-    @objc private func handleDismissalPan(sender: DirectionalPanGestureRecognizer) {
-        let percentComplete = (sender.translation(in: view).y / view.frame.height).clamped(to: 0...1)
-
-        switch sender.state {
-        case .possible:
-            break
-        case .began:
-            if let controller = interactionControllerForDismissal {
-                controller.cancel()
-            }
-            guard let presentingViewController, presentingViewController.presentedViewController == self else {
-                return
-            }
-            interactionControllerForDismissal = UIPercentDrivenInteractiveTransition()
-            presentingViewController.dismiss(animated: true)
-        case .changed:
-            interactionControllerForDismissal?.update(percentComplete)
-        case .ended, .cancelled, .failed: fallthrough
-        @unknown default:
-            if let controller = interactionControllerForDismissal {
-                var shouldFinish = percentComplete >= 0.5
-                let velocity = sender.velocity(in: view).y
-                if abs(velocity) > 1000 {
-                    shouldFinish = velocity > 0
-                }
-
-                controller.completionCurve = .easeOut
-                controller.completionSpeed = max(0.95, abs(velocity) / 1500)
-                if shouldFinish {
-                    controller.finish()
-                } else {
-                    controller.cancel()
-                }
-            }
-            interactionControllerForDismissal = nil
-        }
+        dismissalPanGestureHandler = .init(
+            gestureRecognizer: dismissalPanGestureRecognizer,
+            direction: .down,
+            delegate: self
+        )
     }
 }
 
@@ -123,19 +95,34 @@ extension PlayerViewController: UIGestureRecognizerDelegate {
 extension PlayerViewController: UIViewControllerTransitioningDelegate {
 
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        PlayerTransitionController(animation: .appear)
+        PlayerTransitionController(transition: .appear, playBarView: playBarView)
     }
 
     func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        PlayerTransitionController(animation: .disappear)
+        PlayerTransitionController(transition: .disappear, playBarView: playBarView)
     }
 
     func interactionControllerForPresentation(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-        // TODO: implement, use optional value passed in init?
-        nil
+        interactionControllerForPresentation
     }
 
     func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
-        interactionControllerForDismissal
+        dismissalPanGestureHandler?.interactionController
+    }
+}
+
+extension PlayerViewController: TransitionPanGestureHandlerDelegate {
+
+    func shouldBeginTransition(_ handler: TransitionPanGestureHandler) -> Bool {
+        presentingViewController?.presentedViewController == self && !isBeingDismissed
+    }
+
+    func beginTransition(_ handler: TransitionPanGestureHandler) {
+        presentingViewController?.dismiss(animated: true)
+    }
+
+    func completionPanDistance(_ handler: TransitionPanGestureHandler) -> CGFloat {
+        let playBarFrameInLocalCoordinates = playBarView.convert(playBarView.bounds, to: view)
+        return abs(playBarFrameInLocalCoordinates.minY - view.frame.minY)
     }
 }

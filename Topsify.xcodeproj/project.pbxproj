@@ -12,6 +12,7 @@
 		6B005C1527F3F0EB0064929C /* Album.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B005C1427F3F0EB0064929C /* Album.swift */; };
 		6B005C1927F3F1910064929C /* Song.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B005C1827F3F1910064929C /* Song.swift */; };
 		6B024A6329C7814000B4703F /* Calendar+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B024A6229C7814000B4703F /* Calendar+Additions.swift */; };
+		6B04D59F2A4644F000DA0FC2 /* TransitionPanGestureHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B04D59E2A4644F000DA0FC2 /* TransitionPanGestureHandler.swift */; };
 		6B0C39AE2818B02600B59313 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0C39AD2818B02600B59313 /* User.swift */; };
 		6B0C39B02818B17000B59313 /* ContentObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0C39AF2818B17000B59313 /* ContentObject.swift */; };
 		6B0C39BA281A03DF00B59313 /* FakeModelDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B0C39B9281A03DF00B59313 /* FakeModelDatabase.swift */; };
@@ -195,6 +196,7 @@
 		6B005C1427F3F0EB0064929C /* Album.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Album.swift; sourceTree = "<group>"; };
 		6B005C1827F3F1910064929C /* Song.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Song.swift; sourceTree = "<group>"; };
 		6B024A6229C7814000B4703F /* Calendar+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Calendar+Additions.swift"; sourceTree = "<group>"; };
+		6B04D59E2A4644F000DA0FC2 /* TransitionPanGestureHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionPanGestureHandler.swift; sourceTree = "<group>"; };
 		6B0C39AD2818B02600B59313 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		6B0C39AF2818B17000B59313 /* ContentObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentObject.swift; sourceTree = "<group>"; };
 		6B0C39B9281A03DF00B59313 /* FakeModelDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeModelDatabase.swift; sourceTree = "<group>"; };
@@ -590,6 +592,7 @@
 				6BED244029D75B87002D51C2 /* ExpandedTouchView.swift */,
 				6B444BB12A365B880063DBD5 /* CubicGradientView.swift */,
 				6B444BBA2A40F4AC0063DBD5 /* HorizontalGradientMaskView.swift */,
+				6B04D59E2A4644F000DA0FC2 /* TransitionPanGestureHandler.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -939,6 +942,7 @@
 				6B294C412A23D70F009C37C7 /* PlayerTransitionController.swift in Sources */,
 				6BED244929D8BB47002D51C2 /* PlayerStageBasicItemCell.swift in Sources */,
 				6B9B44D129D28C6E00F6BA94 /* PlayerTitleView.swift in Sources */,
+				6B04D59F2A4644F000DA0FC2 /* TransitionPanGestureHandler.swift in Sources */,
 				6B46C22128EA0E2B00E2B80B /* UIViewImplicitlyAnimating+Extensions.swift in Sources */,
 				6BED244B29D9FBD6002D51C2 /* Comparable+Additions.swift in Sources */,
 				6B0C39D228209CCE00B59313 /* ContentTileViewModel.swift in Sources */,
