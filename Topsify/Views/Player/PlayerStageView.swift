@@ -23,7 +23,7 @@ final class PlayerStageView: AppCollectionView {
     private let contentAreaLayoutGuide: UILayoutGuide
     private var disposeBag = DisposeBag()
 
-    private let stoppedOnItemAtIndexRelay = PassthroughRelay<Int>()
+    private let stoppedOnItemAtIndexRelay = PassthroughRelay<(index: Int, itemList: PlayerStageViewModel.ItemList)>()
     private let willBeginDraggingRelay = PassthroughRelay<Void>()
 
     private var justCalledWillBeginDragging = false
@@ -58,12 +58,6 @@ final class PlayerStageView: AppCollectionView {
     private func bindViewModel() {
         let outputs = viewModel.bind(inputs: .init(
             stoppedOnItemAtIndex: stoppedOnItemAtIndexRelay
-                .compactMap { [weak self] index in
-                    guard let itemList = self?.itemList else {
-                        return nil
-                    }
-                    return (index: index, itemList: itemList)
-                }
                 .eraseToAnyPublisher(),
             willBeginDragging: willBeginDraggingRelay
                 .eraseToAnyPublisher()
@@ -168,7 +162,8 @@ final class PlayerStageView: AppCollectionView {
             /// This can happen
             return
         }
-        stoppedOnItemAtIndexRelay.accept(itemIndex(for: contentOffset))
+        guard let itemList else { return }
+        stoppedOnItemAtIndexRelay.accept((index: itemIndex(for: contentOffset), itemList: itemList))
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
