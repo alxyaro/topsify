@@ -28,6 +28,7 @@ final class PlayerStageView: AppCollectionView {
     private let stoppedOnItemAtIndexRelay = PassthroughRelay<(index: Int, itemList: PlayerStageViewModel.ItemList)>()
     private let willBeginDraggingRelay = PassthroughRelay<Void>()
 
+    private var processingItemListEmission = false
     private var justCalledWillBeginDragging = false
     private var expectedContentOffsetAfterAnimation: CGPoint = .zero
 
@@ -68,6 +69,11 @@ final class PlayerStageView: AppCollectionView {
         outputs.itemList
             .sink { [weak self] newItemList in
                 guard let self else { return }
+
+                assert(!processingItemListEmission, "Got an ItemList emission before the previous emission was processed")
+                processingItemListEmission = true
+                defer { self.processingItemListEmission = false }
+
                 let lastItemList = itemList
 
                 let contentOffsetPreReload = contentOffset.x
@@ -75,6 +81,12 @@ final class PlayerStageView: AppCollectionView {
                 itemList = newItemList
 
                 reloadData()
+
+                if !justCalledWillBeginDragging {
+                    /// Note that cancelling touches may result in a call to `scrollViewDidEndDragging` in the delegate, which is okay as any
+                    /// emissions to `stoppedOnItemAtIndexRelay` are guarded by `processingItemListEmission` being `false`.
+                    cancelActiveTouches()
+                }
 
                 if let itemList {
                     if let transition = itemList.transition {
@@ -133,8 +145,15 @@ final class PlayerStageView: AppCollectionView {
         /// If the bounds change, ensure we're on the right item index. This check is especially important
         /// for the initial layout of the view, as the `itemList` is emitted before the layout occurs.
         if lastWidth != bounds.width, let itemList {
+            cancelActiveTouches()
             setItemIndex(itemList.activeItemIndex, animated: false)
         }
+    }
+
+    private func cancelActiveTouches() {
+        // This is achieved by flipping the isEnabled gesture flag:
+        panGestureRecognizer.isEnabled = false
+        panGestureRecognizer.isEnabled = true
     }
 
     private func itemIndex(for contentOffset: CGPoint) -> Int {
@@ -173,7 +192,13 @@ final class PlayerStageView: AppCollectionView {
             /// We never want to send this event if the user is still dragging the collection view,
             /// as we risk an invalid offset being applied when calling `setItemIndex` in response
             /// to getting a new `itemList`.
-            /// This can happen
+            return
+        }
+        guard !processingItemListEmission else {
+            /// If we're in the middle of processing an `ItemList` emission, we want to avoid
+            /// sending the event as it may result in a second emission before we've finished processing the first.
+            /// This can happen if any active touches are cancelled during the `ItemList` emission processing,
+            /// which can result in this method getting called from one of the `UICollectionViewDelegate` callback.
             return
         }
         guard let itemList else { return }
