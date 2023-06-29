@@ -19,6 +19,8 @@ final class PlayerStageView: AppCollectionView {
         return UICollectionViewCompositionalLayout(section: section, configuration: config)
     }()
 
+    private var lastWidth: CGFloat = 0
+
     private let viewModel: PlayerStageViewModel
     private let contentAreaLayoutGuide: UILayoutGuide
     private var disposeBag = DisposeBag()
@@ -121,6 +123,18 @@ final class PlayerStageView: AppCollectionView {
 
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
         contentAreaLayoutGuide.layoutFrame.contains(point)
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        defer { lastWidth = bounds.width }
+
+        /// If the bounds change, ensure we're on the right item index. This check is especially important
+        /// for the initial layout of the view, as the `itemList` is emitted before the layout occurs.
+        if lastWidth != bounds.width, let itemList {
+            setItemIndex(itemList.activeItemIndex, animated: false)
+        }
     }
 
     private func itemIndex(for contentOffset: CGPoint) -> Int {
