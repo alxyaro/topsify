@@ -157,7 +157,7 @@ final class PlayerStageView: AppCollectionView {
     }
 
     private func itemIndex(for contentOffset: CGPoint) -> Int {
-        Int(contentOffset.x / bounds.width)
+        Int(round(contentOffset.x / bounds.width))
     }
 
     private func contentOffset(forItemIndex index: Int) -> CGPoint {
@@ -216,6 +216,21 @@ final class PlayerStageView: AppCollectionView {
         willBeginDraggingRelay.accept()
         justCalledWillBeginDragging = false
         super.touchesBegan(touches, with: event)
+    }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+
+        if !isDecelerating {
+            /// If the touch was just a quick tap, the scroll view will *not* register it as a drag, so none of the delegate methods will get
+            /// called, and the scroll view will not automatically decelerate the content offset to the right position. Since `touchesBegan`
+            /// invokes `willBeginDraggingRelay`, which can emit a new ItemList, we need to check that the current content
+            /// offset is at a valid resting position (not stuck mid-page/item):
+            let currentItemIndex = itemIndex(for: contentOffset)
+            if contentOffset != contentOffset(forItemIndex: currentItemIndex) {
+                setItemIndex(currentItemIndex, animated: true)
+            }
+        }
     }
 }
 
