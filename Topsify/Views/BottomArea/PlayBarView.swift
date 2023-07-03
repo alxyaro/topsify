@@ -9,13 +9,23 @@ final class PlayBarView: UIView {
         imageView.contentMode = .scaleAspectFill
         imageView.constrainDimensions(uniform: 40)
         imageView.layer.cornerRadius = 4
-
-        imageView.layer.shadowColor = UIColor.black.cgColor
-        imageView.layer.shadowOpacity = 0.5
-        imageView.layer.shadowRadius = 6
-        imageView.layer.shadowOffset = .zero
-
+        imageView.clipsToBounds = true
         return imageView
+    }()
+
+    private lazy var artworkContainerView: UIView = {
+        let view = UIView()
+        view.layer.cornerRadius = artworkImageView.layer.cornerRadius
+
+        view.layer.shadowColor = UIColor.black.cgColor
+        view.layer.shadowOpacity = 0.5
+        view.layer.shadowRadius = 6
+        view.layer.shadowOffset = .zero
+
+        view.addSubview(artworkImageView)
+        artworkImageView.constrainEdgesToSuperview()
+
+        return view
     }()
 
     private let detailsMaskView = HorizontalGradientMaskView(gradientSize: 8)
@@ -48,7 +58,7 @@ final class PlayBarView: UIView {
 
     private lazy var mainStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [
-            artworkImageView,
+            artworkContainerView,
             detailsView,
             devicesButton,
             playPauseButton
@@ -60,10 +70,16 @@ final class PlayBarView: UIView {
         return stackView
     }()
 
-    init() {
+    private let viewModel: PlayBarViewModel
+    private var disposeBag = DisposeBag()
+
+    init(viewModel: PlayBarViewModel) {
+        self.viewModel = viewModel
+
         super.init(frame: .zero)
 
         setUpView()
+        bindViewModel()
     }
 
     required init?(coder: NSCoder) {
@@ -97,6 +113,24 @@ final class PlayBarView: UIView {
         progressBackgroundView.addSubview(progressView)
         progressView.constrainEdgesToSuperview(excluding: .trailing)
         progressView.widthAnchor.constraint(equalTo: progressBackgroundView.widthAnchor, multiplier: 0.3).isActive = true
+    }
+
+    private func bindViewModel() {
+        let outputs = viewModel.bind(inputs: .init(
+            changedActiveItemIndex: detailsView.selectedIndexPublisher
+        ))
+
+        outputs.artworkURL
+            .sink { [weak self] in
+                self?.artworkImageView.configure(with: $0)
+            }
+            .store(in: &disposeBag)
+
+        outputs.itemList
+            .sink { [weak self] in
+                self?.detailsView.updateItemList($0)
+            }
+            .store(in: &disposeBag)
     }
 
     private static func createSideButton(icon: String, tintColor: UIColor = .primaryIcon) -> AppIconButton {

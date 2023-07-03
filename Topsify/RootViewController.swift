@@ -14,8 +14,6 @@ class RootViewController: UIViewController {
         
         view.backgroundColor = .appBackground
         
-        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)
-        
         let homeTabController = AppNavigationController(rootViewController: HomeViewController())
         homeTabController.title = "Home"
         
@@ -30,7 +28,8 @@ class RootViewController: UIViewController {
         let bottomAreaViewController = BottomAreaViewController(
             homeViewController: homeTabController,
             searchViewController: temp1,
-            libraryViewController: temp2
+            libraryViewController: temp2,
+            playBarViewModel: .init(dependencies: .live())
         )
         
         addChild(bottomAreaViewController)

@@ -10,7 +10,7 @@ final class BottomAreaViewController: UITabBarController {
         activeTabPublisher: activeTabSubject.eraseToAnyPublisher()
     )
 
-    private let playBarView = PlayBarView()
+    private let playBarView: PlayBarView
     private let playBarPanGestureRecognizer = DirectionalPanGestureRecognizer(direction: .up)
     private let playBarTapGestureRecognizer = UITapGestureRecognizer()
 
@@ -25,8 +25,11 @@ final class BottomAreaViewController: UITabBarController {
     init(
         homeViewController: UIViewController,
         searchViewController: UIViewController,
-        libraryViewController: UIViewController
+        libraryViewController: UIViewController,
+        playBarViewModel: PlayBarViewModel
     ) {
+        playBarView = PlayBarView(viewModel: playBarViewModel)
+
         tabsToVCs = [
             .home: homeViewController,
             .search: searchViewController,

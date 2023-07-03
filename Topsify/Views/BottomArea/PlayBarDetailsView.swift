@@ -1,5 +1,6 @@
 // Created by Alex Yaro on 2023-06-19.
 
+import Combine
 import Reusable
 import UIKit
 
@@ -22,9 +23,22 @@ final class PlayBarDetailsView: UIView {
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.isPagingEnabled = true
         collectionView.dataSource = self
+        collectionView.delegate = self
         collectionView.register(cellType: PlayBarDetailsCell.self)
         return collectionView
     }()
+
+    private var lastWidth: CGFloat = 0
+    private var itemList: PlayBarViewModel.ItemList?
+    private let selectedIndexSubject = PassthroughSubject<Int, Never>()
+
+    private var currentItemIndex: Int {
+        Int(round(collectionView.contentOffset.x / bounds.width))
+    }
+
+    var selectedIndexPublisher: AnyPublisher<Int, Never> {
+        selectedIndexSubject.eraseToAnyPublisher()
+    }
 
     init() {
         super.init(frame: .zero)
@@ -36,26 +50,63 @@ final class PlayBarDetailsView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        if lastWidth != bounds.width {
+            updateContentOffset()
+        }
+        lastWidth = bounds.width
+    }
+
     private func setUpView() {
         addSubview(collectionView)
         collectionView.constrainEdgesToSuperview()
+    }
+
+    private func updateContentOffset() {
+        let activeIndex = itemList?.activeIndex ?? 0
+        collectionView.contentOffset.x = CGFloat(activeIndex) * bounds.width
+    }
+
+    func updateItemList(_ itemList: PlayBarViewModel.ItemList) {
+        self.itemList = itemList
+        collectionView.reloadData()
+        updateContentOffset()
     }
 }
 
 extension PlayBarDetailsView: UICollectionViewDataSource {
 
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        1
-    }
-
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        3
+        itemList?.count ?? 0
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let item = itemList?[indexPath.item] else {
+            return collectionView.dequeueEmptyCell(for: indexPath)
+        }
         let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: PlayBarDetailsCell.self)
-        cell.configure(with: ())
+        cell.configure(with: item)
         return cell
+    }
+}
+
+extension PlayBarDetailsView: UICollectionViewDelegate {
+
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if !decelerate {
+            selectedIndexSubject.send(currentItemIndex)
+        }
+    }
+
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        /// `scrollViewDidEndDecelerating` seems to be fired if the collection view is bouncing back
+        /// (outside the content rectangle) and the user touches down before the bounce back is complete.
+        /// As such, we ignore the event if `isTracking` is `true`.
+        guard !scrollView.isTracking else { return }
+
+        selectedIndexSubject.send(currentItemIndex)
     }
 }
 
@@ -94,9 +145,9 @@ private final class PlayBarDetailsCell: UICollectionViewCell, Reusable {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(with: Void /* TODO: impl */) {
-        titleLabel.text = "This is some temp sample text"
-        subtitleLabel.text = "Metro Boomin"
+    func configure(with item: PlayBarViewModel.Item) {
+        titleLabel.text = item.title
+        subtitleLabel.text = item.subtitle
         marqueeTitleLabel.reset()
         marqueeSubtitleLabel.reset()
     }

@@ -24,7 +24,12 @@ extension Collection {
 }
 
 extension Sequence where Element == String {
+
     func joinedBySpacedDot() -> String {
         self.joined(separator: " \u{00B7} ")
+    }
+
+    func commaJoined() -> String {
+        return self.joined(separator: NSLocalizedString(", ", comment: "List item separator"))
     }
 }
