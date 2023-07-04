@@ -117,6 +117,23 @@ final class PlayBarViewModelTests: XCTestCase {
 
         XCTAssertEqual(artworkURL, playbackQueue.stateValue.activeItem?.song.imageURL)
     }
+
+    func testOutput_backgroundColor_derivedFromActiveItemOfPlaybackQueue() throws {
+        let accentColorHex = "#d6121e"
+        let playbackQueue = MockPlaybackQueue()
+        playbackQueue.stateValue.activeItem = .init(song: .mock(accentColorHex: accentColorHex))
+
+        let viewModel = PlayBarViewModel(dependencies: .init(playbackQueue: playbackQueue))
+
+        let outputs = viewModel.bind(inputs: .init(
+            changedActiveItemIndex: .never()
+        ))
+
+        let backgroundColorSubscriber = TestSubscriber.subscribe(to: outputs.backgroundColor)
+        let backgroundColor = try backgroundColorSubscriber.pollOnlyValue()
+
+        XCTAssertEqual(backgroundColor, HexColor(accentColorHex, shadedBy: 0.6))
+    }
 }
 
 extension PlayBarViewModel.Item: Equatable {

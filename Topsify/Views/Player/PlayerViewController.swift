@@ -21,9 +21,12 @@ final class PlayerViewController: UIViewController {
     private let dismissalPanGestureRecognizer = DirectionalPanGestureRecognizer(direction: .down)
     private var dismissalPanGestureHandler: TransitionPanGestureHandler?
 
+    private let backgroundGradientLayer = CAGradientLayer()
+
     private let viewModel: PlayerViewModel
     private let playBarView: PlayBarView
     private let interactionControllerForPresentation: UIPercentDrivenInteractiveTransition?
+    private var disposeBag = DisposeBag()
 
     init(viewModel: PlayerViewModel, playBarView: PlayBarView, interactionControllerForPresentation: UIPercentDrivenInteractiveTransition? = nil) {
         self.viewModel = viewModel
@@ -42,9 +45,23 @@ final class PlayerViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .black
+        setupBackground()
         setupView()
         setupDismissalGesture()
+        bindViewModel()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        backgroundGradientLayer.frame = view.bounds
+    }
+
+    private func setupBackground() {
+        view.backgroundColor = .black
+
+        view.layer.insertSublayer(backgroundGradientLayer, at: 0)
+        backgroundGradientLayer.locations = [0, 1]
     }
 
     private func setupView() {
@@ -82,6 +99,19 @@ final class PlayerViewController: UIViewController {
             direction: .down,
             delegate: self
         )
+    }
+
+    private func bindViewModel() {
+        let outputs = viewModel.bind(inputs: ())
+
+        outputs.backgroundGradient
+            .sink { [weak self] top, bottom in
+                guard let self else { return }
+                CALayer.perform(withDuration: 0.8) {
+                    self.backgroundGradientLayer.colors = [top.uiColor.cgColor, bottom.uiColor.cgColor]
+                }
+            }
+            .store(in: &disposeBag)
     }
 }
 

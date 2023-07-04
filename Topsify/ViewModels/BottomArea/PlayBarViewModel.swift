@@ -1,6 +1,7 @@
 // Created by Alex Yaro on 2023-06-30.
 
 import Combine
+import DynamicColor
 import Foundation
 
 final class PlayBarViewModel {
@@ -30,14 +31,18 @@ final class PlayBarViewModel {
             }
             .store(in: &disposeBag)
 
+        let activeSongPublisher = playbackQueue.state
+            .compactMap { $0[itemAt: .activeItem]?.song }
+
         return Outputs(
             itemList: playbackQueue.state
                 .map(ItemList.init(state:))
                 .eraseToAnyPublisher(),
-            artworkURL: playbackQueue.state
-                .compactMap {
-                    $0[itemAt: .activeItem]?.song.imageURL
-                }
+            artworkURL: activeSongPublisher
+                .map(\.imageURL)
+                .eraseToAnyPublisher(),
+            backgroundColor: activeSongPublisher
+                .map { HexColor($0.accentColorHex, shadedBy: 0.6) }
                 .eraseToAnyPublisher()
         )
     }
@@ -58,6 +63,7 @@ extension PlayBarViewModel {
     struct Outputs {
         let itemList: AnyPublisher<ItemList, Never>
         let artworkURL: AnyPublisher<URL, Never>
+        let backgroundColor: AnyPublisher<HexColor, Never>
     }
 
     struct ItemList {

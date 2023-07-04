@@ -85,6 +85,10 @@
 		6B47956429BE90D3006AF142 /* CombineCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 6B47956329BE90D3006AF142 /* CombineCocoa */; };
 		6B47956629BE90F1006AF142 /* CombineCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 6B47956529BE90F1006AF142 /* CombineCocoa */; };
 		6B47956829BE90F5006AF142 /* CombineCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 6B47956729BE90F5006AF142 /* CombineCocoa */; };
+		6B4854EB2A54756400B52E25 /* DynamicColor in Frameworks */ = {isa = PBXBuildFile; productRef = 6B4854EA2A54756400B52E25 /* DynamicColor */; };
+		6B4854EE2A54795800B52E25 /* HexColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4854ED2A54795800B52E25 /* HexColor.swift */; };
+		6B4854F12A547A4000B52E25 /* HexColor+UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4854F02A547A4000B52E25 /* HexColor+UIKit.swift */; };
+		6B4854F32A54BCA900B52E25 /* PlayerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4854F22A54BCA900B52E25 /* PlayerViewModelTests.swift */; };
 		6B4F864C29F5ACE5004625B8 /* PlayerControlsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4F864B29F5ACE5004625B8 /* PlayerControlsViewModel.swift */; };
 		6B4F864E29F5AEA5004625B8 /* PlayerControlsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B4F864D29F5AEA5004625B8 /* PlayerControlsViewModelTests.swift */; };
 		6B5AAE6329BF7C0B00348B1D /* IgnoreEquality.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5AAE6229BF7C0B00348B1D /* IgnoreEquality.swift */; };
@@ -266,6 +270,9 @@
 		6B444BBA2A40F4AC0063DBD5 /* HorizontalGradientMaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HorizontalGradientMaskView.swift; sourceTree = "<group>"; };
 		6B46C22028EA0E2B00E2B80B /* UIViewImplicitlyAnimating+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewImplicitlyAnimating+Extensions.swift"; sourceTree = "<group>"; };
 		6B46C8DE29E9E508006DEDBB /* PlayerStageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerStageViewModel.swift; sourceTree = "<group>"; };
+		6B4854ED2A54795800B52E25 /* HexColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HexColor.swift; sourceTree = "<group>"; };
+		6B4854F02A547A4000B52E25 /* HexColor+UIKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HexColor+UIKit.swift"; sourceTree = "<group>"; };
+		6B4854F22A54BCA900B52E25 /* PlayerViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewModelTests.swift; sourceTree = "<group>"; };
 		6B4F864B29F5ACE5004625B8 /* PlayerControlsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerControlsViewModel.swift; sourceTree = "<group>"; };
 		6B4F864D29F5AEA5004625B8 /* PlayerControlsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerControlsViewModelTests.swift; sourceTree = "<group>"; };
 		6B5AAE6229BF7C0B00348B1D /* IgnoreEquality.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IgnoreEquality.swift; sourceTree = "<group>"; };
@@ -333,6 +340,7 @@
 				6BAE1B78299040490092E53E /* CombineExt in Frameworks */,
 				6B36C9B729E09B1A00A1F8D9 /* Collections in Frameworks */,
 				6B47956429BE90D3006AF142 /* CombineCocoa in Frameworks */,
+				6B4854EB2A54756400B52E25 /* DynamicColor in Frameworks */,
 				6B92DDFA29B3C01300C0231C /* Reusable in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -490,6 +498,7 @@
 				6B444BB32A369B640063DBD5 /* BottomArea */,
 				6B35721D27FE4D9B007CBDF6 /* Navigation */,
 				6B35723E280B2DE4007CBDF6 /* Util */,
+				6B4854EF2A547A1700B52E25 /* Extensions */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -501,6 +510,7 @@
 				6B46C8DA29E9E4E3006DEDBB /* Player */,
 				6B357245280BB98B007CBDF6 /* Home */,
 				6B0C39CE282091F500B59313 /* Common */,
+				6B4854EC2A54792600B52E25 /* Util */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -663,6 +673,22 @@
 			path = TestCommon;
 			sourceTree = "<group>";
 		};
+		6B4854EC2A54792600B52E25 /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				6B4854ED2A54795800B52E25 /* HexColor.swift */,
+			);
+			path = Util;
+			sourceTree = "<group>";
+		};
+		6B4854EF2A547A1700B52E25 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				6B4854F02A547A4000B52E25 /* HexColor+UIKit.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		6B85F7C72A4F21C600EFB21E /* BottomArea */ = {
 			isa = PBXGroup;
 			children = (
@@ -695,6 +721,7 @@
 				6BBF4FD929F5A0C600CBA32D /* PlayerTitleViewModelTests.swift */,
 				6B4F864D29F5AEA5004625B8 /* PlayerControlsViewModelTests.swift */,
 				6B85F7CC2A5380FE00EFB21E /* PlayBarViewModelTests.swift */,
+				6B4854F22A54BCA900B52E25 /* PlayerViewModelTests.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -753,6 +780,7 @@
 				6B92DDF929B3C01300C0231C /* Reusable */,
 				6B47956329BE90D3006AF142 /* CombineCocoa */,
 				6B36C9B629E09B1A00A1F8D9 /* Collections */,
+				6B4854EA2A54756400B52E25 /* DynamicColor */,
 			);
 			productName = Topsify;
 			productReference = 6B0D780D27F0E4BC001BA64E /* Topsify.app */;
@@ -868,6 +896,7 @@
 				6B92DDF829B3C01300C0231C /* XCRemoteSwiftPackageReference "Reusable" */,
 				6B47956229BE90D3006AF142 /* XCRemoteSwiftPackageReference "CombineCocoa" */,
 				6B36C9B529E09B1A00A1F8D9 /* XCRemoteSwiftPackageReference "swift-collections" */,
+				6B4854E92A54756400B52E25 /* XCRemoteSwiftPackageReference "DynamicColor" */,
 			);
 			productRefGroup = 6B0D780E27F0E4BC001BA64E /* Products */;
 			projectDirPath = "";
@@ -924,6 +953,7 @@
 				6B0C39B02818B17000B59313 /* ContentObject.swift in Sources */,
 				6BD2EA6F29A3E7B900D5F1AD /* GenericError.swift in Sources */,
 				6BED244729D8B906002D51C2 /* PlayerStageView.swift in Sources */,
+				6B4854EE2A54795800B52E25 /* HexColor.swift in Sources */,
 				6BE368B329A1E6D300687D48 /* CombineSchedulers+Additions.swift in Sources */,
 				6B444BAA2A3622260063DBD5 /* BottomAreaViewController.swift in Sources */,
 				6B35722928034DB1007CBDF6 /* AppNavigationBarButton.swift in Sources */,
@@ -999,6 +1029,7 @@
 				6B3571FA27FBA669007CBDF6 /* HorizontalCollectionView.swift in Sources */,
 				6B9B44CD29D0CC4F00F6BA94 /* PlayerSliderContainerView.swift in Sources */,
 				6BED244129D75B87002D51C2 /* ExpandedTouchView.swift in Sources */,
+				6B4854F12A547A4000B52E25 /* HexColor+UIKit.swift in Sources */,
 				6B3572232803411E007CBDF6 /* AppNavigationController.swift in Sources */,
 				6B403C7B29E211D400CA6DE0 /* FakeImageProvider.swift in Sources */,
 				6B0C39C9281DD85E00B59313 /* LatePublished.swift in Sources */,
@@ -1027,6 +1058,7 @@
 				6B21E39229E3A5E000BE2B99 /* Playlist+Mock.swift in Sources */,
 				6B47954829BE6DE2006AF142 /* MockContentService.swift in Sources */,
 				6BE368BB29A2AA8600687D48 /* HomeViewModelTests.swift in Sources */,
+				6B4854F32A54BCA900B52E25 /* PlayerViewModelTests.swift in Sources */,
 				6BBF4FDA29F5A0C600CBA32D /* PlayerTitleViewModelTests.swift in Sources */,
 				6B36C9B029E08F6100A1F8D9 /* PlaybackQueueTests.swift in Sources */,
 				6B36C9C229E0CB8200A1F8D9 /* Song+Mock.swift in Sources */,
@@ -1467,6 +1499,14 @@
 				minimumVersion = 0.4.1;
 			};
 		};
+		6B4854E92A54756400B52E25 /* XCRemoteSwiftPackageReference "DynamicColor" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/yannickl/DynamicColor";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
 		6B92DDF829B3C01300C0231C /* XCRemoteSwiftPackageReference "Reusable" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/AliSoftware/Reusable";
@@ -1533,6 +1573,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 6B47956229BE90D3006AF142 /* XCRemoteSwiftPackageReference "CombineCocoa" */;
 			productName = CombineCocoa;
+		};
+		6B4854EA2A54756400B52E25 /* DynamicColor */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6B4854E92A54756400B52E25 /* XCRemoteSwiftPackageReference "DynamicColor" */;
+			productName = DynamicColor;
 		};
 		6B92DDF929B3C01300C0231C /* Reusable */ = {
 			isa = XCSwiftPackageProductDependency;

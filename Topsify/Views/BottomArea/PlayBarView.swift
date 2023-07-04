@@ -131,6 +131,14 @@ final class PlayBarView: UIView {
                 self?.detailsView.updateItemList($0)
             }
             .store(in: &disposeBag)
+
+        outputs.backgroundColor
+            .sink { [weak self] color in
+                UIView.animate(withDuration: 0.4, delay: 0, options: [.allowAnimatedContent, .allowUserInteraction]) {
+                    self?.backgroundColor = color.uiColor
+                }
+            }
+            .store(in: &disposeBag)
     }
 
     private static func createSideButton(icon: String, tintColor: UIColor = .primaryIcon) -> AppIconButton {

@@ -12,4 +12,11 @@ extension CALayer {
         actions()
         CATransaction.commit()
     }
+
+    static func perform(withDuration duration: CFTimeInterval, actions: () -> Void) {
+        CATransaction.begin()
+        CATransaction.setAnimationDuration(duration)
+        actions()
+        CATransaction.commit()
+    }
 }
