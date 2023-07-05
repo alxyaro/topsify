@@ -5,10 +5,7 @@ import CombineCocoa
 import UIKit
 
 class AppButton: UIControl {
-    typealias TapHandler = () -> Void
-
     let contentView: UIView
-    var onTap: TapHandler?
 
     private let scaleOnTap: Bool
     private let expandedTouchBoundary: UIEdgeInsets
@@ -32,49 +29,22 @@ class AppButton: UIControl {
     init(
         contentView: UIView? = nil,
         scaleOnTap: Bool = true,
-        expandedTouchBoundary: UIEdgeInsets = .zero,
-        onTap: TapHandler? = nil
+        expandedTouchBoundary: UIEdgeInsets = .zero
     ) {
         let contentView = contentView ?? UIView()
         self.contentView = contentView
         self.contentView.isUserInteractionEnabled = false
         self.scaleOnTap = scaleOnTap
         self.expandedTouchBoundary = expandedTouchBoundary
-        self.onTap = onTap
 
         super.init(frame: .zero)
         
         super.addSubview(contentView)
         contentView.constrainEdgesToSuperview()
-
-        addTarget(self, action: #selector(handleTap), for: .touchUpInside)
-    }
-
-    convenience init(
-        icon: String,
-        size: CGFloat,
-        expandedTouchBoundary: UIEdgeInsets = .init(uniform: 8),
-        contentMode: UIView.ContentMode = .center
-    ) {
-        let imageView = UIImageView(
-            image: UIImage(
-                systemName: icon,
-                withConfiguration: UIImage.SymbolConfiguration(pointSize: size)
-            )
-        )
-        imageView.setContentHuggingPriority(.required, for: .horizontal)
-        imageView.setContentCompressionResistancePriority(.required, for: .horizontal)
-        imageView.contentMode = contentMode
-        self.init(contentView: imageView, expandedTouchBoundary: expandedTouchBoundary)
-        tintColor = .primaryIcon
     }
     
     required init(coder: NSCoder) {
         fatalError()
-    }
-
-    @objc private func handleTap() {
-        onTap?()
     }
 
     @available(*, unavailable, message: "Add subviews to contentView, not the button itself")

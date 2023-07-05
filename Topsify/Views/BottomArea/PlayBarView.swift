@@ -142,7 +142,7 @@ final class PlayBarView: UIView {
     }
 
     private static func createSideButton(icon: String, tintColor: UIColor = .primaryIcon) -> AppIconButton {
-        let button = AppIconButton(icon: icon, size: 24, buttonSize: 52)
+        let button = AppIconButton(icon: icon, size: .uniform(52), expandedTouchBoundary: .zero)
         button.tintColor = tintColor
         return button
     }

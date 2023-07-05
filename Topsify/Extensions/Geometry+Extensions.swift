@@ -20,3 +20,10 @@ extension CGRect {
         expanded(top: insets.top, bottom: insets.bottom, left: insets.left, right: insets.right)
     }
 }
+
+extension CGSize {
+
+    static func uniform(_ size: CGFloat) -> Self {
+        .init(width: size, height: size)
+    }
+}

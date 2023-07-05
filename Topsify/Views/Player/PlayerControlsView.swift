@@ -8,11 +8,11 @@ final class PlayerControlsView: UIView {
 
     private let slider = PlayerSliderContainerView()
 
-    private let shuffleButton = createButton(icon: "shuffle", size: 24)
-    private let previousButton = createButton(icon: "backward.end.fill", size: 30)
-    private let playPauseButton = createButton(icon: "play.circle.fill", size: 65)
-    private let nextButton = createButton(icon: "forward.end.fill", size: 30)
-    private let repeatButton = createButton(icon: "repeat", size: 24)
+    private let shuffleButton = createButton(icon: "Icons/shuffle", scale: 1.2)
+    private let previousButton = createButton(icon: "Icons/previous", scale: 1)
+    private let playPauseButton = createButton(icon: "Icons/playCircle", scale: 2.7)
+    private let nextButton = createButton(icon: "Icons/next", scale: 1)
+    private let repeatButton = createButton(icon: "Icons/repeat", scale: 1.2)
 
     private let viewModel: PlayerControlsViewModel
 
@@ -71,7 +71,7 @@ final class PlayerControlsView: UIView {
         ))
     }
 
-    private static func createButton(icon: String, size: CGFloat) -> AppButton {
-        AppButton(icon: icon, size: size, expandedTouchBoundary: buttonPadding.toNonDirectionalInsets())
+    private static func createButton(icon: String, scale: CGFloat) -> AppIconButton {
+        AppIconButton(icon: icon, scale: scale, expandedTouchBoundary: buttonPadding.toNonDirectionalInsets())
     }
 }

@@ -4,9 +4,11 @@ import UIKit
 
 final class AppIconButton: AppButton {
 
-    private let iconImageView: UIImageView = {
-        let view = UIImageView()
+    private let iconImageView: IconImageView = {
+        let view = IconImageView()
         view.tintColor = .primaryIcon
+        view.setContentHuggingPriority(.required, for: .horizontal)
+        view.setContentCompressionResistancePriority(.required, for: .horizontal)
         view.contentMode = .scaleAspectFit
         return view
     }()
@@ -23,20 +25,28 @@ final class AppIconButton: AppButton {
         }
     }
 
-    init(icon: String, size: CGFloat, buttonSize: CGFloat? = nil) {
+    init(
+        icon: String,
+        scale: CGFloat = 1,
+        size: CGSize? = nil,
+        expandedTouchBoundary: UIEdgeInsets = .init(uniform: 8)
+    ) {
         self.icon = icon
 
-        super.init()
+        iconImageView.scale = scale
 
-        iconImageView.constrainDimensions(uniform: size)
-        if let buttonSize {
-            constrainDimensions(uniform: buttonSize)
+        if let size {
+            let contentView = UIView()
+            contentView.widthAnchor.constraint(equalToConstant: size.width).isActive = true
+            contentView.heightAnchor.constraint(equalToConstant: size.height).isActive = true
+
+            super.init(contentView: contentView, expandedTouchBoundary: expandedTouchBoundary)
+
+            contentView.addSubview(iconImageView)
+            iconImageView.constrainInCenterOfSuperview()
+        } else {
+            super.init(contentView: iconImageView, expandedTouchBoundary: expandedTouchBoundary)
         }
-
-        contentView.addSubview(iconImageView)
-        iconImageView.constrainInCenter(of: contentView)
-        iconImageView.widthAnchor.constraint(lessThanOrEqualTo: contentView.widthAnchor).isActive = true
-        iconImageView.heightAnchor.constraint(lessThanOrEqualTo: contentView.heightAnchor).isActive = true
 
         updateIcon()
     }
@@ -57,5 +67,20 @@ final class AppIconButton: AppButton {
 
     private func updateIcon() {
         iconImageView.image = UIImage(named: icon)
+    }
+}
+
+private class IconImageView: UIImageView {
+    var scale: CGFloat = 0
+
+    override var intrinsicContentSize: CGSize {
+        var size = super.intrinsicContentSize
+        if size.width < 0 || size.height < 0 {
+            size = .zero
+        }
+        return .init(
+            width: size.width * scale,
+            height: size.height * scale
+        )
     }
 }

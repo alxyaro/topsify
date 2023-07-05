@@ -24,8 +24,8 @@ final class PlayerTitleView: UIView {
     private lazy var marqueeTitleLabel = MarqueeView(titleLabel)
     private lazy var marqueeArtistsLabel = MarqueeView(artistsLabel)
 
-    private let addButton: AppButton = {
-        let button = AppButton(icon: "plus.circle", size: 24)
+    private let saveButton: AppIconButton = {
+        let button = AppIconButton(icon: "Icons/save", scale: 1.2, size: .uniform(24))
         return button
     }()
 
@@ -49,7 +49,7 @@ final class PlayerTitleView: UIView {
         labelStackView.alignment = .fill
         labelStackView.spacing = 2
 
-        let mainStackView = UIStackView(arrangedSubviews: [labelStackView, addButton])
+        let mainStackView = UIStackView(arrangedSubviews: [labelStackView, saveButton])
         mainStackView.axis = .horizontal
         mainStackView.alignment = .center
         mainStackView.spacing = 20

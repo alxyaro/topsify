@@ -5,9 +5,9 @@ import UIKit
 final class PlayerSubMenuView: UIView {
     static let insets = NSDirectionalEdgeInsets(uniform: 10)
 
-    private let outputDeviceButton = createButton(icon: "hifispeaker")
-    private let shareButton = createButton(icon: "square.and.arrow.up")
-    private let queueButton = createButton(icon: "list.bullet.below.rectangle")
+    private let outputDeviceButton = createButton(icon: "Icons/devices", scale: 0.8)
+    private let shareButton = createButton(icon: "Icons/share")
+    private let queueButton = createButton(icon: "Icons/queue")
 
     init() {
         super.init(frame: .zero)
@@ -31,7 +31,7 @@ final class PlayerSubMenuView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    private static func createButton(icon: String) -> AppButton {
-        AppButton(icon: icon, size: 20, expandedTouchBoundary: Self.insets.toNonDirectionalInsets())
+    private static func createButton(icon: String, scale: CGFloat = 1) -> AppButton {
+        AppIconButton(icon: icon, scale: scale, expandedTouchBoundary: Self.insets.toNonDirectionalInsets())
     }
 }
