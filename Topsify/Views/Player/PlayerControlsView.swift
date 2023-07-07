@@ -9,9 +9,9 @@ final class PlayerControlsView: UIView {
     private let slider = PlayerSliderContainerView()
 
     private let shuffleButton = createButton(icon: "Icons/shuffle", scale: 1.2)
-    private let previousButton = createButton(icon: "Icons/previous", scale: 1)
+    private let previousButton = createButton(icon: "Icons/previous", scale: 1.1)
     private let playPauseButton = createButton(icon: "Icons/playCircle", scale: 2.7)
-    private let nextButton = createButton(icon: "Icons/next", scale: 1)
+    private let nextButton = createButton(icon: "Icons/next", scale: 1.1)
     private let repeatButton = createButton(icon: "Icons/repeat", scale: 1.2)
 
     private let viewModel: PlayerControlsViewModel

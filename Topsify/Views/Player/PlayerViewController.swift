@@ -92,7 +92,7 @@ final class PlayerViewController: UIViewController {
         mainStackView.constrainEdges(to: view.safeAreaLayoutGuide, excluding: .top, withInsets: .bottom(24))
 
         stageView.addLayoutGuide(stageContentAreaLayoutGuide)
-        stageContentAreaLayoutGuide.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        stageContentAreaLayoutGuide.topAnchor.constraint(equalTo: topBarView.bottomAnchor, constant: -10).isActive = true
         stageContentAreaLayoutGuide.bottomAnchor.constraint(equalTo: mainStackView.topAnchor, constant: mainStackView.directionalLayoutMargins.top).isActive = true
         stageContentAreaLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         stageContentAreaLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
