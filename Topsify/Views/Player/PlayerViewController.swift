@@ -4,6 +4,11 @@ import UIKit
 
 final class PlayerViewController: UIViewController {
 
+    private let topBarView = PlayerTopBarView(
+        viewModel: .init(dependencies: .live()),
+        dismissButtonIcon: "Icons/chevronDown",
+        showOptionsButton: true
+    )
     private lazy var stageView = PlayerStageView(
         viewModel: viewModel.stageViewModel,
         contentAreaLayoutGuide: stageContentAreaLayoutGuide
@@ -67,6 +72,9 @@ final class PlayerViewController: UIViewController {
     private func setupView() {
         view.addSubview(stageView)
         stageView.constrainEdgesToSuperview()
+
+        view.addSubview(topBarView)
+        topBarView.constrainEdges(to: view.safeAreaLayoutGuide, excluding: .bottom)
 
         let mainStackView = UIStackView(arrangedSubviews: [
             OverhangingView(titleView, overhang: PlayerTitleView.insets),

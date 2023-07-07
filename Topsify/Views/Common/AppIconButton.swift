@@ -35,24 +35,26 @@ final class AppIconButton: AppButton {
 
         iconImageView.scale = scale
 
+        let contentView = UIView()
+        super.init(contentView: contentView, expandedTouchBoundary: expandedTouchBoundary)
+
         if let size {
-            let contentView = UIView()
             contentView.widthAnchor.constraint(equalToConstant: size.width).isActive = true
             contentView.heightAnchor.constraint(equalToConstant: size.height).isActive = true
-
-            super.init(contentView: contentView, expandedTouchBoundary: expandedTouchBoundary)
-
-            contentView.addSubview(iconImageView)
-            iconImageView.constrainInCenterOfSuperview()
-        } else {
-            super.init(contentView: iconImageView, expandedTouchBoundary: expandedTouchBoundary)
         }
+
+        contentView.addSubview(iconImageView)
+        iconImageView.constrainInCenterOfSuperview()
 
         updateIcon()
     }
 
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override var intrinsicContentSize: CGSize {
+        iconImageView.intrinsicContentSize
     }
 
     private func updateIconWithTransition() {
@@ -72,6 +74,11 @@ final class AppIconButton: AppButton {
 
 private class IconImageView: UIImageView {
     var scale: CGFloat = 0
+
+    override func invalidateIntrinsicContentSize() {
+        super.invalidateIntrinsicContentSize()
+        superview?.invalidateIntrinsicContentSize()
+    }
 
     override var intrinsicContentSize: CGSize {
         var size = super.intrinsicContentSize
