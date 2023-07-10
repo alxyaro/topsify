@@ -3,9 +3,6 @@
 import UIKit
 
 final class PlayerControlsView: UIView {
-    static let insets = PlayerSliderContainerView.insets
-    private static let buttonPadding = NSDirectionalEdgeInsets(uniform: 10)
-
     private let slider = PlayerSliderContainerView()
 
     private let shuffleButton = createButton(icon: "Icons/shuffle", scale: 1.2)
@@ -40,7 +37,7 @@ final class PlayerControlsView: UIView {
         buttonsStackView.axis = .horizontal
         buttonsStackView.distribution = .equalSpacing
         buttonsStackView.alignment = .center
-        buttonsStackView.directionalLayoutMargins = Self.buttonPadding
+        buttonsStackView.directionalLayoutMargins = .init(horizontal: PlayerViewConstants.contentSidePadding, vertical: 16)
         buttonsStackView.isLayoutMarginsRelativeArrangement = true
 
         // In case spacing is tight, we want to arrange subviews for better hit testing
@@ -49,17 +46,8 @@ final class PlayerControlsView: UIView {
         buttonsStackView.bringSubviewToFront(nextButton)
         buttonsStackView.bringSubviewToFront(playPauseButton)
 
-        let mainStackView = UIStackView(arrangedSubviews: [
-            OverhangingView(slider, overhang: PlayerSliderContainerView.insets),
-            OverhangingView(buttonsStackView, overhang: Self.buttonPadding)
-        ])
-        mainStackView.axis = .vertical
-        mainStackView.spacing = 8
-        mainStackView.directionalLayoutMargins = PlayerSliderContainerView.insets
-        mainStackView.isLayoutMarginsRelativeArrangement = true
-
-        addSubview(mainStackView)
-        mainStackView.constrainEdgesToSuperview()
+        addSubview(buttonsStackView)
+        buttonsStackView.constrainEdgesToSuperview()
 
         semanticContentAttribute = .playback
     }
@@ -72,6 +60,6 @@ final class PlayerControlsView: UIView {
     }
 
     private static func createButton(icon: String, scale: CGFloat) -> AppIconButton {
-        AppIconButton(icon: icon, scale: scale, expandedTouchBoundary: buttonPadding.toNonDirectionalInsets())
+        AppIconButton(icon: icon, scale: scale, expandedTouchBoundary: .init(uniform: 12))
     }
 }

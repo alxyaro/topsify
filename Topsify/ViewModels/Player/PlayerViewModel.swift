@@ -7,6 +7,7 @@ import Foundation
 final class PlayerViewModel {
     private let dependencies: Dependencies
 
+    let topBarViewModel: PlayerTopBarViewModel
     let stageViewModel: PlayerStageViewModel
     let titleViewModel: PlayerTitleViewModel
     let controlsViewModel: PlayerControlsViewModel
@@ -14,6 +15,7 @@ final class PlayerViewModel {
     init(dependencies: Dependencies) {
         self.dependencies = dependencies
 
+        self.topBarViewModel = .init(dependencies: .init(playbackQueue: dependencies.playbackQueue))
         self.stageViewModel = .init(playbackQueue: dependencies.playbackQueue)
         self.titleViewModel = .init(dependencies: .init(playbackQueue: dependencies.playbackQueue))
         self.controlsViewModel = .init(dependencies: .init(playbackQueue: dependencies.playbackQueue))

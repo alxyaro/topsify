@@ -23,7 +23,7 @@ final class PlayerStageBasicItemCell: UICollectionViewCell, Reusable {
         imageView.useAutoLayout()
         imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor).isActive = true
         imageView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor).isActive = true
-        imageView.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor, constant: 24).isActive = true
+        imageView.leadingAnchor.constraint(greaterThanOrEqualTo: contentView.leadingAnchor, constant: PlayerViewConstants.contentSidePadding).isActive = true
     }
 
     override func didMoveToSuperview() {

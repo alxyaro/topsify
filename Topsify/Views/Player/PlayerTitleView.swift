@@ -3,7 +3,6 @@
 import UIKit
 
 final class PlayerTitleView: UIView {
-    static let insets = NSDirectionalEdgeInsets(uniform: 10)
 
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -25,7 +24,9 @@ final class PlayerTitleView: UIView {
     private lazy var marqueeArtistsLabel = MarqueeView(artistsLabel)
 
     private let saveButton: AppIconButton = {
-        let button = AppIconButton(icon: "Icons/save", scale: 1.2, size: .uniform(24))
+        let button = AppIconButton(icon: "Icons/save", scale: 1.2, expandedTouchBoundary: .init(uniform: 12))
+        button.setContentHuggingPriority(.required, for: .horizontal)
+        button.setContentCompressionResistancePriority(.required, for: .horizontal)
         return button
     }()
 
@@ -53,7 +54,7 @@ final class PlayerTitleView: UIView {
         mainStackView.axis = .horizontal
         mainStackView.alignment = .center
         mainStackView.spacing = 20
-        mainStackView.directionalLayoutMargins = Self.insets
+        mainStackView.directionalLayoutMargins = .horizontal(PlayerViewConstants.contentSidePadding)
         mainStackView.isLayoutMarginsRelativeArrangement = true
 
         addSubview(mainStackView)

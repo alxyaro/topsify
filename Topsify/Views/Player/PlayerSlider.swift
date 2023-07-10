@@ -3,7 +3,7 @@
 import UIKit
 
 final class PlayerSlider: UIControl {
-    static let inset: CGFloat = 15
+    static let padding: CGFloat = 16
 
     private let trackView: UIView = {
         let view = UIView()
@@ -68,7 +68,7 @@ final class PlayerSlider: UIControl {
         semanticContentAttribute = .playback
 
         addSubview(trackView)
-        trackView.constrainEdgesToSuperview(withInsets: .init(uniform: Self.inset))
+        trackView.constrainEdgesToSuperview(withInsets: .init(uniform: Self.padding))
 
         trackView.addSubview(progressOverlayView)
 
@@ -84,7 +84,7 @@ final class PlayerSlider: UIControl {
 
     override func beginTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
         let offsetFromThumb = touch.location(in: thumbView)
-        let expandedThumbRegion = thumbView.bounds.expanded(by: 15)
+        let expandedThumbRegion = thumbView.bounds.expanded(by: 16)
 
         if expandedThumbRegion.contains(offsetFromThumb) {
             activeTouch = touch

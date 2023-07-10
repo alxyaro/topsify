@@ -3,8 +3,6 @@
 import UIKit
 
 final class PlayerSliderContainerView: UIView {
-    static let insets = NSDirectionalEdgeInsets(uniform: PlayerSlider.inset)
-
     private let slider = PlayerSlider()
 
     private let leadingTimeLabel: UILabel = {
@@ -33,23 +31,26 @@ final class PlayerSliderContainerView: UIView {
     }
 
     private func setupView() {
+        let extraSliderSidePadding = PlayerViewConstants.contentSidePadding - PlayerSlider.padding
+
+        addSubview(slider)
+        slider.useAutoLayout()
+        slider.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        slider.leadingAnchor.constraint(equalTo: leadingAnchor, constant: extraSliderSidePadding).isActive = true
+        slider.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -extraSliderSidePadding).isActive = true
+        slider.bottomAnchor.constraint(lessThanOrEqualTo: bottomAnchor).isActive = true
+
         let timeLabelsStackView = UIStackView(arrangedSubviews: [leadingTimeLabel, trailingTimeLabel])
         timeLabelsStackView.axis = .horizontal
         timeLabelsStackView.distribution = .equalSpacing
         timeLabelsStackView.alignment = .center
 
-        let mainStackView = UIStackView(arrangedSubviews: [
-            OverhangingView(slider, horizontalOverhang: PlayerSlider.inset),
-            timeLabelsStackView
-        ])
-        mainStackView.axis = .vertical
-        mainStackView.alignment = .fill
-        mainStackView.spacing = 3 - PlayerSlider.inset
-        mainStackView.bringSubviewToFront(slider)
-        mainStackView.directionalLayoutMargins = Self.insets
-        mainStackView.isLayoutMarginsRelativeArrangement = true
+        addSubview(timeLabelsStackView)
+        timeLabelsStackView.constrainEdges(to: slider, excluding: .vertical, withInsets: .horizontal(PlayerSlider.padding))
+        timeLabelsStackView.topAnchor.constraint(equalTo: slider.bottomAnchor, constant: 3 - PlayerSlider.padding).isActive = true
+        timeLabelsStackView.bottomAnchor.constraint(equalTo: bottomAnchor).priority(.justLessThanRequired).isActive = true
 
-        addSubview(mainStackView)
-        mainStackView.constrainEdgesToSuperview()
+        // Bring slider to front so it gets priority on touch events:
+        bringSubviewToFront(slider)
     }
 }

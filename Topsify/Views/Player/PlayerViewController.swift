@@ -4,8 +4,8 @@ import UIKit
 
 final class PlayerViewController: UIViewController {
 
-    private let topBarView = PlayerTopBarView(
-        viewModel: .init(dependencies: .live()),
+    private lazy var topBarView = PlayerTopBarView(
+        viewModel: viewModel.topBarViewModel,
         dismissButtonIcon: "Icons/chevronDown",
         showOptionsButton: true
     )
@@ -16,6 +16,7 @@ final class PlayerViewController: UIViewController {
     private lazy var titleView = PlayerTitleView(
         viewModel: viewModel.titleViewModel
     )
+    private let sliderView = PlayerSliderContainerView()
     private lazy var controlsView = PlayerControlsView(
         viewModel: viewModel.controlsViewModel
     )
@@ -77,22 +78,21 @@ final class PlayerViewController: UIViewController {
         topBarView.constrainEdges(to: view.safeAreaLayoutGuide, excluding: .bottom)
 
         let mainStackView = UIStackView(arrangedSubviews: [
-            OverhangingView(titleView, overhang: PlayerTitleView.insets),
-            OverhangingView(controlsView, overhang: PlayerControlsView.insets),
-            OverhangingView(subMenuView, overhang: PlayerSubMenuView.insets)
+            titleView,
+            sliderView,
+            controlsView,
+            subMenuView
         ])
         mainStackView.axis = .vertical
-        mainStackView.directionalLayoutMargins = .init(horizontal: 24, vertical: 16)
-        mainStackView.directionalLayoutMargins.top = 0 // to improve stage swiping
-        mainStackView.isLayoutMarginsRelativeArrangement = true
-        mainStackView.spacing = 12
-        mainStackView.setCustomSpacing(20, after: controlsView.superview ?? UIView())
+        mainStackView.spacing = 0
+        mainStackView.setCustomSpacing(12, after: titleView)
+        mainStackView.setCustomSpacing(4, after: controlsView)
 
         view.addSubview(mainStackView)
-        mainStackView.constrainEdges(to: view.safeAreaLayoutGuide, excluding: .top, withInsets: .bottom(24))
+        mainStackView.constrainEdges(to: view.safeAreaLayoutGuide, excluding: .top, withInsets: .bottom(28))
 
         stageView.addLayoutGuide(stageContentAreaLayoutGuide)
-        stageContentAreaLayoutGuide.topAnchor.constraint(equalTo: topBarView.bottomAnchor, constant: -10).isActive = true
+        stageContentAreaLayoutGuide.topAnchor.constraint(equalTo: topBarView.bottomAnchor).isActive = true
         stageContentAreaLayoutGuide.bottomAnchor.constraint(equalTo: mainStackView.topAnchor, constant: mainStackView.directionalLayoutMargins.top).isActive = true
         stageContentAreaLayoutGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         stageContentAreaLayoutGuide.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true

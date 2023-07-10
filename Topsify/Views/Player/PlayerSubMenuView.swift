@@ -3,8 +3,6 @@
 import UIKit
 
 final class PlayerSubMenuView: UIView {
-    static let insets = NSDirectionalEdgeInsets(uniform: 10)
-
     private let outputDeviceButton = createButton(icon: "Icons/devices", scale: 0.8)
     private let shareButton = createButton(icon: "Icons/share")
     private let queueButton = createButton(icon: "Icons/queue")
@@ -20,7 +18,7 @@ final class PlayerSubMenuView: UIView {
         ])
         mainStackView.axis = .horizontal
         mainStackView.spacing = 32
-        mainStackView.directionalLayoutMargins = Self.insets
+        mainStackView.directionalLayoutMargins = .init(horizontal: PlayerViewConstants.contentSidePadding, vertical: 10)
         mainStackView.isLayoutMarginsRelativeArrangement = true
 
         addSubview(mainStackView)
@@ -32,6 +30,6 @@ final class PlayerSubMenuView: UIView {
     }
 
     private static func createButton(icon: String, scale: CGFloat = 1) -> AppButton {
-        AppIconButton(icon: icon, scale: scale, expandedTouchBoundary: Self.insets.toNonDirectionalInsets())
+        AppIconButton(icon: icon, scale: scale)
     }
 }
