@@ -38,6 +38,8 @@ extension HomeViewController {
             collectionView.backgroundColor = .clear
             collectionView.dataSource = self
 
+            collectionView.registerEmptyCell()
+            collectionView.registerEmptySupplementaryView(ofKind: UICollectionView.elementKindSectionHeader)
             collectionView.register(supplementaryViewType: HomeSimpleHeaderCell.self, ofKind: UICollectionView.elementKindSectionHeader)
             collectionView.register(supplementaryViewType: HomeArtistHeaderCell.self, ofKind: UICollectionView.elementKindSectionHeader)
             collectionView.register(cellType: ContentTileCell.self)
@@ -139,7 +141,7 @@ extension HomeViewController.CollectionManager: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         guard let section = sections[safe: indexPath.section] else {
-            return collectionView.dequeueEmptyCell(for: indexPath)
+            return collectionView.dequeueEmptySupplementaryView(ofKind: kind, for: indexPath)
         }
         switch section {
         case let .generic(title, _):
@@ -151,7 +153,7 @@ extension HomeViewController.CollectionManager: UICollectionViewDataSource {
             cell.configure(with: headerViewModel)
             return cell
         case .recentActivity:
-            return collectionView.dequeueEmptyCell(for: indexPath)
+            return collectionView.dequeueEmptySupplementaryView(ofKind: kind, for: indexPath)
         }
     }
 }

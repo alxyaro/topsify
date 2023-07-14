@@ -49,6 +49,7 @@ final class PlayerStageView: AppCollectionView {
         delegate = self
         dataSource = self
 
+        registerEmptyCell()
         register(cellType: PlayerStageBasicItemCell.self)
 
         bindViewModel()

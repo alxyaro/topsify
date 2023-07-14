@@ -24,6 +24,7 @@ final class PlayBarDetailsView: UIView {
         collectionView.isPagingEnabled = true
         collectionView.dataSource = self
         collectionView.delegate = self
+        collectionView.registerEmptyCell()
         collectionView.register(cellType: PlayBarDetailsCell.self)
         return collectionView
     }()
