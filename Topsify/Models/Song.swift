@@ -14,6 +14,7 @@ struct Song: Identifiable, Equatable {
     let imageURL: URL
     let title: String
     let accentColorHex: String
+    let isExplicit: Bool
 }
 
 extension Song {

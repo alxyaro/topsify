@@ -72,7 +72,8 @@ public final class TestSubscriber<Output, Failure: Error>: Subscriber {
 
 extension TestSubscriber {
 
-    public static func subscribe<P: Publisher<Output, Failure>>(to publisher: P) -> TestSubscriber<Output, Failure> {
+    // Using "any" instead of "some" as the IDE encounters an internal error when auto-completing this call...
+    public static func subscribe(to publisher: any Publisher<Output, Failure>) -> TestSubscriber<Output, Failure> {
         let subscriber = TestSubscriber<Output, Failure>()
         publisher.subscribe(subscriber)
         return subscriber

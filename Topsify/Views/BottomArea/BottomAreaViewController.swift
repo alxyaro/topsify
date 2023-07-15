@@ -86,8 +86,6 @@ final class BottomAreaViewController: UITabBarController {
     }
 
     private func setUpViews() {
-        gradientView.isUserInteractionEnabled = false
-
         view.addSubview(gradientView)
         gradientView.constrainEdgesToSuperview(excluding: .top)
         gradientView.heightAnchor.constraint(equalToConstant: 220).isActive = true

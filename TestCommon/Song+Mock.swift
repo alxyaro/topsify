@@ -10,7 +10,8 @@ extension Song {
         albumID: UUID? = .init(),
         imageURL: URL = .imageMockWithRandomID(),
         title: String = "Test Song",
-        accentColorHex: String = "#0011ee"
+        accentColorHex: String = "#0011ee",
+        isExplicit: Bool = false
     ) -> Self {
         .init(
             id: .init(),
@@ -18,7 +19,8 @@ extension Song {
             albumID: albumID,
             imageURL: imageURL,
             title: title,
-            accentColorHex: accentColorHex
+            accentColorHex: accentColorHex,
+            isExplicit: isExplicit
         )
     }
 }

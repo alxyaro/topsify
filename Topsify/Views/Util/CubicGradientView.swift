@@ -12,6 +12,7 @@ final class CubicGradientView: UIView {
 
         contentMode = .redraw
         backgroundColor = .clear
+        isUserInteractionEnabled = false
     }
 
     @available(*, unavailable)
