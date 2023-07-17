@@ -10,6 +10,7 @@ final class SongListCell: UICollectionViewListCell, Reusable {
         label.textColor = .appTextPrimary
         label.font = .appFont(ofSize: 15)
         label.numberOfLines = 1
+        label.requireExactHeight()
         return label
     }()
 
@@ -20,6 +21,7 @@ final class SongListCell: UICollectionViewListCell, Reusable {
         label.textColor = .appTextSecondary
         label.font = .appFont(ofSize: 13)
         label.numberOfLines = 1
+        label.requireExactHeight()
         return label
     }()
 
@@ -34,7 +36,7 @@ final class SongListCell: UICollectionViewListCell, Reusable {
     }
 
     private func setUpView() {
-        backgroundConfiguration?.backgroundColor = .clear
+        backgroundConfiguration = .clear()
 
         let subtitleStackView = UIStackView(arrangedSubviews: [explicitLabelView, subtitleLabel])
         subtitleStackView.axis = .horizontal
@@ -46,12 +48,21 @@ final class SongListCell: UICollectionViewListCell, Reusable {
         mainStackView.spacing = 4
 
         contentView.addSubview(mainStackView)
-        mainStackView.constrainEdgesToSuperview(withInsets: .init(horizontal: 16, vertical: 12), withPriorities: .forCellSizing)
+        mainStackView.useAutoLayout()
+        mainStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16).isActive = true
+        mainStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16).fixCellConstraintErrors().isActive = true
+        mainStackView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
+        mainStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12).priority(.justLessThanRequired).isActive = true
 
         accessories = [
             .multiselect(displayed: .whenEditing),
             .reorder(displayed: .whenEditing)
         ]
+    }
+
+    override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
+        super.apply(layoutAttributes)
+        layer.zPosition = CGFloat(layoutAttributes.zIndex)
     }
 
     override func prepareForReuse() {
@@ -68,5 +79,14 @@ final class SongListCell: UICollectionViewListCell, Reusable {
         titleLabel.text = outputs.title
         subtitleLabel.text = outputs.subtitle
         explicitLabelView.isHidden = !outputs.isExplicitLabelVisible
+    }
+
+    static func computePreferredHeight() -> CGFloat {
+        let sampleCell = SongListCell(frame: .zero)
+        sampleCell.titleLabel.text = "Title"
+        sampleCell.subtitleLabel.text = "Subtitle"
+        sampleCell.explicitLabelView.isHidden = false
+        let size = sampleCell.systemLayoutSizeFitting(.init(width: 400, height: 0), withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
+        return size.height
     }
 }

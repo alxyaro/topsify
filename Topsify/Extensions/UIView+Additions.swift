@@ -108,6 +108,21 @@ extension UIView {
     func constrainDimensions(uniform value: CGFloat) {
         constrainDimensions(width: value, height: value)
     }
+
+    func requireExactWidth() {
+        setContentHuggingPriority(.required, for: .horizontal)
+        setContentCompressionResistancePriority(.required, for: .horizontal)
+    }
+
+    func requireExactHeight() {
+        setContentHuggingPriority(.required, for: .vertical)
+        setContentCompressionResistancePriority(.required, for: .vertical)
+    }
+
+    func requireExactContentSize() {
+        requireExactWidth()
+        requireExactHeight()
+    }
 }
 
 struct EdgeSet: OptionSet {

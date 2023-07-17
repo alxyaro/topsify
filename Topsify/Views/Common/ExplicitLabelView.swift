@@ -29,10 +29,7 @@ final class ExplicitLabelView: UIView {
         addSubview(view)
         view.constrainEdgesToSuperview()
 
-        setContentHuggingPriority(.required, for: .horizontal)
-        setContentHuggingPriority(.required, for: .vertical)
-        setContentCompressionResistancePriority(.required, for: .horizontal)
-        setContentCompressionResistancePriority(.required, for: .vertical)
+        requireExactContentSize()
     }
 
     required init?(coder: NSCoder) {

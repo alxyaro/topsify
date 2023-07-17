@@ -3,7 +3,19 @@
 import Reusable
 import UIKit
 
-class EmptyCollectionViewCell: UICollectionViewCell, Reusable {}
+class EmptyCollectionViewCell: UICollectionViewCell, Reusable {
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        contentView.widthAnchor.constraint(equalToConstant: 0).priority(.justLessThanRequired).isActive = true
+        contentView.heightAnchor.constraint(equalToConstant: 0).priority(.justLessThanRequired).isActive = true
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
 
 extension UICollectionView {
 

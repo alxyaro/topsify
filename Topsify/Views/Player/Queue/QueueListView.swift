@@ -16,46 +16,22 @@ final class QueueListView: UIView {
             snapshot.sectionIdentifiers[safe: indexPath.section]
         }
 
-        func headerIndexPath(for snapshot: DataSnapshot) -> IndexPath? {
+        func index(for snapshot: DataSnapshot) -> Int? {
             guard let sectionIndex = snapshot.sectionIdentifiers.firstIndex(of: self) else {
                 return nil
             }
-            return .init(item: 0, section: sectionIndex)
+            return sectionIndex
         }
     }
 
-    private let collectionViewLayout: UICollectionViewCompositionalLayout = {
-        return .init(
-            sectionProvider: { _, layoutEnvironment in
-
-                var config = UICollectionLayoutListConfiguration(appearance: .plain)
-                config.headerMode = .none
-                config.backgroundColor = .clear
-                config.showsSeparators = false
-
-                let section = NSCollectionLayoutSection.list(using: config, layoutEnvironment: layoutEnvironment)
-
-                let header = NSCollectionLayoutBoundarySupplementaryItem(
-                    layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(40)),
-                    elementKind: UICollectionView.elementKindSectionHeader,
-                    alignment: .top
-                )
-                header.pinToVisibleBounds = true
-                section.boundarySupplementaryItems = [header]
-                section.contentInsets.top = 0
-                section.contentInsets.bottom = 24
-
-                return section
-            },
-            configuration: .init()
-        )
-    }()
+    private let collectionViewLayout = QueueListLayout()
 
     private lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
 
         collectionView.backgroundColor = .clear
         collectionView.isEditing = true
+        collectionView.delegate = self
 
         collectionView.registerEmptyCell()
         collectionView.registerEmptySupplementaryView(ofKind: UICollectionView.elementKindSectionHeader)
@@ -108,6 +84,8 @@ final class QueueListView: UIView {
             return collectionView.dequeueEmptySupplementaryView(ofKind: elementKind, for: indexPath)
         }
 
+        dataSource.reorderingHandlers.canReorderItem = { _ in true }
+
         return dataSource
     }()
 
@@ -148,8 +126,10 @@ final class QueueListView: UIView {
                     snapshot.appendSections([.nowPlaying])
                     snapshot.appendItems([nowPlaying.id])
                 }
+                /// The "Next in Queue" section is always present, so as to allow users to interactively move items into it.
+                /// The custom layout object itself hides the header of the section if there are no items in it.
+                snapshot.appendSections([.nextInQueue])
                 if !content.nextInQueue.isEmpty {
-                    snapshot.appendSections([.nextInQueue])
                     snapshot.appendItems(content.nextInQueue.map(\.id))
                 }
                 if !content.nextFromSource.isEmpty {
@@ -189,10 +169,10 @@ final class QueueListView: UIView {
 
     private func updateNextFromSourceHeaderText() {
         guard
-            let nextFromSourceHeaderIndexPath = Section.nextFromSource.headerIndexPath(for: dataSource.snapshot()),
+            let nextFromSourceSectionIndex = Section.nextFromSource.index(for: dataSource.snapshot()),
             let headerView = collectionView.supplementaryView(
                 forElementKind: UICollectionView.elementKindSectionHeader,
-                at: nextFromSourceHeaderIndexPath
+                at: IndexPath(item: 0, section: nextFromSourceSectionIndex)
             ) as? QueueListHeaderView
         else {
             return
@@ -200,4 +180,21 @@ final class QueueListView: UIView {
 
         headerView.configure(withText: headerText(for: .nextFromSource))
     }
+}
+
+extension QueueListView: UICollectionViewDelegate {
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        targetIndexPathForMoveOfItemFromOriginalIndexPath originalIndexPath: IndexPath,
+        atCurrentIndexPath currentIndexPath: IndexPath,
+        toProposedIndexPath proposedIndexPath: IndexPath
+    ) -> IndexPath {
+        // Prevent moving any items to the "Now Playing" section (first section):
+        if proposedIndexPath.section == Section.nowPlaying.index(for: dataSource.snapshot()) {
+            return currentIndexPath
+        }
+        return proposedIndexPath
+    }
+
 }
