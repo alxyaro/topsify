@@ -5,8 +5,6 @@ import UIKit
 
 final class QueueListView: UIView {
 
-    private typealias DataSnapshot = NSDiffableDataSourceSnapshot<Section, AnyHashable>
-
     private enum Section: Int, CaseIterable, Hashable {
         case nowPlaying = 0
         case nextInQueue
@@ -20,6 +18,15 @@ final class QueueListView: UIView {
             rawValue
         }
     }
+
+    /// A type of combined properties that make up a unique item in the collection view.
+    private struct ItemID: Hashable {
+        let id: UUID
+        let isActiveItem: Bool
+    }
+
+    private typealias DataSource = UICollectionViewDiffableDataSource<Section, ItemID>
+    private typealias DataSnapshot = NSDiffableDataSourceSnapshot<Section, ItemID>
 
     private let collectionViewLayout = QueueListLayout()
 
@@ -40,8 +47,8 @@ final class QueueListView: UIView {
         return collectionView
     }()
 
-    private lazy var dataSource: UICollectionViewDiffableDataSource<Section, AnyHashable> = {
-        let dataSource = UICollectionViewDiffableDataSource<Section, AnyHashable>(collectionView: collectionView) { [weak self] collectionView, indexPath, itemIdentifier in
+    private lazy var dataSource: DataSource = {
+        let dataSource = DataSource(collectionView: collectionView) { [weak self] collectionView, indexPath, itemIdentifier in
             guard let self, let content else {
                 return collectionView.dequeueEmptyCell(for: indexPath)
             }
@@ -124,13 +131,13 @@ final class QueueListView: UIView {
                 snapshot.appendSections(Section.allCases)
 
                 if let nowPlaying = content.nowPlaying {
-                    snapshot.appendItems([nowPlaying.id], toSection: .nowPlaying)
+                    snapshot.appendItems([ItemID(id: nowPlaying.id, isActiveItem: true)], toSection: .nowPlaying)
                 }
                 if !content.nextInQueue.isEmpty {
-                    snapshot.appendItems(content.nextInQueue.map(\.id), toSection: .nextInQueue)
+                    snapshot.appendItems(content.nextInQueue.map { ItemID(id: $0.id, isActiveItem: false) }, toSection: .nextInQueue)
                 }
                 if !content.nextFromSource.isEmpty {
-                    snapshot.appendItems(content.nextFromSource.map(\.id), toSection: .nextFromSource)
+                    snapshot.appendItems(content.nextFromSource.map { ItemID(id: $0.id, isActiveItem: false) }, toSection: .nextFromSource)
                 }
                 dataSource.apply(snapshot)
             }
@@ -185,8 +192,10 @@ extension QueueListView: UICollectionViewDelegate {
         atCurrentIndexPath currentIndexPath: IndexPath,
         toProposedIndexPath proposedIndexPath: IndexPath
     ) -> IndexPath {
-        // Prevent moving any items to the "Now Playing" section (first section):
-        if proposedIndexPath.section == Section.nowPlaying.index {
+        // Prevent moving any items to or from the "Now Playing" section (first section):
+        let isMovingFromNowPlayingSection = currentIndexPath.section == Section.nowPlaying.index
+        let isMovingToNowPlayingSection = proposedIndexPath.section == Section.nowPlaying.index
+        if isMovingFromNowPlayingSection || isMovingToNowPlayingSection {
             return currentIndexPath
         }
         return proposedIndexPath
