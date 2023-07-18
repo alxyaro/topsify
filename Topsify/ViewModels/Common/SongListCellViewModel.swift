@@ -11,6 +11,7 @@ final class SongListCellViewModel {
 
     func outputs() -> Outputs {
         return Outputs(
+            artworkURL: song.imageURL,
             title: song.title,
             subtitle: song.artists.map(\.name).commaJoined(),
             isExplicitLabelVisible: song.isExplicit
@@ -23,6 +24,7 @@ final class SongListCellViewModel {
 extension SongListCellViewModel {
 
     struct Outputs {
+        let artworkURL: URL
         let title: String
         let subtitle: String
         let isExplicitLabelVisible: Bool

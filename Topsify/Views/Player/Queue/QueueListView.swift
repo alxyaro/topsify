@@ -70,7 +70,10 @@ final class QueueListView: UIView {
             }
 
             let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: SongListCell.self)
-            cell.configure(with: viewModel)
+            cell.configure(
+                with: viewModel,
+                options: indexPath.section == Section.nowPlaying.index ? .init(showThumbnail: true) : .init(includeEditingAccessories: true)
+            )
             return cell
         }
 
