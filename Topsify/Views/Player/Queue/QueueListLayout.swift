@@ -6,15 +6,15 @@ final class QueueListLayout: UICollectionViewCompositionalLayout {
     private static let queueSectionIndex = 1
     private static let upNextSectionIndex = 2
 
-    private class LayoutState {
-        var isQueueSectionActive: Bool = false
+    private class CollectionState {
+        var emptySectionIndices = Set<Int>()
     }
 
-    private let layoutState: LayoutState
+    private let collectionState: CollectionState
 
     init() {
-        let layoutState = LayoutState()
-        self.layoutState = layoutState
+        let collectionState = CollectionState()
+        self.collectionState = collectionState
         super.init(
             sectionProvider: { sectionIndex, layoutEnvironment in
 
@@ -31,20 +31,26 @@ final class QueueListLayout: UICollectionViewCompositionalLayout {
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitems: [item])
                 let section = NSCollectionLayoutSection(group: group)
 
+                let headerSize = NSCollectionLayoutSize(
+                    widthDimension: .fractionalWidth(1),
+                    heightDimension: .absolute(QueueListHeaderView.computePreferredHeight())
+                )
                 let header = NSCollectionLayoutBoundarySupplementaryItem(
-                    layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(40)),
+                    layoutSize: headerSize,
                     elementKind: UICollectionView.elementKindSectionHeader,
                     alignment: .top
                 )
                 header.pinToVisibleBounds = true
 
-                let hideSection = sectionIndex == Self.queueSectionIndex && !layoutState.isQueueSectionActive
+                let isSectionEmpty = collectionState.emptySectionIndices.contains(sectionIndex)
 
-                if hideSection {
-                    section.contentInsets.bottom = 16
-                } else {
+                if !isSectionEmpty {
                     section.boundarySupplementaryItems = [header]
                     section.contentInsets.top = 0
+                    section.contentInsets.bottom = 20
+                } else if sectionIndex == Self.queueSectionIndex {
+                    /// Give the queue section a little bit of extra height when empty, as to make the interactive move into this
+                    /// empty section a little easier (the drag will be easier to control and more predictable).
                     section.contentInsets.bottom = 24
                 }
 
@@ -60,11 +66,16 @@ final class QueueListLayout: UICollectionViewCompositionalLayout {
 
     override func invalidateLayout(with context: UICollectionViewLayoutInvalidationContext) {
 
-        if let collectionView, collectionView.numberOfSections >= Self.upNextSectionIndex {
-            let movingIntoQueueSection = (context.targetIndexPathsForInteractivelyMovingItems ?? []).contains { $0.section == Self.queueSectionIndex }
-            let queueSectionHasItems = collectionView.numberOfItems(inSection: Self.queueSectionIndex) > 0
+        collectionState.emptySectionIndices = .init()
 
-            layoutState.isQueueSectionActive = queueSectionHasItems || movingIntoQueueSection
+        if let collectionView {
+            for sectionIndex in 0..<collectionView.numberOfSections {
+                let sectionIsEmpty = collectionView.numberOfItems(inSection: sectionIndex) == 0
+                let movingItemIntoSection = (context.targetIndexPathsForInteractivelyMovingItems ?? []).contains { $0.section == sectionIndex }
+                if sectionIsEmpty && !movingItemIntoSection {
+                    collectionState.emptySectionIndices.insert(sectionIndex)
+                }
+            }
         }
 
         super.invalidateLayout(with: context)

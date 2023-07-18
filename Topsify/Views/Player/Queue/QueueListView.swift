@@ -7,20 +7,17 @@ final class QueueListView: UIView {
 
     private typealias DataSnapshot = NSDiffableDataSourceSnapshot<Section, AnyHashable>
 
-    private enum Section: Hashable {
-        case nowPlaying
+    private enum Section: Int, CaseIterable, Hashable {
+        case nowPlaying = 0
         case nextInQueue
         case nextFromSource
 
-        static func from(indexPath: IndexPath, for snapshot: DataSnapshot) -> Self? {
-            snapshot.sectionIdentifiers[safe: indexPath.section]
+        static func from(indexPath: IndexPath) -> Self? {
+            Section(rawValue: indexPath.section)
         }
 
-        func index(for snapshot: DataSnapshot) -> Int? {
-            guard let sectionIndex = snapshot.sectionIdentifiers.firstIndex(of: self) else {
-                return nil
-            }
-            return sectionIndex
+        var index: Int {
+            rawValue
         }
     }
 
@@ -50,7 +47,7 @@ final class QueueListView: UIView {
             }
 
             var viewModel: SongListCellViewModel?
-            switch Section.from(indexPath: indexPath, for: self.dataSource.snapshot()) {
+            switch Section.from(indexPath: indexPath) {
             case .nowPlaying:
                 viewModel = content.nowPlaying?.viewModel
             case .nextInQueue:
@@ -71,7 +68,7 @@ final class QueueListView: UIView {
         }
 
         dataSource.supplementaryViewProvider = { [weak self] collectionView, elementKind, indexPath in
-            guard let self, let section = Section.from(indexPath: indexPath, for: self.dataSource.snapshot()) else {
+            guard let self, let section = Section.from(indexPath: indexPath) else {
                 return collectionView.dequeueEmptySupplementaryView(ofKind: elementKind, for: indexPath)
             }
 
@@ -122,19 +119,18 @@ final class QueueListView: UIView {
                 self.content = content
 
                 var snapshot = DataSnapshot()
+                /// All sections must always be present to ensure section indices remain stable.
+                /// The custom layout object will hide the header of an empty section.
+                snapshot.appendSections(Section.allCases)
+
                 if let nowPlaying = content.nowPlaying {
-                    snapshot.appendSections([.nowPlaying])
-                    snapshot.appendItems([nowPlaying.id])
+                    snapshot.appendItems([nowPlaying.id], toSection: .nowPlaying)
                 }
-                /// The "Next in Queue" section is always present, so as to allow users to interactively move items into it.
-                /// The custom layout object itself hides the header of the section if there are no items in it.
-                snapshot.appendSections([.nextInQueue])
                 if !content.nextInQueue.isEmpty {
-                    snapshot.appendItems(content.nextInQueue.map(\.id))
+                    snapshot.appendItems(content.nextInQueue.map(\.id), toSection: .nextInQueue)
                 }
                 if !content.nextFromSource.isEmpty {
-                    snapshot.appendSections([.nextFromSource])
-                    snapshot.appendItems(content.nextFromSource.map(\.id))
+                    snapshot.appendItems(content.nextFromSource.map(\.id), toSection: .nextFromSource)
                 }
                 dataSource.apply(snapshot)
             }
@@ -169,10 +165,9 @@ final class QueueListView: UIView {
 
     private func updateNextFromSourceHeaderText() {
         guard
-            let nextFromSourceSectionIndex = Section.nextFromSource.index(for: dataSource.snapshot()),
             let headerView = collectionView.supplementaryView(
                 forElementKind: UICollectionView.elementKindSectionHeader,
-                at: IndexPath(item: 0, section: nextFromSourceSectionIndex)
+                at: IndexPath(item: 0, section: Section.nextFromSource.index)
             ) as? QueueListHeaderView
         else {
             return
@@ -191,7 +186,7 @@ extension QueueListView: UICollectionViewDelegate {
         toProposedIndexPath proposedIndexPath: IndexPath
     ) -> IndexPath {
         // Prevent moving any items to the "Now Playing" section (first section):
-        if proposedIndexPath.section == Section.nowPlaying.index(for: dataSource.snapshot()) {
+        if proposedIndexPath.section == Section.nowPlaying.index {
             return currentIndexPath
         }
         return proposedIndexPath

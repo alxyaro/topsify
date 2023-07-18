@@ -19,7 +19,7 @@ final class QueueListHeaderView: UICollectionReusableView, Reusable {
         backgroundColor = .appBackground
 
         addSubview(headerLabel)
-        headerLabel.constrainEdgesToSuperview(withInsets: .init(top: 8, leading: 16, bottom: 12, trailing: 8), withPriorities: .forCellSizing)
+        headerLabel.constrainEdgesToSuperview(withInsets: .init(top: 8, leading: 16, bottom: 8, trailing: 8), withPriorities: .forCellSizing)
     }
 
     required init?(coder: NSCoder) {
@@ -39,5 +39,12 @@ final class QueueListHeaderView: UICollectionReusableView, Reusable {
         // On the simulator, regular cells are above the header for some
         // reason, this prevents that:
         layer.zPosition = 2
+    }
+
+    static func computePreferredHeight() -> CGFloat {
+        let sampleView = QueueListHeaderView(frame: .zero)
+        sampleView.headerLabel.text = "Header"
+        let size = sampleView.systemLayoutSizeFitting(.init(width: 400, height: 0), withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
+        return size.height
     }
 }
