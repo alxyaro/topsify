@@ -81,53 +81,58 @@ final class QueueListLayout: UICollectionViewCompositionalLayout {
         super.invalidateLayout(with: context)
     }
 
-    override func targetIndexPath(forInteractivelyMovingItem previousIndexPath: IndexPath, withPosition position: CGPoint) -> IndexPath {
+    override func targetIndexPath(forInteractivelyMovingItem currentIndexPath: IndexPath, withPosition position: CGPoint) -> IndexPath {
         /// For some reason, if you drag your finger far left and try moving up and down, the layout will fail to
         /// find a new IndexPath. Setting the x position to zero prevents that.
         var position = position
         position.x = 0
-        let targetIndexPath = super.targetIndexPath(forInteractivelyMovingItem: previousIndexPath, withPosition: position)
+        let targetIndexPath = super.targetIndexPath(forInteractivelyMovingItem: currentIndexPath, withPosition: position)
 
-        let upNextSectionHeaderAttributes = layoutAttributesForSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, at: .init(item: 0, section: Self.upNextSectionIndex))
-        let attributesForMovingItem = layoutAttributesForItem(at: targetIndexPath)
+        var upNextSectionBoundaryPosition: CGFloat?
+        if let firstItemInUpNextSectionAttributes = layoutAttributesForItem(at: IndexPath(item: 0, section: Self.upNextSectionIndex)) {
+            upNextSectionBoundaryPosition = firstItemInUpNextSectionAttributes.frame.minY - 20
+        }
+        let attributesForTargetIndexPath = layoutAttributesForItem(at: targetIndexPath)
 
         // The code below enables easy and precise dragging between the
         // queue & upNext sections, even if there are no items in either of them.
 
         func shouldMoveToUpNextSection() -> Bool {
-            if let upNextSectionHeaderAttributes,
-               position.y > upNextSectionHeaderAttributes.frame.minY
+            if let upNextSectionBoundaryPosition,
+               position.y > upNextSectionBoundaryPosition
             { return true }
 
             if
                 collectionView?.numberOfItems(inSection: Self.queueSectionIndex) == 1,
                 targetIndexPath == IndexPath(item: 0, section: Self.queueSectionIndex),
-                let attributesForMovingItem,
-                position.y - attributesForMovingItem.frame.midY >= 15
+                let attributesForTargetIndexPath,
+                position.y - attributesForTargetIndexPath.frame.midY >= 15
             { return true }
 
             return false
         }
 
         func shouldMoveToQueueSection() -> Bool {
-            if let upNextSectionHeaderAttributes,
-               position.y < upNextSectionHeaderAttributes.frame.maxY
+            if let upNextSectionBoundaryPosition,
+               position.y < upNextSectionBoundaryPosition
             { return true}
 
             if
                 collectionView?.numberOfItems(inSection: Self.queueSectionIndex) == 0,
                 targetIndexPath == IndexPath(item: 0, section: Self.upNextSectionIndex),
-                let attributesForMovingItem,
-                attributesForMovingItem.frame.midY - position.y >= 15
+                let attributesForTargetIndexPath,
+                attributesForTargetIndexPath.frame.midY - position.y >= 15
             { return true }
 
             return false
         }
 
-        if targetIndexPath.section < Self.upNextSectionIndex && shouldMoveToUpNextSection() {
+        if currentIndexPath.section < Self.upNextSectionIndex && targetIndexPath.section < Self.upNextSectionIndex && shouldMoveToUpNextSection() {
             return IndexPath(item: 0, section: Self.upNextSectionIndex)
         }
-        if targetIndexPath.section > Self.queueSectionIndex && shouldMoveToQueueSection() {
+        /// The `currentIndexPath` check is very important here; the item may already be in the queue section, and if we assume its not
+        /// and try to move it there again, the `numberOfItems` call will include the moving item, and so we'll get an off-by-one index error.
+        if currentIndexPath.section > Self.queueSectionIndex && targetIndexPath.section > Self.queueSectionIndex && shouldMoveToQueueSection() {
             return IndexPath(item: collectionView?.numberOfItems(inSection: Self.queueSectionIndex) ?? 0, section: Self.queueSectionIndex)
         }
 
