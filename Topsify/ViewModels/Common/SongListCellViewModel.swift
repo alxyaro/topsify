@@ -1,20 +1,37 @@
 // Created by Alex Yaro on 2023-07-11.
 
+import Combine
 import Foundation
 
 final class SongListCellViewModel {
     private let song: Song
+    private let optionsButtonState: ButtonState
 
-    init(song: Song) {
+    private var disposeBag = DisposeBag()
+
+    init(
+        song: Song,
+        optionsButtonState: ButtonState = .hidden
+    ) {
         self.song = song
+        self.optionsButtonState = optionsButtonState
     }
 
-    func outputs() -> Outputs {
+    func bind(inputs: Inputs) -> Outputs {
+        disposeBag = .init()
+
+        if case .shown(let tapHandler) = optionsButtonState {
+            inputs.tappedOptionsButton
+                .sink(receiveValue: tapHandler)
+                .store(in: &disposeBag)
+        }
+
         return Outputs(
             artworkURL: song.imageURL,
             title: song.title,
             subtitle: song.artists.map(\.name).commaJoined(),
-            isExplicitLabelVisible: song.isExplicit
+            showExplicitLabel: song.isExplicit,
+            showOptionsButton: optionsButtonState.isShown
         )
     }
 }
@@ -23,10 +40,27 @@ final class SongListCellViewModel {
 
 extension SongListCellViewModel {
 
+    struct Inputs {
+        let tappedOptionsButton: AnyPublisher<Void, Never>
+    }
+
     struct Outputs {
         let artworkURL: URL
         let title: String
         let subtitle: String
-        let isExplicitLabelVisible: Bool
+        let showExplicitLabel: Bool
+        let showOptionsButton: Bool
+    }
+
+    enum ButtonState {
+        case hidden
+        case shown(tapHandler: () -> Void)
+
+        var isShown: Bool {
+            switch self {
+            case .shown: return true
+            default: return false
+            }
+        }
     }
 }

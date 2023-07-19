@@ -99,6 +99,16 @@ extension UIView {
         constrainInCenter(of: superview)
     }
 
+    func constrainWidth(to width: CGFloat) {
+        useAutoLayout()
+        widthAnchor.constraint(equalToConstant: width).isActive = true
+    }
+
+    func constrainHeight(to height: CGFloat) {
+        useAutoLayout()
+        heightAnchor.constraint(equalToConstant: height).isActive = true
+    }
+
     func constrainDimensions(width: CGFloat, height: CGFloat) {
         useAutoLayout()
         widthAnchor.constraint(equalToConstant: width).isActive = true
@@ -109,19 +119,19 @@ extension UIView {
         constrainDimensions(width: value, height: value)
     }
 
-    func requireExactWidth() {
+    func requireIntrinsicWidth() {
         setContentHuggingPriority(.required, for: .horizontal)
         setContentCompressionResistancePriority(.required, for: .horizontal)
     }
 
-    func requireExactHeight() {
+    func requireIntrinsicHeight() {
         setContentHuggingPriority(.required, for: .vertical)
         setContentCompressionResistancePriority(.required, for: .vertical)
     }
 
-    func requireExactContentSize() {
-        requireExactWidth()
-        requireExactHeight()
+    func requireIntrinsicDimensions() {
+        requireIntrinsicWidth()
+        requireIntrinsicHeight()
     }
 }
 

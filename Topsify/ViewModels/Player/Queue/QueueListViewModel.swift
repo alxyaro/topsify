@@ -19,9 +19,16 @@ final class QueueListViewModel {
             content: playbackQueue.state
                 .map { state in
                     Content(
-                        nowPlaying: state.activeItem.map { ListItem(id: $0.id, viewModel: .init(song: $0.song)) },
-                        nextInQueue: state.userQueue.map { ListItem(id: $0.id, viewModel: .init(song: $0.song)) },
-                        nextFromSource: state.upNext.prefix(100).map { ListItem(id: $0.id, viewModel: .init(song: $0.song)) }
+                        nowPlaying: state.activeItem.map {
+                            ListItem.from(
+                                $0,
+                                optionsButtonState: .shown {
+                                    // TODO: handle options button tap
+                                }
+                            )
+                        },
+                        nextInQueue: state.userQueue.map { ListItem.from($0) },
+                        nextFromSource: state.upNext.prefix(100).map { ListItem.from($0) }
                     )
                 }
                 .eraseToAnyPublisher(),
@@ -58,6 +65,19 @@ extension QueueListViewModel {
     struct ListItem: Identifiable {
         let id: UUID
         let viewModel: SongListCellViewModel
+
+        static func from(
+            _ playbackQueueItem: PlaybackQueueItem,
+            optionsButtonState: SongListCellViewModel.ButtonState = .hidden
+        ) -> Self {
+            .init(
+                id: playbackQueueItem.id,
+                viewModel: .init(
+                    song: playbackQueueItem.song,
+                    optionsButtonState: optionsButtonState
+                )
+            )
+        }
     }
 }
 

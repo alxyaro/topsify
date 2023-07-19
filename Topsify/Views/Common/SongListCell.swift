@@ -9,6 +9,13 @@ final class SongListCell: UICollectionViewListCell, Reusable {
 
     private let thumbnailView = ThumbnailView()
 
+    private let optionsButton: AppIconButton = {
+        let button = AppIconButton(icon: "Icons/options", scale: 0.9)
+        button.tintColor = .appTextSecondary
+        button.constrainHeight(to: 30)
+        return button
+    }()
+
     struct Options {
         var showThumbnail = false
         var includeEditingAccessories = false
@@ -19,7 +26,7 @@ final class SongListCell: UICollectionViewListCell, Reusable {
         label.textColor = .appTextPrimary
         label.font = .appFont(ofSize: 15)
         label.numberOfLines = 1
-        label.requireExactHeight()
+        label.requireIntrinsicHeight()
         return label
     }()
 
@@ -30,7 +37,7 @@ final class SongListCell: UICollectionViewListCell, Reusable {
         label.textColor = .appTextSecondary
         label.font = .appFont(ofSize: 13)
         label.numberOfLines = 1
-        label.requireExactHeight()
+        label.requireIntrinsicHeight()
         return label
     }()
 
@@ -57,7 +64,7 @@ final class SongListCell: UICollectionViewListCell, Reusable {
         titleStackView.axis = .vertical
         titleStackView.spacing = 4
 
-        let mainStackView = UIStackView(arrangedSubviews: [thumbnailView, titleStackView])
+        let mainStackView = UIStackView(arrangedSubviews: [thumbnailView, titleStackView, optionsButton])
         mainStackView.axis = .horizontal
         mainStackView.spacing = 12
         mainStackView.alignment = .center
@@ -87,11 +94,14 @@ final class SongListCell: UICollectionViewListCell, Reusable {
     func configure(with viewModel: SongListCellViewModel, options: Options = .init()) {
         directionalLayoutMargins = .horizontal(16)
 
-        let outputs = viewModel.outputs()
+        let outputs = viewModel.bind(inputs: .init(
+            tappedOptionsButton: optionsButton.tapPublisher
+        ))
 
         titleLabel.text = outputs.title
         subtitleLabel.text = outputs.subtitle
-        explicitLabelView.isHidden = !outputs.isExplicitLabelVisible
+        explicitLabelView.isHidden = !outputs.showExplicitLabel
+        optionsButton.isHidden = !outputs.showOptionsButton
 
         if options.showThumbnail {
             thumbnailView.isHidden = false

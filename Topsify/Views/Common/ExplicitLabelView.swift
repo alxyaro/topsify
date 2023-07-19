@@ -29,7 +29,7 @@ final class ExplicitLabelView: UIView {
         addSubview(view)
         view.constrainEdgesToSuperview()
 
-        requireExactContentSize()
+        requireIntrinsicDimensions()
     }
 
     required init?(coder: NSCoder) {

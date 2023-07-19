@@ -46,6 +46,8 @@ final class AppIconButton: AppButton {
         contentView.addSubview(iconImageView)
         iconImageView.constrainInCenterOfSuperview()
 
+        requireIntrinsicDimensions()
+
         updateIcon()
     }
 
@@ -74,11 +76,6 @@ final class AppIconButton: AppButton {
 
 private class IconImageView: UIImageView {
     var scale: CGFloat = 0
-
-    override func invalidateIntrinsicContentSize() {
-        super.invalidateIntrinsicContentSize()
-        superview?.invalidateIntrinsicContentSize()
-    }
 
     override var intrinsicContentSize: CGSize {
         var size = super.intrinsicContentSize
