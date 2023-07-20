@@ -5,7 +5,7 @@ import Foundation
 struct PlaybackQueueItem: Identifiable, Equatable {
     let id: UUID
     let song: Song
-    let isUserQueueItem: Bool
+    var isUserQueueItem: Bool
 
     init(id: UUID = .init(), song: Song, isUserQueueItem: Bool = false) {
         self.id = id

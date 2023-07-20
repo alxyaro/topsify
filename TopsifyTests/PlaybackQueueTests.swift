@@ -34,6 +34,8 @@ final class PlaybackQueueTests: XCTestCase {
         XCTAssertEqual(hasNextItem.pollValues(), [false])
     }
 
+    // MARK: - load(with:)
+
     func test_loadWithSingleSong() {
         let song = Song.mock()
         let sut = PlaybackQueue(dependencies: .mock(
@@ -141,6 +143,8 @@ final class PlaybackQueueTests: XCTestCase {
 
         XCTAssertEqual(source.pollValues(), [nil])
     }
+
+    // MARK: - goToNextItem() and goToPreviousItem()
 
     func test_goToNextItem() {
         let songs = [Song].mock(count: 3)
@@ -329,6 +333,8 @@ final class PlaybackQueueTests: XCTestCase {
         assertState(state, history: [], activeItemSong: song, userQueue: [], context: .movedToPreviousItem(removedItem: activeItem))
     }
 
+    // MARK: - goToItem(atIndex:)
+
     func test_goToItemAtIndex_forActiveItemIndex() {
         let sut = PlaybackQueue(dependencies: .mock())
 
@@ -455,6 +461,166 @@ final class PlaybackQueueTests: XCTestCase {
         )
     }
 
+    // MARK: - moveItem(to:from:)
+
+    func test_moveItem_fromAnInvalidIndex_isNoOp() {
+        let (_, _, _, _, sut) = makeSamplePlaybackQueue()
+        let state = TestSubscriber.subscribe(to: sut.stateWithContext)
+        state.discardStoredEvents()
+
+        XCTAssertFalse(sut.moveItem(from: .history(1), to: .userQueue(0)))
+        XCTAssertFalse(sut.moveItem(from: .history(1), to: .upNext(0)))
+        XCTAssertFalse(sut.moveItem(from: .userQueue(1), to: .history(0)))
+        XCTAssertFalse(sut.moveItem(from: .userQueue(1), to: .upNext(0)))
+        XCTAssertFalse(sut.moveItem(from: .upNext(1), to: .history(0)))
+        XCTAssertFalse(sut.moveItem(from: .upNext(1), to: .userQueue(0)))
+
+        XCTAssertFalse(sut.moveItem(from: .history(-1), to: .userQueue(0)))
+        XCTAssertFalse(sut.moveItem(from: .userQueue(-1), to: .history(0)))
+
+        XCTAssertTrue(state.pollEvents().isEmpty)
+    }
+
+    func test_moveItem_toAnInvalidIndex_isNoOp() {
+        let (_, _, _, _, sut) = makeSamplePlaybackQueue()
+        let state = TestSubscriber.subscribe(to: sut.stateWithContext)
+        state.discardStoredEvents()
+
+        XCTAssertFalse(sut.moveItem(from: .history(0), to: .userQueue(2)))
+        XCTAssertFalse(sut.moveItem(from: .history(0), to: .upNext(2)))
+        XCTAssertFalse(sut.moveItem(from: .userQueue(0), to: .history(2)))
+        XCTAssertFalse(sut.moveItem(from: .userQueue(0), to: .upNext(2)))
+        XCTAssertFalse(sut.moveItem(from: .upNext(0), to: .history(2)))
+        XCTAssertFalse(sut.moveItem(from: .upNext(0), to: .userQueue(2)))
+
+        XCTAssertFalse(sut.moveItem(from: .history(0), to: .userQueue(-1)))
+        XCTAssertFalse(sut.moveItem(from: .userQueue(0), to: .history(-1)))
+
+        XCTAssertTrue(state.pollEvents().isEmpty)
+    }
+
+    func test_moveItem_from_activeItem_isNoOp() {
+        let (_, _, _, _, sut) = makeSamplePlaybackQueue()
+        let state = TestSubscriber.subscribe(to: sut.stateWithContext)
+        state.discardStoredEvents()
+
+        XCTAssertFalse(sut.moveItem(from: .activeItem, to: .history(0)))
+        XCTAssertFalse(sut.moveItem(from: .activeItem, to: .userQueue(0)))
+        XCTAssertFalse(sut.moveItem(from: .activeItem, to: .upNext(0)))
+
+        XCTAssertTrue(state.pollValues().isEmpty)
+    }
+
+    func test_moveItem_to_activeItem_isNoOp() {
+        let (_, _, _, _, sut) = makeSamplePlaybackQueue()
+        let state = TestSubscriber.subscribe(to: sut.stateWithContext)
+        state.discardStoredEvents()
+
+        XCTAssertFalse(sut.moveItem(from: .history(0), to: .activeItem))
+        XCTAssertFalse(sut.moveItem(from: .userQueue(0), to: .activeItem))
+        XCTAssertFalse(sut.moveItem(from: .upNext(0), to: .activeItem))
+
+        XCTAssertTrue(state.pollValues().isEmpty)
+    }
+
+    func test_moveItem_from_history_to_userQueue() {
+        let (historyItem, activeItem, userQueueItem, upNextItem, sut) = makeSamplePlaybackQueue()
+        let state = TestSubscriber.subscribe(to: sut.stateWithContext)
+        state.discardStoredEvents()
+
+        XCTAssertTrue(sut.moveItem(from: .history(0), to: .userQueue(0)))
+
+        assertState(
+            state,
+            history: [],
+            activeItemSong: activeItem,
+            userQueue: [historyItem, userQueueItem],
+            upNext: [upNextItem]
+        )
+    }
+
+    func test_moveItem_from_history_to_upNext() {
+        let (historyItem, activeItem, userQueueItem, upNextItem, sut) = makeSamplePlaybackQueue()
+        let state = TestSubscriber.subscribe(to: sut.stateWithContext)
+        state.discardStoredEvents()
+
+        XCTAssertTrue(sut.moveItem(from: .history(0), to: .upNext(1)))
+
+        assertState(
+            state,
+            history: [],
+            activeItemSong: activeItem,
+            userQueue: [userQueueItem],
+            upNext: [upNextItem, historyItem]
+        )
+    }
+
+    func test_moveItem_from_userQueue_to_history() {
+        let (historyItem, activeItem, userQueueItem, upNextItem, sut) = makeSamplePlaybackQueue()
+        let state = TestSubscriber.subscribe(to: sut.stateWithContext)
+        state.discardStoredEvents()
+
+        XCTAssertTrue(sut.moveItem(from: .userQueue(0), to: .history(1)))
+
+        assertState(
+            state,
+            history: [historyItem, userQueueItem],
+            activeItemSong: activeItem,
+            userQueue: [],
+            upNext: [upNextItem]
+        )
+    }
+
+    func test_moveItem_from_userQueue_to_upNext() {
+        let (historyItem, activeItem, userQueueItem, upNextItem, sut) = makeSamplePlaybackQueue()
+        let state = TestSubscriber.subscribe(to: sut.stateWithContext)
+        state.discardStoredEvents()
+
+        XCTAssertTrue(sut.moveItem(from: .userQueue(0), to: .upNext(0)))
+
+        assertState(
+            state,
+            history: [historyItem],
+            activeItemSong: activeItem,
+            userQueue: [],
+            upNext: [userQueueItem, upNextItem]
+        )
+    }
+
+    func test_moveItem_from_upNext_to_history() {
+        let (historyItem, activeItem, userQueueItem, upNextItem, sut) = makeSamplePlaybackQueue()
+        let state = TestSubscriber.subscribe(to: sut.stateWithContext)
+        state.discardStoredEvents()
+
+        XCTAssertTrue(sut.moveItem(from: .upNext(0), to: .history(0)))
+
+        assertState(
+            state,
+            history: [upNextItem, historyItem],
+            activeItemSong: activeItem,
+            userQueue: [userQueueItem],
+            upNext: []
+        )
+    }
+
+    func test_moveItem_from_upNext_to_userQueue() {
+        let (historyItem, activeItem, userQueueItem, upNextItem, sut) = makeSamplePlaybackQueue()
+        let state = TestSubscriber.subscribe(to: sut.stateWithContext)
+        state.discardStoredEvents()
+
+        XCTAssertTrue(sut.moveItem(from: .upNext(0), to: .userQueue(1)))
+
+        assertState(
+            state,
+            history: [historyItem],
+            activeItemSong: activeItem,
+            userQueue: [userQueueItem, upNextItem],
+            upNext: []
+        )
+    }
+
+    // MARK: - addToQueue
+
     func test_addToQueue() {
         let sut = PlaybackQueue(dependencies: .mock())
 
@@ -484,7 +650,35 @@ final class PlaybackQueueTests: XCTestCase {
         assertState(state, userQueue: [song1, song2, song1])
     }
 
+    // MARK: - Helper Tests
+
+    func test_makeSamplePlaybackQueue() {
+        let (historyItem, activeItem, userQueueItem, upNextItem, sut) = makeSamplePlaybackQueue()
+        let state = TestSubscriber.subscribe(to: sut.stateWithContext)
+
+        assertState(
+            state,
+            history: [historyItem],
+            activeItemSong: activeItem,
+            userQueue: [userQueueItem],
+            upNext: [upNextItem]
+        )
+    }
+
     // MARK: - Helpers
+
+    private func makeSamplePlaybackQueue() -> (historyItem: Song, activeItem: Song, userQueueItem: Song, upNextItem: Song, playbackQueue: PlaybackQueue) {
+        let sut = PlaybackQueue(dependencies: .mock())
+
+        let songs = [Song].mock(count: 3)
+        let queueSong = Song.mock()
+
+        sut.load(with: songs, source: nil)
+        sut.goToNextItem()
+        sut.addToQueue(queueSong)
+
+        return (historyItem: songs[0], activeItem: songs[1], userQueueItem: queueSong, upNextItem: songs[2], playbackQueue: sut)
+    }
 
     private func assertState<State: PlaybackQueueState>(
         _ testSubscriber: TestSubscriber<(state: State, context: PlaybackQueueStateContext?), Never>,
@@ -529,6 +723,10 @@ final class PlaybackQueueTests: XCTestCase {
         XCTAssertEqual(state.activeItem.map(\.song), activeItemSong, "activeItem does not match", line: line)
         XCTAssertEqual(state.userQueue.map(\.song), Array(userQueue), "userQueue does not match", line: line)
         XCTAssertEqual(state.upNext.map(\.song), Array(upNext), "upNext does not match", line: line)
+
+        XCTAssertTrue(state.history.allSatisfy { !$0.isUserQueueItem }, "history contained item(s) with isUserQueueItem = true", line: line)
+        XCTAssertTrue(state.userQueue.allSatisfy { $0.isUserQueueItem }, "userQueue contained item(s) with isUserQueueItem = false", line: line)
+        XCTAssertTrue(state.upNext.allSatisfy { !$0.isUserQueueItem }, "upNext contained item(s) with isUserQueueItem = true", line: line)
 
         let expectedCount = history.count + (activeItemSong != nil ? 1 : 0) + userQueue.count + upNext.count
         XCTAssertEqual(state.count, expectedCount, "invalid count", line: line)

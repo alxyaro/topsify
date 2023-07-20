@@ -35,16 +35,17 @@ extension PlaybackQueueIndex {
         return nil
     }
 
-    func isValid(for state: some PlaybackQueueState) -> Bool {
+    func isValid(for state: some PlaybackQueueState, forInsertion: Bool = false) -> Bool {
+        let upperAdjustment = forInsertion ? 1 : 0
         switch self {
         case .history(let offset):
-            return (0..<state.history.count).contains(offset)
+            return (0..<state.history.count+upperAdjustment).contains(offset)
         case .activeItem:
-            return state.activeItem != nil
+            return forInsertion ? false : state.activeItem != nil
         case .userQueue(let offset):
-            return (0..<state.userQueue.count).contains(offset)
+            return (0..<state.userQueue.count+upperAdjustment).contains(offset)
         case .upNext(let offset):
-            return (0..<state.upNext.count).contains(offset)
+            return (0..<state.upNext.count+upperAdjustment).contains(offset)
         }
     }
 }

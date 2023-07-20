@@ -21,6 +21,8 @@ protocol PlaybackQueueType {
     func goToNextItem()
     func goToPreviousItem()
     func goToItem(atIndex index: PlaybackQueueIndex, emptyUserQueueIfUpNextIndex: Bool)
+    @discardableResult
+    func moveItem(from fromIndex: PlaybackQueueIndex, to toIndex: PlaybackQueueIndex) -> Bool
 }
 
 extension PlaybackQueueType {
@@ -191,6 +193,49 @@ final class PlaybackQueue: PlaybackQueueType {
         }
 
         currentState = state
+    }
+
+    @discardableResult
+    func moveItem(from fromIndex: PlaybackQueueIndex, to toIndex: PlaybackQueueIndex) -> Bool {
+        var state = currentState
+
+        guard
+            fromIndex.isValid(for: state),
+            toIndex.isValid(for: state, forInsertion: true),
+            fromIndex != .activeItem,
+            toIndex != .activeItem
+        else {
+            return false
+        }
+
+        var movingItem: PlaybackQueueItem
+
+        switch fromIndex {
+        case .history(let offset):
+            movingItem = state.history.remove(at: offset)
+        case .activeItem:
+            return false
+        case .userQueue(let offset):
+            movingItem = state.userQueue.remove(at: offset)
+            movingItem.isUserQueueItem = false
+        case .upNext(let offset):
+            movingItem = state.upNext.remove(at: offset)
+        }
+
+        switch toIndex {
+        case .history(let offset):
+            state.history.insert(movingItem, at: offset)
+        case .activeItem:
+            return false
+        case .userQueue(let offset):
+            movingItem.isUserQueueItem = true
+            state.userQueue.insert(movingItem, at: offset)
+        case .upNext(let offset):
+            state.upNext.insert(movingItem, at: offset)
+        }
+
+        currentState = state
+        return true
     }
 
     func addToQueue(_ song: Song) {

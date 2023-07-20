@@ -19,6 +19,10 @@ public final class TestSubscriber<Output, Failure: Error>: Subscriber {
         subscription?.cancel()
     }
 
+    public func discardStoredEvents() {
+        self.events = []
+    }
+
     public func pollEvents() -> [Event<Output, Failure>] {
         let events = self.events
         self.events = []

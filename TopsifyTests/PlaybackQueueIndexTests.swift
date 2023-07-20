@@ -89,6 +89,11 @@ final class PlaybackQueueIndexTests: XCTestCase {
         XCTAssertFalse(PlaybackQueueIndex.activeItem.isValid(for: state))
         XCTAssertFalse(PlaybackQueueIndex.userQueue(0).isValid(for: state))
         XCTAssertFalse(PlaybackQueueIndex.upNext(0).isValid(for: state))
+
+        XCTAssertTrue(PlaybackQueueIndex.history(0).isValid(for: state, forInsertion: true))
+        XCTAssertFalse(PlaybackQueueIndex.activeItem.isValid(for: state))
+        XCTAssertTrue(PlaybackQueueIndex.userQueue(0).isValid(for: state, forInsertion: true))
+        XCTAssertTrue(PlaybackQueueIndex.upNext(0).isValid(for: state, forInsertion: true))
     }
 
     func test_isValid_usingHistoryIndex() {
@@ -100,6 +105,11 @@ final class PlaybackQueueIndexTests: XCTestCase {
         XCTAssertTrue(PlaybackQueueIndex.history(0).isValid(for: state))
         XCTAssertTrue(PlaybackQueueIndex.history(3).isValid(for: state))
         XCTAssertFalse(PlaybackQueueIndex.history(4).isValid(for: state))
+
+        XCTAssertFalse(PlaybackQueueIndex.history(-1).isValid(for: state, forInsertion: true))
+        XCTAssertTrue(PlaybackQueueIndex.history(0).isValid(for: state, forInsertion: true))
+        XCTAssertTrue(PlaybackQueueIndex.history(4).isValid(for: state, forInsertion: true))
+        XCTAssertFalse(PlaybackQueueIndex.history(5).isValid(for: state, forInsertion: true))
     }
 
     func test_isValid_usingActiveItemIndex() {
@@ -108,6 +118,7 @@ final class PlaybackQueueIndexTests: XCTestCase {
         )
 
         XCTAssertTrue(PlaybackQueueIndex.activeItem.isValid(for: state))
+        XCTAssertFalse(PlaybackQueueIndex.activeItem.isValid(for: state, forInsertion: true))
     }
 
     func test_isValid_usingUserQueueIndex() {
@@ -119,6 +130,11 @@ final class PlaybackQueueIndexTests: XCTestCase {
         XCTAssertTrue(PlaybackQueueIndex.userQueue(0).isValid(for: state))
         XCTAssertTrue(PlaybackQueueIndex.userQueue(3).isValid(for: state))
         XCTAssertFalse(PlaybackQueueIndex.userQueue(4).isValid(for: state))
+
+        XCTAssertFalse(PlaybackQueueIndex.userQueue(-1).isValid(for: state, forInsertion: true))
+        XCTAssertTrue(PlaybackQueueIndex.userQueue(0).isValid(for: state, forInsertion: true))
+        XCTAssertTrue(PlaybackQueueIndex.userQueue(4).isValid(for: state, forInsertion: true))
+        XCTAssertFalse(PlaybackQueueIndex.userQueue(5).isValid(for: state, forInsertion: true))
     }
 
     func test_isValid_usingUpNextIndex() {
@@ -130,6 +146,11 @@ final class PlaybackQueueIndexTests: XCTestCase {
         XCTAssertTrue(PlaybackQueueIndex.upNext(0).isValid(for: state))
         XCTAssertTrue(PlaybackQueueIndex.upNext(3).isValid(for: state))
         XCTAssertFalse(PlaybackQueueIndex.upNext(4).isValid(for: state))
+
+        XCTAssertFalse(PlaybackQueueIndex.upNext(-1).isValid(for: state, forInsertion: true))
+        XCTAssertTrue(PlaybackQueueIndex.upNext(0).isValid(for: state, forInsertion: true))
+        XCTAssertTrue(PlaybackQueueIndex.upNext(4).isValid(for: state, forInsertion: true))
+        XCTAssertFalse(PlaybackQueueIndex.upNext(5).isValid(for: state, forInsertion: true))
     }
 }
 
