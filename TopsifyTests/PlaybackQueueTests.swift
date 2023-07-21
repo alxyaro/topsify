@@ -144,6 +144,37 @@ final class PlaybackQueueTests: XCTestCase {
         XCTAssertEqual(source.pollValues(), [nil])
     }
 
+    // MARK: - addToQueue
+
+    func test_addToQueue() {
+        let sut = PlaybackQueue(dependencies: .mock())
+
+        let state = TestSubscriber.subscribe(to: sut.stateWithContext)
+
+        assertState(
+            state,
+            history: [],
+            activeItemSong: nil,
+            userQueue: [],
+            upNext: []
+        )
+
+        let song1 = Song.mock()
+        let song2 = Song.mock()
+
+        sut.addToQueue(song1)
+
+        assertState(state, userQueue: [song1])
+
+        sut.addToQueue(song2)
+
+        assertState(state, userQueue: [song1, song2])
+
+        sut.addToQueue(song1)
+
+        assertState(state, userQueue: [song1, song2, song1])
+    }
+
     // MARK: - goToNextItem() and goToPreviousItem()
 
     func test_goToNextItem() {
@@ -617,37 +648,6 @@ final class PlaybackQueueTests: XCTestCase {
             userQueue: [userQueueItem, upNextItem],
             upNext: []
         )
-    }
-
-    // MARK: - addToQueue
-
-    func test_addToQueue() {
-        let sut = PlaybackQueue(dependencies: .mock())
-
-        let state = TestSubscriber.subscribe(to: sut.stateWithContext)
-
-        assertState(
-            state,
-            history: [],
-            activeItemSong: nil,
-            userQueue: [],
-            upNext: []
-        )
-
-        let song1 = Song.mock()
-        let song2 = Song.mock()
-
-        sut.addToQueue(song1)
-
-        assertState(state, userQueue: [song1])
-
-        sut.addToQueue(song2)
-
-        assertState(state, userQueue: [song1, song2])
-
-        sut.addToQueue(song1)
-
-        assertState(state, userQueue: [song1, song2, song1])
     }
 
     // MARK: - Helper Tests

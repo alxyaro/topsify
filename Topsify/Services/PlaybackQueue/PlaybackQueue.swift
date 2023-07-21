@@ -106,6 +106,13 @@ final class PlaybackQueue: PlaybackQueueType {
         currentState.load(with: songs)
     }
 
+    func addToQueue(_ song: Song) {
+        let item = Item(song: song, isUserQueueItem: true)
+        currentState.userQueue.append(item)
+    }
+
+    // TODO: func clearQueue()
+
     func goToNextItem() {
         var state = currentState
 
@@ -237,15 +244,6 @@ final class PlaybackQueue: PlaybackQueueType {
         currentState = state
         return true
     }
-
-    func addToQueue(_ song: Song) {
-        let item = Item(song: song, isUserQueueItem: true)
-        currentState.userQueue.append(item)
-    }
-
-    // TODO: func clearQueue()
-    // TODO: func goToItem(atUserQueueIndex index: Int)
-    // TODO: func goToItem(atUpNextIndex index: Int)
 }
 
 extension PlaybackQueue {
