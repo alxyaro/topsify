@@ -5,6 +5,7 @@ import Foundation
 
 final class QueueListViewModel {
     private let dependencies: Dependencies
+    private var disposeBag = DisposeBag()
 
     init(dependencies: Dependencies) {
         self.dependencies = dependencies
@@ -15,6 +16,18 @@ final class QueueListViewModel {
     }
 
     private func bind(inputs: Inputs, playbackQueue: some PlaybackQueueType) -> Outputs {
+
+        let resendState = CurrentValueSubject<Void, Never>(())
+
+        inputs.movedItem
+            .sink { from, to in
+                let moveResult = playbackQueue.moveItem(from: from.playbackQueueIndex, to: to.playbackQueueIndex)
+                if !moveResult {
+                    resendState.send()
+                }
+            }
+            .store(in: &disposeBag)
+
         return Outputs(
             content: playbackQueue.state
                 .map { state in
@@ -31,6 +44,7 @@ final class QueueListViewModel {
                         nextFromSource: state.upNext.prefix(100).map { ListItem.from($0) }
                     )
                 }
+                .reEmit(onOutputFrom: resendState)
                 .eraseToAnyPublisher(),
             sourceName: playbackQueue.source
                 .map(\.?.textValue)
@@ -48,12 +62,28 @@ extension QueueListViewModel {
     }
 
     struct Inputs {
-
+        let movedItem: AnyPublisher<ItemMovement, Never>
     }
 
     struct Outputs {
         let content: AnyPublisher<Content, Never>
         let sourceName: AnyPublisher<String?, Never>
+    }
+
+    typealias ItemMovement = (from: MovableItemIndex, to: MovableItemIndex)
+
+    enum MovableItemIndex {
+        case nextInQueue(index: Int)
+        case nextFromSource(index: Int)
+
+        fileprivate var playbackQueueIndex: PlaybackQueueIndex {
+            switch self {
+            case .nextInQueue(let index):
+                return .userQueue(index)
+            case .nextFromSource(let index):
+                return .upNext(index)
+            }
+        }
     }
 
     struct Content {

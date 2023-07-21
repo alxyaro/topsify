@@ -1,5 +1,6 @@
 // Created by Alex Yaro on 2023-07-11.
 
+import Combine
 import Reusable
 import UIKit
 
@@ -25,7 +26,6 @@ final class QueueListView: UIView {
         let isActiveItem: Bool
     }
 
-    private typealias DataSource = UICollectionViewDiffableDataSource<Section, ItemID>
     private typealias DataSnapshot = NSDiffableDataSourceSnapshot<Section, ItemID>
 
     private let collectionViewLayout = QueueListLayout()
@@ -91,7 +91,19 @@ final class QueueListView: UIView {
             return collectionView.dequeueEmptySupplementaryView(ofKind: elementKind, for: indexPath)
         }
 
-        dataSource.reorderingHandlers.canReorderItem = { _ in true }
+        dataSource.moveItemAtTo = { [weak self] from, to in
+            let fromIndex = Self.movableIndex(for: from)
+            let toIndex = Self.movableIndex(for: to)
+
+            guard let fromIndex, let toIndex else {
+                assertionFailure("Could not get indices for \(from) -> \(to) = \(String(describing: fromIndex)) -> \(String(describing: toIndex))")
+                /// As a fail-safe, re-apply the current snapshot if we couldn't grab indices for some reason:
+                dataSource.apply(dataSource.snapshot(), animatingDifferences: false)
+                return
+            }
+
+            self?.movedItemSubject.send((from: fromIndex, to: toIndex))
+        }
 
         return dataSource
     }()
@@ -99,6 +111,7 @@ final class QueueListView: UIView {
     private let viewModel: QueueListViewModel
     private var content: QueueListViewModel.Content?
     private var sourceName: String?
+    private let movedItemSubject = PassthroughSubject<QueueListViewModel.ItemMovement, Never>()
     private var disposeBag = DisposeBag()
 
     init(viewModel: QueueListViewModel) {
@@ -120,7 +133,9 @@ final class QueueListView: UIView {
     }
 
     private func bindViewModel() {
-        let outputs = viewModel.bind(inputs: .init())
+        let outputs = viewModel.bind(inputs: .init(
+            movedItem: movedItemSubject.eraseToAnyPublisher()
+        ))
 
         outputs.content
             .sink { [weak self] content in
@@ -185,6 +200,20 @@ final class QueueListView: UIView {
 
         headerView.configure(withText: headerText(for: .nextFromSource))
     }
+
+    private static func movableIndex(for indexPath: IndexPath) -> QueueListViewModel.MovableItemIndex? {
+        guard let section = Section.from(indexPath: indexPath) else {
+            return nil
+        }
+        switch section {
+        case .nowPlaying:
+            return nil
+        case .nextInQueue:
+            return .nextInQueue(index: indexPath.item)
+        case .nextFromSource:
+            return .nextFromSource(index: indexPath.item)
+        }
+    }
 }
 
 extension QueueListView: UICollectionViewDelegate {
@@ -203,5 +232,25 @@ extension QueueListView: UICollectionViewDelegate {
         }
         return proposedIndexPath
     }
+}
 
+private extension QueueListView {
+
+    /// Subclass of the diffable data source, with easy access to `collectionView(_:moveItemAt:to:)`
+    /// to avoid juggling with the convoluted `reorderingHandlers`.
+    private final class DataSource: UICollectionViewDiffableDataSource<Section, ItemID> {
+        var moveItemAtTo: (_ from: IndexPath, _ to: IndexPath) -> Void = { _, _ in }
+
+        override func collectionView(_ collectionView: UICollectionView, canMoveItemAt indexPath: IndexPath) -> Bool {
+            return true
+        }
+
+        override func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+            super.collectionView(collectionView, moveItemAt: sourceIndexPath, to: destinationIndexPath)
+
+            /// This callback **must** be called *after* super call, or buggy behaviour and possible crashes will ensue!
+            /// Presumably, if data source is updated as a result of this callback & before it can process the movement, things go haywire.
+            moveItemAtTo(sourceIndexPath, destinationIndexPath)
+        }
+    }
 }
