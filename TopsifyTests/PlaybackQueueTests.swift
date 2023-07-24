@@ -650,6 +650,94 @@ final class PlaybackQueueTests: XCTestCase {
         )
     }
 
+    // MARK: - removeItems(at:)
+
+    func test_removeItems_withEmptyInput() {
+        let sut = PlaybackQueue(dependencies: .mock())
+
+        let songs = makeSongs(count: 5)
+        let queueSongs = makeSongs(count: 3)
+        sut.load(with: songs, source: nil)
+        queueSongs.forEach(sut.addToQueue(_:))
+
+        let state = TestSubscriber.subscribe(to: sut.stateWithContext)
+        state.discardStoredEvents()
+
+        sut.removeItems(at: [])
+
+        XCTAssertTrue(state.pollValues().isEmpty)
+    }
+
+    func test_removeItems_fromInvalidIndices_isNoOp() {
+        let sut = PlaybackQueue(dependencies: .mock())
+
+        let songs = makeSongs(count: 1)
+        sut.load(with: songs, source: nil)
+
+        let state = TestSubscriber.subscribe(to: sut.stateWithContext)
+        state.discardStoredEvents()
+
+        sut.removeItems(at: [
+            .history(-1),
+            .history(100),
+            .activeItem,
+            .userQueue(500),
+            .upNext(-100)
+        ])
+
+        XCTAssertTrue(state.pollValues().isEmpty)
+    }
+
+    func test_removeItems_fromValidAndInvalidIndices() {
+        let sut = PlaybackQueue(dependencies: .mock())
+
+        let songs = makeSongs(count: 11)
+        let queueSongs = makeSongs(count: 5)
+        sut.load(with: songs, source: nil)
+        sut.goToItem(atIndex: .upNext(4))
+        queueSongs.forEach(sut.addToQueue)
+
+        let state = TestSubscriber.subscribe(to: sut.stateWithContext)
+        state.discardStoredEvents()
+
+        sut.removeItems(at: [
+            .history(-1),
+            .history(0),
+            .history(2),
+            .history(1000),
+
+            .activeItem,
+
+            .userQueue(-1),
+            .userQueue(1),
+            .userQueue(50),
+
+            .upNext(-1),
+            .upNext(1),
+            .upNext(4),
+            .upNext(50)
+        ])
+
+        var expectedHistory = Array(songs[0..<5])
+        expectedHistory.remove(at: 2)
+        expectedHistory.remove(at: 0)
+
+        var expectedUserQueue = queueSongs
+        expectedUserQueue.remove(at: 1)
+
+        var expectedUpNext = Array(songs[6...])
+        expectedUpNext.remove(at: 4)
+        expectedUpNext.remove(at: 1)
+
+        assertState(
+            state,
+            history: expectedHistory,
+            activeItemSong: songs[5],
+            userQueue: expectedUserQueue,
+            upNext: expectedUpNext
+        )
+    }
+
     // MARK: - Helper Tests
 
     func test_makeSamplePlaybackQueue() {
@@ -678,6 +766,10 @@ final class PlaybackQueueTests: XCTestCase {
         sut.addToQueue(queueSong)
 
         return (historyItem: songs[0], activeItem: songs[1], userQueueItem: queueSong, upNextItem: songs[2], playbackQueue: sut)
+    }
+
+    private func makeSongs(count: Int) -> [Song] {
+        .mock(count: count)
     }
 
     private func assertState<State: PlaybackQueueState>(

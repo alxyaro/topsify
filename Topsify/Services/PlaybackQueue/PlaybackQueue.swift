@@ -21,8 +21,10 @@ protocol PlaybackQueueType {
     func goToNextItem()
     func goToPreviousItem()
     func goToItem(atIndex index: PlaybackQueueIndex, emptyUserQueueIfUpNextIndex: Bool)
+
     @discardableResult
     func moveItem(from fromIndex: PlaybackQueueIndex, to toIndex: PlaybackQueueIndex) -> Bool
+    func removeItems(at indices: [PlaybackQueueIndex])
 }
 
 extension PlaybackQueueType {
@@ -243,6 +245,43 @@ final class PlaybackQueue: PlaybackQueueType {
 
         currentState = state
         return true
+    }
+
+    func removeItems(at indices: [PlaybackQueueIndex]) {
+        var state = currentState
+
+        var indices = indices
+        indices.sort(by: >)
+
+        var historyIndices = [Int]()
+        var userQueueIndices = [Int]()
+        var upNextIndices = [Int]()
+
+        for index in indices {
+            guard index.isValid(for: state) else {
+                continue
+            }
+            switch index {
+            case .history(let index):
+                historyIndices.append(index)
+            case .activeItem:
+                break
+            case .userQueue(let index):
+                userQueueIndices.append(index)
+            case .upNext(let index):
+                upNextIndices.append(index)
+            }
+        }
+
+        guard !(historyIndices.isEmpty && userQueueIndices.isEmpty && upNextIndices.isEmpty) else {
+            return
+        }
+
+        state.history.remove(atOffsets: IndexSet(historyIndices))
+        state.userQueue.remove(atOffsets: IndexSet(userQueueIndices))
+        state.upNext.remove(atOffsets: IndexSet(upNextIndices))
+
+        currentState = state
     }
 }
 

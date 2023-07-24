@@ -2,7 +2,7 @@
 
 import Foundation
 
-enum PlaybackQueueIndex: Equatable {
+enum PlaybackQueueIndex: Equatable, Comparable {
     case history(Int)
     case activeItem
     case userQueue(Int)

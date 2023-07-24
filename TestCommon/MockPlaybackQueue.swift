@@ -36,6 +36,7 @@ final class MockPlaybackQueue: PlaybackQueueType {
     let goToPreviousItemSubject = PassthroughSubject<Void, Never>()
     let goToItemAtIndexSubject = PassthroughSubject<(index: PlaybackQueueIndex, emptyUserQueueIfUpNextIndex: Bool), Never>()
     var moveItemFromToCallback: (PlaybackQueueIndex, PlaybackQueueIndex) -> Bool = { _, _ in false }
+    var removeItemsAtSubject = PassthroughSubject<[PlaybackQueueIndex], Never>()
 
     // MARK: - Mocked Members
 
@@ -73,5 +74,9 @@ final class MockPlaybackQueue: PlaybackQueueType {
 
     func moveItem(from fromIndex: Topsify.PlaybackQueueIndex, to toIndex: Topsify.PlaybackQueueIndex) -> Bool {
         moveItemFromToCallback(fromIndex, toIndex)
+    }
+
+    func removeItems(at indices: [PlaybackQueueIndex]) {
+        removeItemsAtSubject.send(indices)
     }
 }
