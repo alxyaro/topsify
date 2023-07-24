@@ -35,6 +35,8 @@ final class QueueListView: UIView {
 
         collectionView.backgroundColor = .clear
         collectionView.isEditing = true
+        collectionView.allowsSelectionDuringEditing = true
+        collectionView.allowsMultipleSelectionDuringEditing = true
         collectionView.delegate = self
 
         collectionView.registerEmptyCell()
@@ -231,6 +233,14 @@ extension QueueListView: UICollectionViewDelegate {
             return currentIndexPath
         }
         return proposedIndexPath
+    }
+
+    func collectionView(_ collectionView: UICollectionView, shouldBeginMultipleSelectionInteractionAt indexPath: IndexPath) -> Bool {
+        return indexPath.section > Section.nowPlaying.index
+    }
+
+    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        return indexPath.section > Section.nowPlaying.index
     }
 }
 
