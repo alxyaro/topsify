@@ -24,6 +24,7 @@ protocol PlaybackQueueType {
 
     @discardableResult
     func moveItem(from fromIndex: PlaybackQueueIndex, to toIndex: PlaybackQueueIndex) -> Bool
+    func moveItemsToQueue(at indices: [PlaybackQueueIndex])
     func removeItems(at indices: [PlaybackQueueIndex])
 }
 
@@ -247,7 +248,26 @@ final class PlaybackQueue: PlaybackQueueType {
         return true
     }
 
+    func moveItemsToQueue(at indices: [PlaybackQueueIndex]) {
+        guard var (state, removedItems) = stateForRemovedItems(at: indices) else {
+            return
+        }
+        state.userQueue.append(contentsOf: removedItems.map {
+            var updatedItem = $0
+            updatedItem.isUserQueueItem = true
+            return updatedItem
+        })
+        currentState = state
+    }
+
     func removeItems(at indices: [PlaybackQueueIndex]) {
+        let removeResult = stateForRemovedItems(at: indices)
+        if let (state, _) = removeResult {
+            currentState = state
+        }
+    }
+
+    private func stateForRemovedItems(at indices: [PlaybackQueueIndex]) -> (State, removedItems: [PlaybackQueueItem])? {
         var state = currentState
 
         var indices = indices
@@ -257,6 +277,9 @@ final class PlaybackQueue: PlaybackQueueType {
         var userQueueIndices = [Int]()
         var upNextIndices = [Int]()
 
+        var removedItems = [PlaybackQueueItem]()
+        removedItems.reserveCapacity(indices.count)
+
         for index in indices {
             guard index.isValid(for: state) else {
                 continue
@@ -265,23 +288,27 @@ final class PlaybackQueue: PlaybackQueueType {
             case .history(let index):
                 historyIndices.append(index)
             case .activeItem:
-                break
+                continue
             case .userQueue(let index):
                 userQueueIndices.append(index)
             case .upNext(let index):
                 upNextIndices.append(index)
             }
+
+            if let itemBeingRemoved = state[itemAt: index] {
+                removedItems.append(itemBeingRemoved)
+            }
         }
 
         guard !(historyIndices.isEmpty && userQueueIndices.isEmpty && upNextIndices.isEmpty) else {
-            return
+            return nil
         }
 
         state.history.remove(atOffsets: IndexSet(historyIndices))
         state.userQueue.remove(atOffsets: IndexSet(userQueueIndices))
         state.upNext.remove(atOffsets: IndexSet(upNextIndices))
 
-        currentState = state
+        return (state, removedItems: removedItems.reversed())
     }
 }
 

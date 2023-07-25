@@ -650,6 +650,98 @@ final class PlaybackQueueTests: XCTestCase {
         )
     }
 
+    // MARK: - moveItemsToQueue(at:)
+
+    func test_moveItemsToQueue_withEmptyInput() {
+        let sut = PlaybackQueue(dependencies: .mock())
+
+        sut.load(with: .mock(count: 5), source: nil)
+
+        let state = TestSubscriber.subscribe(to: sut.stateWithContext)
+        state.discardStoredEvents()
+
+        sut.moveItemsToQueue(at: [])
+
+        XCTAssertTrue(state.pollValues().isEmpty)
+    }
+
+    func test_moveItemsToQueue_withInvalidIndices() {
+        let sut = PlaybackQueue(dependencies: .mock())
+
+        sut.load(with: .mock(count: 5), source: nil)
+
+        let state = TestSubscriber.subscribe(to: sut.stateWithContext)
+        state.discardStoredEvents()
+
+        sut.moveItemsToQueue(at: [
+            .activeItem,
+            .userQueue(-10),
+            .history(0),
+            .upNext(100)
+        ])
+
+        XCTAssertTrue(state.pollValues().isEmpty)
+    }
+
+    func test_moveItemsToQueue_withValidAndInvalidIndices() {
+        let sut = PlaybackQueue(dependencies: .mock())
+
+        let songs = makeSongs(count: 11)
+        let userQueueSongs = makeSongs(count: 5)
+        sut.load(with: songs, source: nil)
+        sut.goToItem(atIndex: .upNext(4))
+        userQueueSongs.forEach(sut.addToQueue)
+
+        let historySongs = Array(songs[0..<5])
+        let upNextSongs = Array(songs[6...])
+
+        let state = TestSubscriber.subscribe(to: sut.stateWithContext)
+        state.discardStoredEvents()
+
+        sut.moveItemsToQueue(at: [
+            .activeItem,
+
+            .userQueue(-1),
+            .userQueue(1),
+            .userQueue(50),
+
+            .upNext(-1),
+            .upNext(1),
+
+            .history(-1),
+            .history(2),
+            .history(0),
+            .history(1000),
+
+            .upNext(4),
+            .upNext(50)
+        ])
+
+        var expectedHistory = historySongs
+        expectedHistory.remove(at: 2)
+        expectedHistory.remove(at: 0)
+
+        var expectedUserQueue = userQueueSongs
+        expectedUserQueue.remove(at: 1)
+        expectedUserQueue.append(historySongs[0])
+        expectedUserQueue.append(historySongs[2])
+        expectedUserQueue.append(userQueueSongs[1])
+        expectedUserQueue.append(upNextSongs[1])
+        expectedUserQueue.append(upNextSongs[4])
+
+        var expectedUpNext = upNextSongs
+        expectedUpNext.remove(at: 4)
+        expectedUpNext.remove(at: 1)
+
+        assertState(
+            state,
+            history: expectedHistory,
+            activeItemSong: songs[5],
+            userQueue: expectedUserQueue,
+            upNext: expectedUpNext
+        )
+    }
+
     // MARK: - removeItems(at:)
 
     func test_removeItems_withEmptyInput() {
