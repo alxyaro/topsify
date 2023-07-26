@@ -4,7 +4,25 @@ import Combine
 import Foundation
 
 final class QueueListViewModel {
+
+    var hasSelectedItems: AnyPublisher<Bool, Never> {
+        selectedItemIndicesSubject
+            .map(\.isEmpty)
+            .map(!)
+            .removeDuplicates()
+            .eraseToAnyPublisher()
+    }
+
+    var isQueueItemSelected: AnyPublisher<Bool, Never> {
+        selectedItemIndicesSubject
+            .map { $0.contains(where: \.isInQueue) }
+            .removeDuplicates()
+            .eraseToAnyPublisher()
+    }
+
     private let dependencies: Dependencies
+    private let selectedItemIndicesSubject = CurrentValueSubject<[ItemIndex], Never>([])
+    private let deselectAllItemsSubject = PassthroughSubject<Void, Never>()
     private var disposeBag = DisposeBag()
 
     init(dependencies: Dependencies) {
@@ -28,6 +46,10 @@ final class QueueListViewModel {
             }
             .store(in: &disposeBag)
 
+        inputs.selectedItemIndices
+            .subscribe(selectedItemIndicesSubject)
+            .store(in: &disposeBag)
+
         return Outputs(
             content: playbackQueue.state
                 .map { state in
@@ -48,8 +70,24 @@ final class QueueListViewModel {
                 .eraseToAnyPublisher(),
             sourceName: playbackQueue.source
                 .map(\.?.textValue)
+                .eraseToAnyPublisher(),
+            deselectAllItems: deselectAllItemsSubject
                 .eraseToAnyPublisher()
         )
+    }
+}
+
+extension QueueListViewModel: QueueSelectionMenuViewModelDelegate {
+
+    func selectionMenuRemoveButtonTapped() {
+        let indices = selectedItemIndicesSubject.value .map(\.playbackQueueIndex)
+        dependencies.playbackQueue.removeItems(at: indices)
+    }
+
+    func selectionMenuMoveToQueueButtonTapped() {
+        deselectAllItemsSubject.send()
+        let indices = selectedItemIndicesSubject.value .map(\.playbackQueueIndex)
+        dependencies.playbackQueue.moveItemsToQueue(at: indices)
     }
 }
 
@@ -63,16 +101,18 @@ extension QueueListViewModel {
 
     struct Inputs {
         let movedItem: AnyPublisher<ItemMovement, Never>
+        let selectedItemIndices: AnyPublisher<[ItemIndex], Never>
     }
 
     struct Outputs {
         let content: AnyPublisher<Content, Never>
         let sourceName: AnyPublisher<String?, Never>
+        let deselectAllItems: AnyPublisher<Void, Never>
     }
 
-    typealias ItemMovement = (from: MovableItemIndex, to: MovableItemIndex)
+    typealias ItemMovement = (from: ItemIndex, to: ItemIndex)
 
-    enum MovableItemIndex {
+    enum ItemIndex {
         case nextInQueue(index: Int)
         case nextFromSource(index: Int)
 
@@ -82,6 +122,15 @@ extension QueueListViewModel {
                 return .userQueue(index)
             case .nextFromSource(let index):
                 return .upNext(index)
+            }
+        }
+
+        fileprivate var isInQueue: Bool {
+            switch self {
+            case .nextInQueue:
+                return true
+            default:
+                return false
             }
         }
     }
@@ -108,16 +157,5 @@ extension QueueListViewModel {
                 )
             )
         }
-    }
-}
-
-// MARK: - Live Dependencies
-
-extension QueueListViewModel.Dependencies {
-
-    static func live() -> Self {
-        .init(
-            playbackQueue: Environment.current.playbackQueue
-        )
     }
 }

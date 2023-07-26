@@ -10,10 +10,8 @@ final class QueueViewController: UIViewController {
         showOptionsButton: false
     )
 
-    private let queueListView = QueueListView(
-        // TODO: inject elsewhere
-        viewModel: .init(dependencies: .live())
-    )
+    private let queueListView: QueueListView
+    private let selectionMenuView: QueueSelectionMenuView
 
     private let controlsBackgroundView = CubicGradientView(color: .appBackground)
 
@@ -22,7 +20,15 @@ final class QueueViewController: UIViewController {
         viewModel: .init(dependencies: .init(playbackQueue: Environment.current.playbackQueue))
     )
 
-    init() {
+    private let viewModel: QueueViewModel
+    private var disposeBag = DisposeBag()
+
+    init(viewModel: QueueViewModel) {
+        self.viewModel = viewModel
+
+        queueListView = .init(viewModel: viewModel.listViewModel)
+        selectionMenuView = .init(viewModel: viewModel.selectionMenuViewModel)
+
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -34,6 +40,7 @@ final class QueueViewController: UIViewController {
         super.viewDidLoad()
 
         setUpView()
+        bindViewModel()
     }
 
     private func setUpView() {
@@ -52,5 +59,36 @@ final class QueueViewController: UIViewController {
         view.insertSubview(controlsBackgroundView, belowSubview: controlsView)
         controlsBackgroundView.constrainEdgesToSuperview(excluding: .top)
         controlsBackgroundView.topAnchor.constraint(equalTo: controlsView.topAnchor, constant: -80).isActive = true
+
+        view.addSubview(selectionMenuView)
+        selectionMenuView.constrainEdgesToSuperview(excluding: .top)
+
+    }
+
+    private func bindViewModel() {
+        let outputs = viewModel.bind(inputs: .init())
+
+        let selectionMenuTransitionDuration: CGFloat = 0.1
+
+        outputs.showPlaybackControls
+            .sink { [weak self] showPlaybackControls in
+                guard let self else { return }
+                if showPlaybackControls {
+                    controlsView.fadeIn(withDuration: selectionMenuTransitionDuration)
+                } else {
+                    controlsView.fadeOut(withDuration: selectionMenuTransitionDuration)
+                }
+            }
+            .store(in: &disposeBag)
+
+        outputs.showSelectionMenu
+            .sink { [weak self] showSelectionMenu in
+                if showSelectionMenu {
+                    self?.selectionMenuView.fadeIn(withDuration: selectionMenuTransitionDuration)
+                } else {
+                    self?.selectionMenuView.fadeOut(withDuration: selectionMenuTransitionDuration)
+                }
+            }
+            .store(in: &disposeBag)
     }
 }

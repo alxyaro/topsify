@@ -94,8 +94,8 @@ final class QueueListView: UIView {
         }
 
         dataSource.moveItemAtTo = { [weak self] from, to in
-            let fromIndex = Self.movableIndex(for: from)
-            let toIndex = Self.movableIndex(for: to)
+            let fromIndex = Self.vmIndex(for: from)
+            let toIndex = Self.vmIndex(for: to)
 
             guard let fromIndex, let toIndex else {
                 assertionFailure("Could not get indices for \(from) -> \(to) = \(String(describing: fromIndex)) -> \(String(describing: toIndex))")
@@ -114,6 +114,7 @@ final class QueueListView: UIView {
     private var content: QueueListViewModel.Content?
     private var sourceName: String?
     private let movedItemSubject = PassthroughSubject<QueueListViewModel.ItemMovement, Never>()
+    private let selectionChangedSubject = PassthroughSubject<Void, Never>()
     private var disposeBag = DisposeBag()
 
     init(viewModel: QueueListViewModel) {
@@ -136,7 +137,15 @@ final class QueueListView: UIView {
 
     private func bindViewModel() {
         let outputs = viewModel.bind(inputs: .init(
-            movedItem: movedItemSubject.eraseToAnyPublisher()
+            movedItem: movedItemSubject.eraseToAnyPublisher(),
+            selectedItemIndices: selectionChangedSubject
+                .prepend(())
+                // Debounce while bulk selection/deselection occurs in the collection view's delegate:
+                .debounce(for: .microseconds(1), scheduler: DispatchQueue.main)
+                .map { [weak self] in
+                    self?.collectionView.indexPathsForSelectedItems?.compactMap(Self.vmIndex(for:)) ?? []
+                }
+                .eraseToAnyPublisher()
         ))
 
         outputs.content
@@ -160,6 +169,9 @@ final class QueueListView: UIView {
                     snapshot.appendItems(content.nextFromSource.map { ItemID(id: $0.id, isActiveItem: false) }, toSection: .nextFromSource)
                 }
                 dataSource.apply(snapshot)
+
+                /// If the data source is removing selected items, the delegate doesn't seem to get called, hense this:
+                selectionChangedSubject.send()
             }
             .store(in: &disposeBag)
 
@@ -170,6 +182,17 @@ final class QueueListView: UIView {
                 self.sourceName = sourceName
 
                 updateNextFromSourceHeaderText()
+            }
+            .store(in: &disposeBag)
+
+        outputs.deselectAllItems
+            .sink { [weak self] in
+                guard let self else { return }
+                for indexPath in collectionView.indexPathsForSelectedItems ?? [] {
+                    collectionView.deselectItem(at: indexPath, animated: false)
+                }
+                /// `collectionView.deselectItem` does not call the deselection delegate method, hense this:
+                selectionChangedSubject.send()
             }
             .store(in: &disposeBag)
     }
@@ -203,7 +226,7 @@ final class QueueListView: UIView {
         headerView.configure(withText: headerText(for: .nextFromSource))
     }
 
-    private static func movableIndex(for indexPath: IndexPath) -> QueueListViewModel.MovableItemIndex? {
+    private static func vmIndex(for indexPath: IndexPath) -> QueueListViewModel.ItemIndex? {
         guard let section = Section.from(indexPath: indexPath) else {
             return nil
         }
@@ -241,6 +264,14 @@ extension QueueListView: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
         return indexPath.section > Section.nowPlaying.index
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        selectionChangedSubject.send()
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        selectionChangedSubject.send()
     }
 }
 

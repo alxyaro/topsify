@@ -56,6 +56,103 @@ final class QueueListViewModelTests: XCTestCase {
         XCTAssertEqual(try contentSubscriber.pollOnlyValue(), content)
     }
 
+    func testInput_selectedItemIndices_updatesProperty_hasSelectedItems() {
+        let viewModel = QueueListViewModel(dependencies: .init(playbackQueue: MockPlaybackQueue()))
+
+        let selectedItemIndicesPublisher = TestPublisher<[QueueListViewModel.ItemIndex], Never>()
+
+        _ = viewModel.bind(inputs: .mock(
+            selectedItemIndices: selectedItemIndicesPublisher.eraseToAnyPublisher()
+        ))
+
+        let hasSelectedItems = TestSubscriber.subscribe(to: viewModel.hasSelectedItems)
+
+        XCTAssertEqual(hasSelectedItems.pollValues(), [false])
+
+        selectedItemIndicesPublisher.send([])
+
+        XCTAssertEqual(hasSelectedItems.pollValues(), [])
+
+        selectedItemIndicesPublisher.send([
+            .nextFromSource(index: 0)
+        ])
+
+        XCTAssertEqual(hasSelectedItems.pollValues(), [true])
+
+        selectedItemIndicesPublisher.send([])
+
+        XCTAssertEqual(hasSelectedItems.pollValues(), [false])
+    }
+
+    func testInput_selectedItemIndices_updatesProperty_isQueueItemSelected() {
+        let viewModel = QueueListViewModel(dependencies: .init(playbackQueue: MockPlaybackQueue()))
+
+        let selectedItemIndicesPublisher = TestPublisher<[QueueListViewModel.ItemIndex], Never>()
+
+        _ = viewModel.bind(inputs: .mock(
+            selectedItemIndices: selectedItemIndicesPublisher.eraseToAnyPublisher()
+        ))
+
+        let isQueueItemSelected = TestSubscriber.subscribe(to: viewModel.isQueueItemSelected)
+
+        XCTAssertEqual(isQueueItemSelected.pollValues(), [false])
+
+        selectedItemIndicesPublisher.send([
+            .nextFromSource(index: 0),
+            .nextFromSource(index: 1)
+        ])
+
+        XCTAssertEqual(isQueueItemSelected.pollValues(), [])
+
+        selectedItemIndicesPublisher.send([
+            .nextFromSource(index: 0),
+            .nextFromSource(index: 1),
+            .nextInQueue(index: 1)
+        ])
+
+        XCTAssertEqual(isQueueItemSelected.pollValues(), [true])
+    }
+
+    func testDelegateMethod_selectionMenuRemoveButtonTapped_callsPlaybackQueue() {
+        let playbackQueue = MockPlaybackQueue()
+        let viewModel = QueueListViewModel(dependencies: .init(playbackQueue: playbackQueue))
+
+        _ = viewModel.bind(inputs: .mock(
+            selectedItemIndices: .just([
+                .nextInQueue(index: 0),
+                .nextFromSource(index: 0),
+                .nextFromSource(index: 1)
+            ])
+        ))
+
+        let removeItemsAtSubscriber = TestSubscriber.subscribe(to: playbackQueue.removeItemsAtSubject)
+
+        viewModel.selectionMenuRemoveButtonTapped()
+
+        XCTAssertEqual(removeItemsAtSubscriber.pollValues(), [
+            [.userQueue(0), .upNext(0), .upNext(1)]
+        ])
+    }
+
+    func testDelegateMethod_selectionMenuMoveToQueueButtonTapped_sendsOutput_and_callsPlaybackQueue() {
+        let playbackQueue = MockPlaybackQueue()
+        let viewModel = QueueListViewModel(dependencies: .init(playbackQueue: playbackQueue))
+
+        let outputs = viewModel.bind(inputs: .mock(
+            selectedItemIndices: .just([
+                .nextFromSource(index: 2)
+            ])
+        ))
+
+        let deselectAllItemsSubscriber = TestSubscriber.subscribe(to: outputs.deselectAllItems)
+        let moveItemsToQueueAtSubscriber = TestSubscriber.subscribe(to: playbackQueue.moveItemsToQueueAtSubject)
+
+        viewModel.selectionMenuMoveToQueueButtonTapped()
+
+        XCTAssertEqual(deselectAllItemsSubscriber.pollValues().count, 1)
+        XCTAssertEqual(moveItemsToQueueAtSubscriber.pollValues(), [[.upNext(2)]])
+    }
+
     func testOutput_content_reflectsPlaybackQueueState() throws {
         let playbackQueue = MockPlaybackQueue()
         playbackQueue.stateValue.activeItem = .init(song: .mock())
@@ -91,9 +188,13 @@ final class QueueListViewModelTests: XCTestCase {
 private extension QueueListViewModel.Inputs {
 
     static func mock(
-        movedItem: AnyPublisher<QueueListViewModel.ItemMovement, Never> = .never()
+        movedItem: AnyPublisher<QueueListViewModel.ItemMovement, Never> = .never(),
+        selectedItemIndices: AnyPublisher<[QueueListViewModel.ItemIndex], Never> = .never()
     ) -> Self {
-        .init(movedItem: movedItem)
+        .init(
+            movedItem: movedItem,
+            selectedItemIndices: selectedItemIndices
+        )
     }
 }
 
