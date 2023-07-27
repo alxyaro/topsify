@@ -43,6 +43,12 @@ final class QueueViewController: UIViewController {
         bindViewModel()
     }
 
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        queueListView.setBottomInset(controlsView.bounds.height)
+    }
+
     private func setUpView() {
         view.backgroundColor = .appBackground
 

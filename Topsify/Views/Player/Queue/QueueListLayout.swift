@@ -47,7 +47,7 @@ final class QueueListLayout: UICollectionViewCompositionalLayout {
                 if !isSectionEmpty {
                     section.boundarySupplementaryItems = [header]
                     section.contentInsets.top = 0
-                    section.contentInsets.bottom = 20
+                    section.contentInsets.bottom = sectionIndex < Self.upNextSectionIndex ? 20 : 0
                 } else if sectionIndex == Self.queueSectionIndex {
                     /// Give the queue section a little bit of extra height when empty, as to make the interactive move into this
                     /// empty section a little easier (the drag will be easier to control and more predictable).

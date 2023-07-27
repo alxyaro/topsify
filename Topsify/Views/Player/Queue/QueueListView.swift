@@ -34,6 +34,7 @@ final class QueueListView: UIView {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
 
         collectionView.backgroundColor = .clear
+        collectionView.indicatorStyle = .white
         collectionView.isEditing = true
         collectionView.allowsSelectionDuringEditing = true
         collectionView.allowsMultipleSelectionDuringEditing = true
@@ -43,8 +44,6 @@ final class QueueListView: UIView {
         collectionView.registerEmptySupplementaryView(ofKind: UICollectionView.elementKindSectionHeader)
         collectionView.register(cellType: SongListCell.self)
         collectionView.register(supplementaryViewType: QueueListHeaderView.self, ofKind: UICollectionView.elementKindSectionHeader)
-
-        collectionView.contentInset.bottom = 60
 
         return collectionView
     }()
@@ -128,6 +127,11 @@ final class QueueListView: UIView {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func setBottomInset(_ inset: CGFloat) {
+        collectionView.contentInset.bottom = inset
+        collectionView.verticalScrollIndicatorInsets.bottom = inset
     }
 
     private func setUpView() {
