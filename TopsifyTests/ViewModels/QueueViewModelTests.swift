@@ -15,7 +15,8 @@ final class QueueViewModelTests: XCTestCase {
 
         _ = viewModel.listViewModel.bind(inputs: .init(
             movedItem: .never(),
-            selectedItemIndices: selectedItemIndicesPublisher.eraseToAnyPublisher()
+            selectedItemIndices: selectedItemIndicesPublisher.eraseToAnyPublisher(),
+            tappedItem: .never()
         ))
 
         let outputs = viewModel.bind(inputs: .init())

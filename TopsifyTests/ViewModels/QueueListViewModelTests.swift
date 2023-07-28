@@ -113,6 +113,23 @@ final class QueueListViewModelTests: XCTestCase {
         XCTAssertEqual(isQueueItemSelected.pollValues(), [true])
     }
 
+    func testInput_tappedItem_callsPlaybackQueue() {
+        let playbackQueue = MockPlaybackQueue()
+        let viewModel = QueueListViewModel(dependencies: .init(playbackQueue: playbackQueue))
+
+        let tappedItemPublisher = TestPublisher<QueueListViewModel.ItemIndex, Never>()
+
+        _ = viewModel.bind(inputs: .mock(
+            tappedItem: tappedItemPublisher.eraseToAnyPublisher()
+        ))
+
+        let goToItemAtIndex = TestSubscriber.subscribe(to: playbackQueue.goToItemAtIndexSubject)
+
+        tappedItemPublisher.send(.nextFromSource(index: 5))
+
+        XCTAssertEqual(goToItemAtIndex.pollValues().map(\.index), [.upNext(5)])
+    }
+
     func testDelegateMethod_selectionMenuRemoveButtonTapped_callsPlaybackQueue() {
         let playbackQueue = MockPlaybackQueue()
         let viewModel = QueueListViewModel(dependencies: .init(playbackQueue: playbackQueue))
@@ -189,11 +206,13 @@ private extension QueueListViewModel.Inputs {
 
     static func mock(
         movedItem: AnyPublisher<QueueListViewModel.ItemMovement, Never> = .never(),
-        selectedItemIndices: AnyPublisher<[QueueListViewModel.ItemIndex], Never> = .never()
+        selectedItemIndices: AnyPublisher<[QueueListViewModel.ItemIndex], Never> = .never(),
+        tappedItem: AnyPublisher<QueueListViewModel.ItemIndex, Never> = .never()
     ) -> Self {
         .init(
             movedItem: movedItem,
-            selectedItemIndices: selectedItemIndices
+            selectedItemIndices: selectedItemIndices,
+            tappedItem: tappedItem
         )
     }
 }

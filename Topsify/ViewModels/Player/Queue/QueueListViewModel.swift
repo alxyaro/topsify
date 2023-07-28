@@ -50,6 +50,12 @@ final class QueueListViewModel {
             .subscribe(selectedItemIndicesSubject)
             .store(in: &disposeBag)
 
+        inputs.tappedItem
+            .sink { index in
+                playbackQueue.goToItem(atIndex: index.playbackQueueIndex)
+            }
+            .store(in: &disposeBag)
+
         return Outputs(
             content: playbackQueue.state
                 .map { state in
@@ -102,6 +108,7 @@ extension QueueListViewModel {
     struct Inputs {
         let movedItem: AnyPublisher<ItemMovement, Never>
         let selectedItemIndices: AnyPublisher<[ItemIndex], Never>
+        let tappedItem: AnyPublisher<ItemIndex, Never>
     }
 
     struct Outputs {

@@ -73,6 +73,7 @@ final class QueueListView: UIView {
             let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: SongListCell.self)
             cell.configure(
                 with: viewModel,
+                delegate: self,
                 options: indexPath.section == Section.nowPlaying.index ? .init(showThumbnail: true) : .init(includeEditingAccessories: true)
             )
             return cell
@@ -114,6 +115,7 @@ final class QueueListView: UIView {
     private var sourceName: String?
     private let movedItemSubject = PassthroughSubject<QueueListViewModel.ItemMovement, Never>()
     private let selectionChangedSubject = PassthroughSubject<Void, Never>()
+    private let tappedItemSubject = PassthroughSubject<QueueListViewModel.ItemIndex, Never>()
     private var disposeBag = DisposeBag()
 
     init(viewModel: QueueListViewModel) {
@@ -149,7 +151,8 @@ final class QueueListView: UIView {
                 .map { [weak self] in
                     self?.collectionView.indexPathsForSelectedItems?.compactMap(Self.vmIndex(for:)) ?? []
                 }
-                .eraseToAnyPublisher()
+                .eraseToAnyPublisher(),
+            tappedItem: tappedItemSubject.eraseToAnyPublisher()
         ))
 
         outputs.content
@@ -276,6 +279,19 @@ extension QueueListView: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         selectionChangedSubject.send()
+    }
+}
+
+extension QueueListView: SongListCellDelegate {
+
+    func songListCellTapped(_ cell: SongListCell) {
+        guard
+            let indexPath = collectionView.indexPath(for: cell),
+            let index = Self.vmIndex(for: indexPath)
+        else {
+            return
+        }
+        tappedItemSubject.send(index)
     }
 }
 

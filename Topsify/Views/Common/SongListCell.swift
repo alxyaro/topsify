@@ -3,9 +3,18 @@
 import Reusable
 import UIKit
 
+protocol SongListCellDelegate: AnyObject {
+    func songListCellTapped(_ cell: SongListCell)
+}
+
 final class SongListCell: UICollectionViewListCell, Reusable {
     private static let accessoryTintColor = UIColor(named: "ListAccessoryTintColor")
     private static let accessoryActiveColor = UIColor.appTextPrimary
+
+    struct Options {
+        var showThumbnail = false
+        var includeEditingAccessories = false
+    }
 
     private let thumbnailView = ThumbnailView()
 
@@ -15,11 +24,6 @@ final class SongListCell: UICollectionViewListCell, Reusable {
         button.constrainHeight(to: 30)
         return button
     }()
-
-    struct Options {
-        var showThumbnail = false
-        var includeEditingAccessories = false
-    }
 
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -40,6 +44,8 @@ final class SongListCell: UICollectionViewListCell, Reusable {
         label.requireIntrinsicHeight()
         return label
     }()
+
+    private weak var delegate: SongListCellDelegate?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -73,6 +79,9 @@ final class SongListCell: UICollectionViewListCell, Reusable {
         mainStackView.constrainEdgesToSuperview(excluding: .vertical, withInsets: .horizontal(16), withPriorities: .forCellSizing)
         titleStackView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
         titleStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12).priority(.justLessThanRequired).isActive = true
+
+        let recognizer = UITapGestureRecognizer(target: self, action: #selector(handleContentTap))
+        contentView.addGestureRecognizer(recognizer)
     }
 
     override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
@@ -91,7 +100,9 @@ final class SongListCell: UICollectionViewListCell, Reusable {
         accessories = []
     }
 
-    func configure(with viewModel: SongListCellViewModel, options: Options = .init()) {
+    func configure(with viewModel: SongListCellViewModel, delegate: SongListCellDelegate? = nil, options: Options = .init()) {
+        self.delegate = delegate
+
         directionalLayoutMargins = .horizontal(16)
 
         let outputs = viewModel.bind(inputs: .init(
@@ -126,6 +137,10 @@ final class SongListCell: UICollectionViewListCell, Reusable {
                 )
             ]
         }
+    }
+
+    @objc private func handleContentTap() {
+        delegate?.songListCellTapped(self)
     }
 
     static func computePreferredHeight() -> CGFloat {
