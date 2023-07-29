@@ -3,8 +3,9 @@
 import UIKit
 
 final class QueueListLayout: UICollectionViewCompositionalLayout {
-    private static let queueSectionIndex = 1
-    private static let upNextSectionIndex = 2
+    private static let topEmptySpacerSectionIndex = QueueListView.Section.topEmptySpacer.index
+    private static let queueSectionIndex = QueueListView.Section.nextInQueue.index
+    private static let upNextSectionIndex = QueueListView.Section.nextFromSource.index
 
     private class CollectionState {
         var emptySectionIndices = Set<Int>()
@@ -31,6 +32,11 @@ final class QueueListLayout: UICollectionViewCompositionalLayout {
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitems: [item])
                 let section = NSCollectionLayoutSection(group: group)
 
+                if sectionIndex == Self.topEmptySpacerSectionIndex {
+                    section.contentInsets.bottom = 20
+                    return section
+                }
+
                 let headerSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(1),
                     heightDimension: .absolute(QueueListHeaderView.computePreferredHeight())
@@ -48,10 +54,12 @@ final class QueueListLayout: UICollectionViewCompositionalLayout {
                     section.boundarySupplementaryItems = [header]
                     section.contentInsets.top = 0
                     section.contentInsets.bottom = sectionIndex < Self.upNextSectionIndex ? 20 : 0
-                } else if sectionIndex == Self.queueSectionIndex {
-                    /// Give the queue section a little bit of extra height when empty, as to make the interactive move into this
-                    /// empty section a little easier (the drag will be easier to control and more predictable).
-                    section.contentInsets.bottom = 24
+                } else {
+                    if sectionIndex == Self.queueSectionIndex {
+                        /// Give the queue section a little bit of extra height when empty, as to make the interactive move into this
+                        /// empty section a little easier (the drag will be easier to control and more predictable).
+                        section.contentInsets.bottom = 24
+                    }
                 }
 
                 return section
