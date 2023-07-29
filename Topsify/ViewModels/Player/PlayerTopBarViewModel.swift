@@ -5,6 +5,7 @@ import Foundation
 
 final class PlayerTopBarViewModel {
     private let dependencies: Dependencies
+    private var disposeBag = DisposeBag()
 
     init(dependencies: Dependencies) {
         self.dependencies = dependencies
@@ -15,6 +16,10 @@ final class PlayerTopBarViewModel {
     }
 
     private func bind(inputs: Inputs, playbackQueue: some PlaybackQueueType) -> Outputs {
+        inputs.tappedDismissButton
+            .subscribe(dependencies.tappedDismissButtonSubject)
+            .store(in: &disposeBag)
+
         return Outputs(
             title: Publishers.CombineLatest(
                 playbackQueue.source,
@@ -41,9 +46,12 @@ extension PlayerTopBarViewModel {
 
     struct Dependencies {
         let playbackQueue: any PlaybackQueueType
+        let tappedDismissButtonSubject: any Subject<Void, Never>
     }
 
-    typealias Inputs = Void
+    struct Inputs {
+        let tappedDismissButton: AnyPublisher<Void, Never>
+    }
 
     struct Outputs {
         let title: AnyPublisher<String?, Never>
@@ -56,7 +64,8 @@ extension PlayerTopBarViewModel.Dependencies {
 
     static func live() -> Self {
         .init(
-            playbackQueue: Environment.current.playbackQueue
+            playbackQueue: Environment.current.playbackQueue,
+            tappedDismissButtonSubject: PassthroughSubject()
         )
     }
 }

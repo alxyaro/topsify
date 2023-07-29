@@ -23,4 +23,24 @@ final class PlayerViewModelTests: XCTestCase {
         XCTAssertEqual(backgroundGradient.top, HexColor(accentColorHex, shadedBy: 0.2))
         XCTAssertEqual(backgroundGradient.bottom, HexColor(accentColorHex, shadedBy: 0.7))
     }
+
+    func testOutput_dismiss_derivedFromTopBarViewModel() {
+        let viewModel = PlayerViewModel(dependencies: .init(playbackQueue: MockPlaybackQueue()))
+
+        let tappedDismissButtonPublisher = TestPublisher<Void, Never>()
+
+        _ = viewModel.topBarViewModel.bind(inputs: .mock(
+            tappedDismissButton: tappedDismissButtonPublisher.eraseToAnyPublisher()
+        ))
+
+        let outputs = viewModel.bind(inputs: ())
+
+        let dismiss = TestSubscriber.subscribe(to: outputs.dismiss)
+
+        XCTAssertEqual(dismiss.pollValues().count, 0)
+
+        tappedDismissButtonPublisher.send()
+
+        XCTAssertEqual(dismiss.pollValues().count, 1)
+    }
 }

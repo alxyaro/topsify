@@ -120,6 +120,15 @@ final class PlayerViewController: UIViewController {
                 }
             }
             .store(in: &disposeBag)
+
+        outputs.dismiss
+            .sink { [weak self] in
+                guard let self, let presentingViewController, !isBeingDismissed else {
+                    return
+                }
+                presentingViewController.dismiss(animated: true)
+            }
+            .store(in: &disposeBag)
     }
 }
 

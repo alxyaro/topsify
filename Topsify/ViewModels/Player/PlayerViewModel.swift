@@ -5,17 +5,22 @@ import DynamicColor
 import Foundation
 
 final class PlayerViewModel {
-    private let dependencies: Dependencies
 
     let topBarViewModel: PlayerTopBarViewModel
     let stageViewModel: PlayerStageViewModel
     let titleViewModel: PlayerTitleViewModel
     let controlsViewModel: PlayerControlsViewModel
 
+    private let dependencies: Dependencies
+    private let tappedDismissButtonSubject = PassthroughSubject<Void, Never>()
+
     init(dependencies: Dependencies) {
         self.dependencies = dependencies
 
-        self.topBarViewModel = .init(dependencies: .init(playbackQueue: dependencies.playbackQueue))
+        self.topBarViewModel = .init(dependencies: .init(
+            playbackQueue: dependencies.playbackQueue,
+            tappedDismissButtonSubject: tappedDismissButtonSubject
+        ))
         self.stageViewModel = .init(playbackQueue: dependencies.playbackQueue)
         self.titleViewModel = .init(dependencies: .init(playbackQueue: dependencies.playbackQueue))
         self.controlsViewModel = .init(dependencies: .init(playbackQueue: dependencies.playbackQueue))
@@ -35,6 +40,8 @@ final class PlayerViewModel {
                         bottom: HexColor(accentColorHex, shadedBy: 0.7)
                     )
                 }
+                .eraseToAnyPublisher(),
+            dismiss: tappedDismissButtonSubject
                 .eraseToAnyPublisher()
         )
     }
@@ -52,6 +59,7 @@ extension PlayerViewModel {
 
     struct Outputs {
         let backgroundGradient: AnyPublisher<(top: HexColor, bottom: HexColor), Never>
+        let dismiss: AnyPublisher<Void, Never>
     }
 }
 

@@ -73,7 +73,9 @@ final class PlayerTopBarView: UIView {
     }
 
     private func bindViewModel() {
-        let outputs = viewModel.bind(inputs: ())
+        let outputs = viewModel.bind(inputs: .init(
+            tappedDismissButton: dismissButton.tapPublisher
+        ))
 
         outputs.title
             .sink { [weak self] in
