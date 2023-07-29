@@ -98,6 +98,21 @@ final class SongListCell: UICollectionViewListCell, Reusable {
         layer.zPosition = CGFloat(layoutAttributes.zIndex)
     }
 
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        guard !accessories.isEmpty else {
+            return super.point(inside: point, with: event)
+        }
+
+        // When the multiselect accessory is active, the UICollectionView seems to process touch events
+        // related to it, not the cell itself. Even if the UICollectionView deems the user tapped the
+        // accessory (and selects/deselects the cell), the touch event will still get propagated to the
+        // cell itself. This can result in the TapGestureRecognizer on the contentView getting triggered
+        // simultaneously! To avoid the conflict, reduce the touch area when the accessory is active.
+
+        let touchSurface = contentView.frame.insetBy(dx: 16, dy: 0)
+        return touchSurface.contains(point)
+    }
+
     override func prepareForReuse() {
         super.prepareForReuse()
 
