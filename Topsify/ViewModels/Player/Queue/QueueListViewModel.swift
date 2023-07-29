@@ -56,18 +56,17 @@ final class QueueListViewModel {
             }
             .store(in: &disposeBag)
 
+        inputs.tappedOptionsButtonAt
+            .sink { index in
+                // TODO: handle options button tap
+            }
+            .store(in: &disposeBag)
+
         return Outputs(
             content: playbackQueue.state
                 .map { state in
                     Content(
-                        nowPlaying: state.activeItem.map {
-                            ListItem.from(
-                                $0,
-                                optionsButtonState: .shown {
-                                    // TODO: handle options button tap
-                                }
-                            )
-                        },
+                        nowPlaying: state.activeItem.map { ListItem.from($0, showOptionsButton: true) },
                         nextInQueue: state.userQueue.map { ListItem.from($0) },
                         nextFromSource: state.upNext.prefix(100).map { ListItem.from($0) }
                     )
@@ -109,6 +108,7 @@ extension QueueListViewModel {
         let movedItem: AnyPublisher<ItemMovement, Never>
         let selectedItemIndices: AnyPublisher<[ItemIndex], Never>
         let tappedItem: AnyPublisher<ItemIndex, Never>
+        let tappedOptionsButtonAt: AnyPublisher<ItemIndex, Never>
     }
 
     struct Outputs {
@@ -154,13 +154,13 @@ extension QueueListViewModel {
 
         static func from(
             _ playbackQueueItem: PlaybackQueueItem,
-            optionsButtonState: SongListCellViewModel.ButtonState = .hidden
+            showOptionsButton: Bool = false
         ) -> Self {
             .init(
                 id: playbackQueueItem.id,
                 viewModel: .init(
                     song: playbackQueueItem.song,
-                    optionsButtonState: optionsButtonState
+                    showOptionsButton: showOptionsButton
                 )
             )
         }

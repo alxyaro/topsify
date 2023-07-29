@@ -116,6 +116,7 @@ final class QueueListView: UIView {
     private let movedItemSubject = PassthroughSubject<QueueListViewModel.ItemMovement, Never>()
     private let selectionChangedSubject = PassthroughSubject<Void, Never>()
     private let tappedItemSubject = PassthroughSubject<QueueListViewModel.ItemIndex, Never>()
+    private let tappedOptionsButtonAtSubject = PassthroughSubject<QueueListViewModel.ItemIndex, Never>()
     private var disposeBag = DisposeBag()
 
     init(viewModel: QueueListViewModel) {
@@ -152,7 +153,8 @@ final class QueueListView: UIView {
                     self?.collectionView.indexPathsForSelectedItems?.compactMap(Self.vmIndex(for:)) ?? []
                 }
                 .eraseToAnyPublisher(),
-            tappedItem: tappedItemSubject.eraseToAnyPublisher()
+            tappedItem: tappedItemSubject.eraseToAnyPublisher(),
+            tappedOptionsButtonAt: tappedOptionsButtonAtSubject.eraseToAnyPublisher()
         ))
 
         outputs.content
@@ -288,10 +290,16 @@ extension QueueListView: SongListCellDelegate {
         guard
             let indexPath = collectionView.indexPath(for: cell),
             let index = Self.vmIndex(for: indexPath)
-        else {
-            return
-        }
+        else { return }
         tappedItemSubject.send(index)
+    }
+
+    func songListCellOptionsButtonTapped(_ cell: SongListCell) {
+        guard
+            let indexPath = collectionView.indexPath(for: cell),
+            let index = Self.vmIndex(for: indexPath)
+        else { return }
+        tappedOptionsButtonAtSubject.send(index)
     }
 }
 

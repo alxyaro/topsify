@@ -5,34 +5,22 @@ import Foundation
 
 final class SongListCellViewModel {
     private let song: Song
-    private let optionsButtonState: ButtonState
+    private let showOptionsButton: Bool
 
-    private var disposeBag = DisposeBag()
+    private(set) lazy var outputs = Outputs(
+        artworkURL: song.imageURL,
+        title: song.title,
+        subtitle: song.artists.map(\.name).commaJoined(),
+        showExplicitLabel: song.isExplicit,
+        showOptionsButton: showOptionsButton
+    )
 
     init(
         song: Song,
-        optionsButtonState: ButtonState = .hidden
+        showOptionsButton: Bool = true
     ) {
         self.song = song
-        self.optionsButtonState = optionsButtonState
-    }
-
-    func bind(inputs: Inputs) -> Outputs {
-        disposeBag = .init()
-
-        if case .shown(let tapHandler) = optionsButtonState {
-            inputs.tappedOptionsButton
-                .sink(receiveValue: tapHandler)
-                .store(in: &disposeBag)
-        }
-
-        return Outputs(
-            artworkURL: song.imageURL,
-            title: song.title,
-            subtitle: song.artists.map(\.name).commaJoined(),
-            showExplicitLabel: song.isExplicit,
-            showOptionsButton: optionsButtonState.isShown
-        )
+        self.showOptionsButton = showOptionsButton
     }
 }
 
@@ -40,27 +28,11 @@ final class SongListCellViewModel {
 
 extension SongListCellViewModel {
 
-    struct Inputs {
-        let tappedOptionsButton: AnyPublisher<Void, Never>
-    }
-
     struct Outputs {
         let artworkURL: URL
         let title: String
         let subtitle: String
         let showExplicitLabel: Bool
         let showOptionsButton: Bool
-    }
-
-    enum ButtonState {
-        case hidden
-        case shown(tapHandler: () -> Void)
-
-        var isShown: Bool {
-            switch self {
-            case .shown: return true
-            default: return false
-            }
-        }
     }
 }

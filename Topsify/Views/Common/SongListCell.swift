@@ -5,6 +5,7 @@ import UIKit
 
 protocol SongListCellDelegate: AnyObject {
     func songListCellTapped(_ cell: SongListCell)
+    func songListCellOptionsButtonTapped(_ cell: SongListCell)
 }
 
 final class SongListCell: UICollectionViewListCell, Reusable {
@@ -51,6 +52,7 @@ final class SongListCell: UICollectionViewListCell, Reusable {
         super.init(frame: frame)
 
         setUpView()
+        setUpUserInteraction()
     }
 
     required init?(coder: NSCoder) {
@@ -74,14 +76,21 @@ final class SongListCell: UICollectionViewListCell, Reusable {
         mainStackView.axis = .horizontal
         mainStackView.spacing = 12
         mainStackView.alignment = .center
+        mainStackView.directionalLayoutMargins = .horizontal(16)
+        mainStackView.isLayoutMarginsRelativeArrangement = true
 
         contentView.addSubview(mainStackView)
-        mainStackView.constrainEdgesToSuperview(excluding: .vertical, withInsets: .horizontal(16), withPriorities: .forCellSizing)
+        mainStackView.constrainEdgesToSuperview(excluding: .vertical, withPriorities: .forCellSizing)
         titleStackView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
         titleStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12).priority(.justLessThanRequired).isActive = true
+    }
 
-        let recognizer = UITapGestureRecognizer(target: self, action: #selector(handleContentTap))
-        contentView.addGestureRecognizer(recognizer)
+    private func setUpUserInteraction() {
+        let contentTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleContentTap))
+        contentTapGestureRecognizer.delegate = self
+        contentView.addGestureRecognizer(contentTapGestureRecognizer)
+
+        optionsButton.addTarget(self, action: #selector(handleOptionsButtonTap), for: .touchUpInside)
     }
 
     override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
@@ -100,23 +109,19 @@ final class SongListCell: UICollectionViewListCell, Reusable {
         accessories = []
     }
 
-    func configure(with viewModel: SongListCellViewModel, delegate: SongListCellDelegate? = nil, options: Options = .init()) {
+    func configure(with viewModel: SongListCellViewModel, delegate: SongListCellDelegate?, options: Options = .init()) {
         self.delegate = delegate
 
         directionalLayoutMargins = .horizontal(16)
 
-        let outputs = viewModel.bind(inputs: .init(
-            tappedOptionsButton: optionsButton.tapPublisher
-        ))
-
-        titleLabel.text = outputs.title
-        subtitleLabel.text = outputs.subtitle
-        explicitLabelView.isHidden = !outputs.showExplicitLabel
-        optionsButton.isHidden = !outputs.showOptionsButton
+        titleLabel.text = viewModel.outputs.title
+        subtitleLabel.text = viewModel.outputs.subtitle
+        explicitLabelView.isHidden = !viewModel.outputs.showExplicitLabel
+        optionsButton.isHidden = !viewModel.outputs.showOptionsButton
 
         if options.showThumbnail {
             thumbnailView.isHidden = false
-            thumbnailView.configure(with: outputs.artworkURL)
+            thumbnailView.configure(with: viewModel.outputs.artworkURL)
         } else {
             thumbnailView.isHidden = true
         }
@@ -143,6 +148,10 @@ final class SongListCell: UICollectionViewListCell, Reusable {
         delegate?.songListCellTapped(self)
     }
 
+    @objc private func handleOptionsButtonTap() {
+        delegate?.songListCellOptionsButtonTapped(self)
+    }
+
     static func computePreferredHeight() -> CGFloat {
         let sampleCell = SongListCell(frame: .zero)
         sampleCell.titleLabel.text = "Title"
@@ -150,6 +159,13 @@ final class SongListCell: UICollectionViewListCell, Reusable {
         sampleCell.explicitLabelView.isHidden = false
         let size = sampleCell.systemLayoutSizeFitting(.init(width: 400, height: 0), withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
         return size.height
+    }
+}
+
+extension SongListCell: UIGestureRecognizerDelegate {
+
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        return !(touch.view is UIControl)
     }
 }
 

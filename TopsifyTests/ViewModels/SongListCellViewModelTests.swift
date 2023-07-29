@@ -8,22 +8,14 @@ import CombineExt
 
 final class SongListCellViewModelTests: XCTestCase {
 
-    func testInput_tappedOptionsButton_callsOptionsButtonStateHandler() {
-        var tapHandlerCalled = false
-        let viewModel = SongListCellViewModel(song: .mock(), optionsButtonState: .shown(tapHandler: {
-            tapHandlerCalled = true
-        }))
+    func testOutputs_correctlyDerivedFromInitParams() {
+        let song = Song.mock(imageURL: .imageMock(), title: "Some song", isExplicit: true)
+        let viewModel = SongListCellViewModel(song: song, showOptionsButton: true)
 
-        let tappedOptionsButton = TestPublisher<Void, Never>()
-
-        _ = viewModel.bind(inputs: .init(
-            tappedOptionsButton: tappedOptionsButton.eraseToAnyPublisher()
-        ))
-
-        XCTAssertFalse(tapHandlerCalled)
-
-        tappedOptionsButton.send()
-
-        XCTAssertTrue(tapHandlerCalled)
+        XCTAssertEqual(viewModel.outputs.artworkURL, song.imageURL)
+        XCTAssertEqual(viewModel.outputs.title, song.title)
+        XCTAssertEqual(viewModel.outputs.subtitle, song.artists.map(\.name).commaJoined())
+        XCTAssertEqual(viewModel.outputs.showExplicitLabel, song.isExplicit)
+        XCTAssertEqual(viewModel.outputs.showOptionsButton, true)
     }
 }

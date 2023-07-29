@@ -130,6 +130,8 @@ final class QueueListViewModelTests: XCTestCase {
         XCTAssertEqual(goToItemAtIndex.pollValues().map(\.index), [.upNext(5)])
     }
 
+    // TODO: testInput_tappedOptionsButtonAt_ ...
+
     func testDelegateMethod_selectionMenuRemoveButtonTapped_callsPlaybackQueue() {
         let playbackQueue = MockPlaybackQueue()
         let viewModel = QueueListViewModel(dependencies: .init(playbackQueue: playbackQueue))
@@ -207,12 +209,14 @@ private extension QueueListViewModel.Inputs {
     static func mock(
         movedItem: AnyPublisher<QueueListViewModel.ItemMovement, Never> = .never(),
         selectedItemIndices: AnyPublisher<[QueueListViewModel.ItemIndex], Never> = .never(),
-        tappedItem: AnyPublisher<QueueListViewModel.ItemIndex, Never> = .never()
+        tappedItem: AnyPublisher<QueueListViewModel.ItemIndex, Never> = .never(),
+        tappedOptionsButtonAt: AnyPublisher<QueueListViewModel.ItemIndex, Never> = .never()
     ) -> Self {
         .init(
             movedItem: movedItem,
             selectedItemIndices: selectedItemIndices,
-            tappedItem: tappedItem
+            tappedItem: tappedItem,
+            tappedOptionsButtonAt: tappedOptionsButtonAt
         )
     }
 }
