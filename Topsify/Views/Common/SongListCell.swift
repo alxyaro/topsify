@@ -109,7 +109,14 @@ final class SongListCell: UICollectionViewListCell, Reusable {
         // cell itself. This can result in the TapGestureRecognizer on the contentView getting triggered
         // simultaneously! To avoid the conflict, reduce the touch area when the accessory is active.
 
-        let touchSurface = contentView.frame.insetBy(dx: 16, dy: 0)
+        var insets = UIEdgeInsets.zero
+        if traitCollection.layoutDirection == .leftToRight {
+            insets.left = contentView.frame.minX + 16
+        } else {
+            insets.right = (bounds.maxX - contentView.frame.maxX) + 16
+        }
+
+        let touchSurface = bounds.inset(by: insets)
         return touchSurface.contains(point)
     }
 
