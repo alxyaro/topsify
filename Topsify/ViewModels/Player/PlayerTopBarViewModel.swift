@@ -57,15 +57,3 @@ extension PlayerTopBarViewModel {
         let title: AnyPublisher<String?, Never>
     }
 }
-
-// MARK: - Live Dependencies
-
-extension PlayerTopBarViewModel.Dependencies {
-
-    static func live() -> Self {
-        .init(
-            playbackQueue: Environment.current.playbackQueue,
-            tappedDismissButtonSubject: PassthroughSubject()
-        )
-    }
-}

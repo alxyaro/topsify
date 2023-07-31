@@ -13,11 +13,8 @@ final class QueueViewModelTests: XCTestCase {
 
         let selectedItemIndicesPublisher = TestPublisher<[QueueListViewModel.ItemIndex], Never>()
 
-        _ = viewModel.listViewModel.bind(inputs: .init(
-            movedItem: .never(),
-            selectedItemIndices: selectedItemIndicesPublisher.eraseToAnyPublisher(),
-            tappedItem: .never(),
-            tappedOptionsButtonAt: .never()
+        _ = viewModel.listViewModel.bind(inputs: .mock(
+            selectedItemIndices: selectedItemIndicesPublisher.eraseToAnyPublisher()
         ))
 
         let outputs = viewModel.bind(inputs: .init())
@@ -42,5 +39,23 @@ final class QueueViewModelTests: XCTestCase {
 
         XCTAssertEqual(try showPlaybackControls.pollOnlyValue(), true)
         XCTAssertEqual(try showSelectionMenu.pollOnlyValue(), false)
+    }
+
+    func testOutput_dismiss_derivedFromTopBarViewModel() {
+        let viewModel = QueueViewModel(dependencies: .init(playbackQueue: MockPlaybackQueue()))
+
+        let tappedDismissButtonPublisher = TestPublisher<Void, Never>()
+        _ = viewModel.topBarViewModel.bind(inputs: .mock(
+            tappedDismissButton: tappedDismissButtonPublisher.eraseToAnyPublisher()
+        ))
+
+        let outputs = viewModel.bind(inputs: .init())
+        let dismissSubscriber = TestSubscriber.subscribe(to: outputs.dismiss)
+
+        XCTAssertEqual(dismissSubscriber.pollValues().count, 0)
+
+        tappedDismissButtonPublisher.send()
+
+        XCTAssertEqual(dismissSubscriber.pollValues().count, 1)
     }
 }

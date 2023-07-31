@@ -4,14 +4,22 @@ import Combine
 import Foundation
 
 final class QueueViewModel {
+    let topBarViewModel: PlayerTopBarViewModel
     let listViewModel: QueueListViewModel
     let selectionMenuViewModel: QueueSelectionMenuViewModel
 
     private let dependencies: Dependencies
+    private let tappedDismissButtonSubject = PassthroughSubject<Void, Never>()
 
     init(dependencies: Dependencies) {
         self.dependencies = dependencies
 
+        topBarViewModel = .init(
+            dependencies: .init(
+                playbackQueue: dependencies.playbackQueue,
+                tappedDismissButtonSubject: tappedDismissButtonSubject
+            )
+        )
         listViewModel = .init(
             dependencies: .init(
                 playbackQueue: dependencies.playbackQueue
@@ -34,6 +42,8 @@ final class QueueViewModel {
                 .eraseToAnyPublisher(),
             showSelectionMenu: listViewModel
                 .hasSelectedItems
+                .eraseToAnyPublisher(),
+            dismiss: tappedDismissButtonSubject
                 .eraseToAnyPublisher()
         )
     }
@@ -54,6 +64,7 @@ extension QueueViewModel {
     struct Outputs {
         let showPlaybackControls: AnyPublisher<Bool, Never>
         let showSelectionMenu: AnyPublisher<Bool, Never>
+        let dismiss: AnyPublisher<Void, Never>
     }
 }
 

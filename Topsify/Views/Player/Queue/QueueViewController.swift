@@ -4,12 +4,7 @@ import UIKit
 
 final class QueueViewController: UIViewController {
 
-    private let topBar = PlayerTopBarView(
-        viewModel: .init(dependencies: .live()),
-        dismissButtonIcon: "Icons/x",
-        showOptionsButton: false
-    )
-
+    private let topBarView: PlayerTopBarView
     private let queueListView: QueueListView
     private let selectionMenuView: QueueSelectionMenuView
 
@@ -26,6 +21,11 @@ final class QueueViewController: UIViewController {
     init(viewModel: QueueViewModel) {
         self.viewModel = viewModel
 
+        topBarView = .init(
+            viewModel: viewModel.topBarViewModel,
+            dismissButtonIcon: "Icons/x",
+            showOptionsButton: false
+        )
         queueListView = .init(viewModel: viewModel.listViewModel)
         selectionMenuView = .init(viewModel: viewModel.selectionMenuViewModel)
 
@@ -55,12 +55,12 @@ final class QueueViewController: UIViewController {
     private func setUpView() {
         view.backgroundColor = .appBackground
 
-        view.addSubview(topBar)
-        topBar.constrainEdges(to: view.safeAreaLayoutGuide, excluding: .bottom)
+        view.addSubview(topBarView)
+        topBarView.constrainEdges(to: view.safeAreaLayoutGuide, excluding: .bottom)
 
         view.addSubview(queueListView)
         queueListView.constrainEdgesToSuperview(excluding: .top)
-        queueListView.topAnchor.constraint(equalTo: topBar.bottomAnchor).isActive = true
+        queueListView.topAnchor.constraint(equalTo: topBarView.bottomAnchor).isActive = true
 
         view.addSubview(controlsView)
         controlsView.constrainEdges(to: view.safeAreaLayoutGuide, excluding: .top)
@@ -97,6 +97,15 @@ final class QueueViewController: UIViewController {
                 } else {
                     self?.selectionMenuView.fadeOut(withDuration: selectionMenuTransitionDuration)
                 }
+            }
+            .store(in: &disposeBag)
+
+        outputs.dismiss
+            .sink { [weak self] in
+                guard let self, let presentingViewController, !isBeingDismissed else {
+                    return
+                }
+                presentingViewController.dismiss(animated: true)
             }
             .store(in: &disposeBag)
     }

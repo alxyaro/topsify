@@ -204,7 +204,7 @@ final class QueueListViewModelTests: XCTestCase {
     }
 }
 
-private extension QueueListViewModel.Inputs {
+extension QueueListViewModel.Inputs {
 
     static func mock(
         movedItem: AnyPublisher<QueueListViewModel.ItemMovement, Never> = .never(),
