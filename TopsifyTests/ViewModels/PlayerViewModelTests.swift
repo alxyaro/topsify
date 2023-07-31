@@ -8,6 +8,24 @@ import CombineExt
 
 final class PlayerViewModelTests: XCTestCase {
 
+    func testInput_tappedQueueButton_sendOutput_presentQueue() {
+        let viewModel = PlayerViewModel(dependencies: .init(playbackQueue: MockPlaybackQueue()))
+
+        let tappedQueueButtonPublisher = TestPublisher<Void, Never>()
+
+        let outputs = viewModel.bind(inputs: .mock(
+            tappedQueueButton: tappedQueueButtonPublisher.eraseToAnyPublisher()
+        ))
+
+        let presentQueue = TestSubscriber.subscribe(to: outputs.presentQueue)
+
+        XCTAssertEqual(presentQueue.pollValues().count, 0)
+
+        tappedQueueButtonPublisher.send()
+
+        XCTAssertEqual(presentQueue.pollValues().count, 1)
+    }
+
     func testOutput_backgroundGradient_derivedFromActiveItemOfPlaybackQueue() throws {
         let accentColorHex = "#d6121e"
         let playbackQueue = MockPlaybackQueue()
@@ -15,7 +33,7 @@ final class PlayerViewModelTests: XCTestCase {
 
         let viewModel = PlayerViewModel(dependencies: .init(playbackQueue: playbackQueue))
 
-        let outputs = viewModel.bind(inputs: ())
+        let outputs = viewModel.bind(inputs: .mock())
 
         let backgroundGradientSubscriber = TestSubscriber.subscribe(to: outputs.backgroundGradient)
         let backgroundGradient = try backgroundGradientSubscriber.pollOnlyValue()
@@ -33,7 +51,7 @@ final class PlayerViewModelTests: XCTestCase {
             tappedDismissButton: tappedDismissButtonPublisher.eraseToAnyPublisher()
         ))
 
-        let outputs = viewModel.bind(inputs: ())
+        let outputs = viewModel.bind(inputs: .mock())
 
         let dismiss = TestSubscriber.subscribe(to: outputs.dismiss)
 
@@ -42,5 +60,16 @@ final class PlayerViewModelTests: XCTestCase {
         tappedDismissButtonPublisher.send()
 
         XCTAssertEqual(dismiss.pollValues().count, 1)
+    }
+}
+
+extension PlayerViewModel.Inputs {
+
+    static func mock(
+        tappedQueueButton: AnyPublisher<Void, Never> = .never()
+    ) -> Self {
+        .init(
+            tappedQueueButton: tappedQueueButton
+        )
     }
 }

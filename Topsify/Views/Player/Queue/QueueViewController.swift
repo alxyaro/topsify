@@ -30,6 +30,9 @@ final class QueueViewController: UIViewController {
         selectionMenuView = .init(viewModel: viewModel.selectionMenuViewModel)
 
         super.init(nibName: nil, bundle: nil)
+
+        modalPresentationStyle = .fullScreen
+        modalTransitionStyle = .crossDissolve
     }
 
     required init?(coder: NSCoder) {

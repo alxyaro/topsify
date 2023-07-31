@@ -110,7 +110,9 @@ final class PlayerViewController: UIViewController {
     }
 
     private func bindViewModel() {
-        let outputs = viewModel.bind(inputs: ())
+        let outputs = viewModel.bind(inputs: .init(
+            tappedQueueButton: subMenuView.queueButton.tapPublisher
+        ))
 
         outputs.backgroundGradient
             .sink { [weak self] top, bottom in
@@ -118,6 +120,16 @@ final class PlayerViewController: UIViewController {
                 CALayer.perform(withDuration: 0.8) {
                     self.backgroundGradientLayer.colors = [top.uiColor.cgColor, bottom.uiColor.cgColor]
                 }
+            }
+            .store(in: &disposeBag)
+
+        outputs.presentQueue
+            .sink { [weak self] in
+                guard let self, self.presentedViewController == nil else {
+                    return
+                }
+                let vc = QueueViewController(viewModel: .init(dependencies: .live()))
+                present(vc, animated: true)
             }
             .store(in: &disposeBag)
 

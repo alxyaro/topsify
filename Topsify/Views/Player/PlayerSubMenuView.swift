@@ -3,9 +3,9 @@
 import UIKit
 
 final class PlayerSubMenuView: UIView {
-    private let outputDeviceButton = createButton(icon: "Icons/devices", scale: 0.8)
-    private let shareButton = createButton(icon: "Icons/share")
-    private let queueButton = createButton(icon: "Icons/queue")
+    let outputDeviceButton = createButton(icon: "Icons/devices", scale: 0.8)
+    let shareButton = createButton(icon: "Icons/share")
+    let queueButton = createButton(icon: "Icons/queue")
 
     init() {
         super.init(frame: .zero)

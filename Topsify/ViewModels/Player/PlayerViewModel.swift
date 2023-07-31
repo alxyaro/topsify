@@ -41,6 +41,7 @@ final class PlayerViewModel {
                     )
                 }
                 .eraseToAnyPublisher(),
+            presentQueue: inputs.tappedQueueButton,
             dismiss: tappedDismissButtonSubject
                 .eraseToAnyPublisher()
         )
@@ -55,10 +56,13 @@ extension PlayerViewModel {
         let playbackQueue: any PlaybackQueueType
     }
 
-    typealias Inputs = Void
+    struct Inputs {
+        let tappedQueueButton: AnyPublisher<Void, Never>
+    }
 
     struct Outputs {
         let backgroundGradient: AnyPublisher<(top: HexColor, bottom: HexColor), Never>
+        let presentQueue: AnyPublisher<Void, Never>
         let dismiss: AnyPublisher<Void, Never>
     }
 }
