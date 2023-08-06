@@ -8,7 +8,7 @@ final class QueueViewController: UIViewController {
     private let queueListView: QueueListView
     private let selectionMenuView: QueueSelectionMenuView
 
-    private let controlsBackgroundView = CubicGradientView(color: .appBackground)
+    private let controlsBackgroundView = GradientFadeView(color: .appBackground, direction: .up)
 
     private let controlsView = PlayerControlsView(
         // TODO: inject elsewhere

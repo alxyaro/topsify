@@ -16,7 +16,7 @@ final class BottomAreaViewController: UITabBarController {
 
     private var playerTransitionHandler: TransitionPanGestureHandler?
 
-    private let gradientView = CubicGradientView(color: .init(named: "BackgroundColor"))
+    private let gradientView = GradientFadeView(color: .init(named: "BackgroundColor"), direction: .up)
 
     private let tabsToVCs: [TabBarView.Tab: UIViewController]
     private let activeTabSubject = CurrentValueSubject<TabBarView.Tab, Never>(.home)

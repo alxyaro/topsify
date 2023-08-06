@@ -69,7 +69,7 @@
 		6B403C8429E39E0E00CA6DE0 /* Album+Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B403C8229E39DE100CA6DE0 /* Album+Mock.swift */; };
 		6B444BAA2A3622260063DBD5 /* BottomAreaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B444BA92A3622260063DBD5 /* BottomAreaViewController.swift */; };
 		6B444BAC2A362B9C0063DBD5 /* TabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B444BAB2A362B9C0063DBD5 /* TabBarView.swift */; };
-		6B444BB22A365B880063DBD5 /* CubicGradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B444BB12A365B880063DBD5 /* CubicGradientView.swift */; };
+		6B444BB22A365B880063DBD5 /* GradientFadeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B444BB12A365B880063DBD5 /* GradientFadeView.swift */; };
 		6B444BB52A3FE05B0063DBD5 /* PlayBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B444BB42A3FE05B0063DBD5 /* PlayBarView.swift */; };
 		6B444BB72A40963C0063DBD5 /* PlayBarDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B444BB62A40963C0063DBD5 /* PlayBarDetailsView.swift */; };
 		6B444BB92A4097CC0063DBD5 /* AppIconButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B444BB82A4097CC0063DBD5 /* AppIconButton.swift */; };
@@ -285,7 +285,7 @@
 		6B403C8229E39DE100CA6DE0 /* Album+Mock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Album+Mock.swift"; sourceTree = "<group>"; };
 		6B444BA92A3622260063DBD5 /* BottomAreaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomAreaViewController.swift; sourceTree = "<group>"; };
 		6B444BAB2A362B9C0063DBD5 /* TabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarView.swift; sourceTree = "<group>"; };
-		6B444BB12A365B880063DBD5 /* CubicGradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CubicGradientView.swift; sourceTree = "<group>"; };
+		6B444BB12A365B880063DBD5 /* GradientFadeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientFadeView.swift; sourceTree = "<group>"; };
 		6B444BB42A3FE05B0063DBD5 /* PlayBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayBarView.swift; sourceTree = "<group>"; };
 		6B444BB62A40963C0063DBD5 /* PlayBarDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayBarDetailsView.swift; sourceTree = "<group>"; };
 		6B444BB82A4097CC0063DBD5 /* AppIconButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconButton.swift; sourceTree = "<group>"; };
@@ -653,7 +653,7 @@
 				6BF9690129D726A300EA8B6F /* AppCollectionView.swift */,
 				6BED243E29D7564F002D51C2 /* SpacerView.swift */,
 				6BED244029D75B87002D51C2 /* ExpandedTouchView.swift */,
-				6B444BB12A365B880063DBD5 /* CubicGradientView.swift */,
+				6B444BB12A365B880063DBD5 /* GradientFadeView.swift */,
 				6B444BBA2A40F4AC0063DBD5 /* HorizontalGradientMaskView.swift */,
 				6B04D59E2A4644F000DA0FC2 /* TransitionPanGestureHandler.swift */,
 				6BF3DD242A608B7E00E5F2D0 /* InverseMaskView.swift */,
@@ -1094,7 +1094,7 @@
 				6BF3DD252A608B7E00E5F2D0 /* InverseMaskView.swift in Sources */,
 				6B3571FC27FBA880007CBDF6 /* ContentTileCell.swift in Sources */,
 				6B0C39BC281D9B8A00B59313 /* ImageProvider.swift in Sources */,
-				6B444BB22A365B880063DBD5 /* CubicGradientView.swift in Sources */,
+				6B444BB22A365B880063DBD5 /* GradientFadeView.swift in Sources */,
 				6BF3DD162A5C9E3300E5F2D0 /* QueueViewController.swift in Sources */,
 				6B35720727FBDB78007CBDF6 /* UICollectionReusableView+identifier.swift in Sources */,
 				6B35721727FCFC8D007CBDF6 /* UIColor+AppColors.swift in Sources */,
