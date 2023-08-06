@@ -5,7 +5,9 @@ import UIKit
 extension CGRect {
 
     func expanded(top: CGFloat = 0, bottom: CGFloat = 0, left: CGFloat = 0, right: CGFloat = 0) -> CGRect {
-        Self.init(x: minX - left, y: minY - top, width: width + left + right, height: height + top + bottom)
+        let newWidth = max(0, width + left + right)
+        let newHeight = max(0, height + top + bottom)
+        return CGRect(x: minX - left, y: minY - top, width: newWidth, height: newHeight)
     }
 
     func expanded(horizontal: CGFloat, vertical: CGFloat) -> CGRect {
