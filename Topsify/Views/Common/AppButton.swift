@@ -25,6 +25,12 @@ class AppButton: UIControl {
             }
         }
     }
+
+    override var isEnabled: Bool {
+        didSet {
+            contentView.alpha = isEnabled ? 1 : 0.5
+        }
+    }
     
     init(
         contentView: UIView? = nil,

@@ -5,6 +5,14 @@ import UIKit
 
 final class ArtworkBannerView: BannerView {
 
+    private let artworkPlaceholderView: UIView = {
+        let view = UIView()
+        view.useAutoLayout()
+        view.widthAnchor.constraint(equalToConstant: 260).priority(.justLessThanRequired).isActive = true
+        view.heightAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        return view
+    }()
+
     private let artworkView = RemoteImageView()
 
     private let titleLabel: UILabel = {
@@ -51,14 +59,16 @@ final class ArtworkBannerView: BannerView {
         return view
     }()
 
+    private var artworkPlaceholderViewTopConstraint: NSLayoutConstraint?
+    private var scrollAmount: CGFloat = 0
+    private var disposeBag = DisposeBag()
+
     required init(frame: CGRect) {
         super.init(frame: frame)
 
         downloadButton.isEnabled = false
 
-        // FIXME: lagging when banner is stretching (too many layouts, or layout object issue? try with standard compositional layout)
-        // 25% or so CPU when actively scrolling is okay, but maybe it can be optimized further by making regular cells fixed-height
-
+        artworkView.configure(with: FakeAlbums.catchTheseVibes.imageURL)
         titleLabel.text = FakeAlbums.catchTheseVibes.title
         artistsLabel.text = FakeUsers.pnbRock.name
         artistAvatarImageView.configure(with: FakeUsers.pnbRock.avatarURL)
@@ -66,8 +76,11 @@ final class ArtworkBannerView: BannerView {
 
         directionalLayoutMargins = .init(horizontal: 16, vertical: 0)
 
-        // TODO: remove temp
-        heightAnchor.constraint(greaterThanOrEqualToConstant: 450).priority(.justLessThanRequired).isActive = true
+        addSubview(artworkPlaceholderView)
+        artworkPlaceholderView.useAutoLayout()
+        artworkPlaceholderViewTopConstraint = artworkPlaceholderView.topAnchor.constraint(equalTo: topAnchor).isActive(true)
+        artworkPlaceholderView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+        artworkPlaceholderView.leadingAnchor.constraint(greaterThanOrEqualTo: layoutMarginsGuide.leadingAnchor).isActive = true
 
         let artistRowStack = UIStackView(arrangedSubviews: [artistAvatarImageView, artistsLabel])
         artistRowStack.axis = .horizontal
@@ -82,6 +95,7 @@ final class ArtworkBannerView: BannerView {
 
         addSubview(descriptionStack)
         descriptionStack.useAutoLayout()
+        descriptionStack.topAnchor.constraint(equalTo: artworkPlaceholderView.bottomAnchor, constant: 16).isActive = true
         descriptionStack.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor).isActive = true
 
         let bottomButtonsStack = UIStackView(arrangedSubviews: [
@@ -102,14 +116,58 @@ final class ArtworkBannerView: BannerView {
         addSubview(bottomButtonsStack)
         bottomButtonsStack.constrainEdgesToSuperview(excluding: .top)
         bottomButtonsStack.topAnchor.constraint(equalTo: descriptionStack.bottomAnchor).isActive = true
+
+        addSubview(artworkView)
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        updateArtworkView()
     }
 
     @available(*, unavailable)
-    override func configure(gradientColor: UIColor, scrollDownAmountPublisher: AnyPublisher<CGFloat, Never>) {}
+    override func configure(gradientColor: UIColor, scrollAmountPublisher: AnyPublisher<CGFloat, Never>) {}
 
-    func configure(scrollDownAmountPublisher: AnyPublisher<CGFloat, Never>, topInset: CGFloat, playButton: PlayButton) {
-        super.configure(gradientColor: .red.withAlphaComponent(0.2), scrollDownAmountPublisher: scrollDownAmountPublisher)
+    func configure(
+        scrollAmountPublisher: AnyPublisher<CGFloat, Never>,
+        topInset: CGFloat,
+        playButton: PlayButton
+    ) {
+        super.configure(gradientColor: UIColor(hexString: FakeAlbums.catchTheseVibes.accentColorHex).withAlphaComponent(0.2), scrollAmountPublisher: scrollAmountPublisher)
+
+        disposeBag = DisposeBag()
+
+        artworkPlaceholderViewTopConstraint?.constant = topInset + 12
         playButton.centerYAnchor.constraint(greaterThanOrEqualTo: playButtonPlaceholderView.centerYAnchor).isActive = true
+
+        scrollAmountPublisher
+            .sink { [weak self] scrollAmount in
+                self?.scrollAmount = scrollAmount
+                self?.updateArtworkView()
+            }
+            .store(in: &disposeBag)
+    }
+
+    private func updateArtworkView() {
+        artworkView.frame = artworkPlaceholderView.frame
+        artworkView.alpha = 1
+
+        if scrollAmount < 0 {
+            let maxGrowAmount = 2 * (artworkView.frame.minX - 16)
+            let growScrollFactor: CGFloat = 0.5
+            let growAmount = min(-scrollAmount * growScrollFactor, maxGrowAmount)
+
+            artworkView.frame = artworkView.frame.expanded(by: growAmount / 2)
+            artworkView.center.y -= -scrollAmount / 2
+        } else {
+            let maxShrinkAmount = artworkView.frame.width * 0.2
+            let shrinkScrollFactor: CGFloat = 0.3
+            let shrinkAmount = min(scrollAmount * shrinkScrollFactor, maxShrinkAmount)
+
+            artworkView.frame = artworkView.frame.expanded(by: -shrinkAmount / 2)
+            artworkView.center.y += scrollAmount - shrinkAmount / 2
+            artworkView.alpha = 1 - (shrinkAmount / maxShrinkAmount)
+        }
     }
 
     static func createSideButton(icon: String) -> AppIconButton {

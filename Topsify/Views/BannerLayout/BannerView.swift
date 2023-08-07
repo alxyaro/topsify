@@ -8,7 +8,7 @@ class BannerView: UICollectionReusableView, Reusable {
     static let kind = "BannerView"
 
     private var lastSize = CGSize.zero
-    private var scrollDownAmount = CGFloat.zero
+    private var scrollAmount = CGFloat.zero
 
     private let backgroundGradientView = GradientFadeView(
         color: .clear,
@@ -38,26 +38,26 @@ class BannerView: UICollectionReusableView, Reusable {
         }
     }
 
-    func configure(gradientColor: UIColor, scrollDownAmountPublisher: AnyPublisher<CGFloat, Never>) {
+    func configure(gradientColor: UIColor, scrollAmountPublisher: AnyPublisher<CGFloat, Never>) {
         disposeBag = DisposeBag()
 
         backgroundGradientView.color = gradientColor
 
-        scrollDownAmountPublisher
-            .sink { [weak self] scrollDownAmount in
+        scrollAmountPublisher
+            .sink { [weak self] scrollAmount in
                 guard let self else { return }
-                self.scrollDownAmount = scrollDownAmount
+                self.scrollAmount = scrollAmount
                 updateBackgroundGradient()
             }
             .store(in: &disposeBag)
     }
 
     private func updateBackgroundGradient() {
-        let scrollUpAmount = -scrollDownAmount
+        let bounceAmount = -scrollAmount
 
-        backgroundGradientView.frame = bounds.expanded(top: max(0, scrollUpAmount))
+        backgroundGradientView.frame = bounds.expanded(top: max(0, bounceAmount))
         backgroundGradientView.frame.size.height += 100
-        backgroundGradientView.alpha = 1 - scrollDownAmount.pctInRange(bounds.height * 0.7 ... bounds.height)
+        backgroundGradientView.alpha = 1 - scrollAmount.pctInRange(bounds.height * 0.7 ... bounds.height)
     }
 }
 

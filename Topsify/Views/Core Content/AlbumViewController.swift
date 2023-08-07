@@ -72,8 +72,8 @@ final class AlbumViewController: UIViewController {
             case ArtworkBannerView.kind:
                 let view = collectionView.dequeueBannerView(type: ArtworkBannerView.self)
                 view.configure(
-                    scrollDownAmountPublisher: collectionView.scrollDownAmountPublisher,
-                    topInset: 0,
+                    scrollAmountPublisher: collectionView.scrollAmountPublisher,
+                    topInset: collectionView.safeAreaInsets.top,
                     playButton: playButton
                 )
                 return view
@@ -116,7 +116,7 @@ final class AlbumViewController: UIViewController {
         view.addSubview(playButton)
         playButton.useAutoLayout()
         playButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
-        playButton.centerYAnchor.constraint(greaterThanOrEqualTo: view.safeAreaLayoutGuide.topAnchor, constant: 80).isActive = true
+        playButton.centerYAnchor.constraint(greaterThanOrEqualTo: view.safeAreaLayoutGuide.topAnchor, constant: 50).isActive = true
     }
 }
 

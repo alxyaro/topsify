@@ -5,7 +5,7 @@ import UIKit
 
 extension UICollectionView {
 
-    var scrollDownAmountPublisher: AnyPublisher<CGFloat, Never> {
+    var scrollAmountPublisher: AnyPublisher<CGFloat, Never> {
         didScrollPublisher
             .prepend(())
             .compactMap { [weak self] in
