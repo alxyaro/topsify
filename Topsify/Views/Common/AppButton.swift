@@ -42,7 +42,8 @@ class AppButton: UIControl {
         super.addSubview(contentView)
         contentView.constrainEdgesToSuperview()
     }
-    
+
+    @available(*, unavailable)
     required init(coder: NSCoder) {
         fatalError()
     }

@@ -2,7 +2,7 @@
 
 import UIKit
 
-final class AppIconButton: AppButton {
+class AppIconButton: AppButton {
 
     private let iconImageView: IconImageView = {
         let view = IconImageView()
@@ -49,10 +49,6 @@ final class AppIconButton: AppButton {
         requireIntrinsicDimensions()
 
         updateIcon()
-    }
-
-    required init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 
     override var intrinsicContentSize: CGSize {

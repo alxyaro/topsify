@@ -43,11 +43,6 @@ final class BannerLayout: UICollectionViewCompositionalLayout {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
-        // This is required for the stretchy effect to work:
-        return true
-    }
-
     override func shouldInvalidateLayout(
         forPreferredLayoutAttributes preferredAttributes: UICollectionViewLayoutAttributes,
         withOriginalAttributes originalAttributes: UICollectionViewLayoutAttributes
@@ -55,6 +50,7 @@ final class BannerLayout: UICollectionViewCompositionalLayout {
         if preferredAttributes.areForBanner {
 
             /// ### Important observation on how the compositional layout treats preferred sizing:
+            /// *This used to be relevant as the banner view changed size - but is no longer the case.*
             ///
             /// UICollectionView calls this method after the initial call to `layoutAttributesForElements(in)`, if the cell has different size preference
             /// than what was returned. The compositional layout essentially never returns `true` in the super impl of this method, but if the preferred size is
@@ -105,12 +101,6 @@ final class BannerLayout: UICollectionViewCompositionalLayout {
 
         bannerAttributes.size.height = bannerHeight
         bannerAttributes.frame.origin.y = -topContentInset
-
-        let movedDownOffset = collectionView.bounds.minY + topContentInset
-        if movedDownOffset < 0 {
-            let expandBy = -movedDownOffset
-            bannerAttributes.frame = bannerAttributes.frame.expanded(top: expandBy)
-        }
     }
 }
 

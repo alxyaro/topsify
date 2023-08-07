@@ -37,18 +37,27 @@ final class GradientFadeView: UIView {
         }
     }
 
-    private let color: UIColor
+    var color: UIColor {
+        didSet {
+            setNeedsDisplay()
+        }
+    }
     private let direction: Direction
     private let easing: Easing
 
-    init(color: UIColor, direction: Direction, easing: Easing = .cubicInOut) {
+    init(
+        color: UIColor,
+        direction: Direction,
+        easing: Easing = .cubicInOut,
+        redrawOnBoundsChange: Bool = true
+    ) {
         self.color = color
         self.direction = direction
         self.easing = easing
 
         super.init(frame: .zero)
 
-        contentMode = .redraw
+        contentMode = redrawOnBoundsChange ? .redraw : .scaleToFill
         backgroundColor = .clear
         isUserInteractionEnabled = false
     }
@@ -75,7 +84,7 @@ final class GradientFadeView: UIView {
 
         for stop in 0..<stops {
             let pct = CGFloat(stop) / CGFloat(stops-1)
-            let alpha = easing.ease(pct)
+            let alpha = 1 - easing.ease(1 - pct)
 
             colors.append(color.withAlphaComponent(alpha).cgColor)
             locations.append(pct)

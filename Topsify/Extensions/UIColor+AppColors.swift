@@ -3,6 +3,7 @@
 import UIKit
 
 extension UIColor {
+    static let accent = UIColor(named: "Colors/accent")
     static let appBackground = UIColor(named: "BackgroundColor")!
     static let appCardBackground = UIColor(named: "CardBackgroundColor")!
     static let appTextPrimary = UIColor(named: "TextPrimaryColor")!
