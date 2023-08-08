@@ -86,7 +86,7 @@ final class GradientFadeView: UIView {
             let pct = CGFloat(stop) / CGFloat(stops-1)
             let alpha = 1 - easing.ease(1 - pct)
 
-            colors.append(color.withAlphaComponent(alpha).cgColor)
+            colors.append(color.withAlphaComponent(color.alphaComponent * alpha).cgColor)
             locations.append(pct)
         }
 

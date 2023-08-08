@@ -3,7 +3,7 @@
 import UIKit
 
 final class PlayButton: AppIconButton {
-    static let size: CGFloat = 50
+    static let size: CGFloat = 48
 
     private static let playIcon = "Icons/playCentered"
     private static let pauseIcon = "Icons/pause"

@@ -82,6 +82,8 @@ final class ArtworkBannerView: BannerView {
         artworkPlaceholderView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         artworkPlaceholderView.leadingAnchor.constraint(greaterThanOrEqualTo: layoutMarginsGuide.leadingAnchor).isActive = true
 
+        addSubview(artworkView)
+
         let artistRowStack = UIStackView(arrangedSubviews: [artistAvatarImageView, artistsLabel])
         artistRowStack.axis = .horizontal
         artistRowStack.alignment = .center
@@ -116,8 +118,6 @@ final class ArtworkBannerView: BannerView {
         addSubview(bottomButtonsStack)
         bottomButtonsStack.constrainEdgesToSuperview(excluding: .top)
         bottomButtonsStack.topAnchor.constraint(equalTo: descriptionStack.bottomAnchor).isActive = true
-
-        addSubview(artworkView)
     }
 
     override func layoutSubviews() {
@@ -133,7 +133,7 @@ final class ArtworkBannerView: BannerView {
         topInset: CGFloat,
         playButton: PlayButton
     ) {
-        super.configure(gradientColor: UIColor(hexString: FakeAlbums.catchTheseVibes.accentColorHex).withAlphaComponent(0.2), scrollAmountPublisher: scrollAmountPublisher)
+        super.configure(gradientColor: UIColor(hexString: FakeAlbums.catchTheseVibes.accentColorHex), scrollAmountPublisher: scrollAmountPublisher)
 
         disposeBag = DisposeBag()
 
@@ -154,7 +154,7 @@ final class ArtworkBannerView: BannerView {
 
         if scrollAmount < 0 {
             let maxGrowAmount = 2 * (artworkView.frame.minX - 16)
-            let growScrollFactor: CGFloat = 0.5
+            let growScrollFactor: CGFloat = 0.4
             let growAmount = min(-scrollAmount * growScrollFactor, maxGrowAmount)
 
             artworkView.frame = artworkView.frame.expanded(by: growAmount / 2)
