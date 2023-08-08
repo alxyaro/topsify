@@ -29,7 +29,7 @@ final class HorizontalGradientMaskView: UIView {
 
         guard let gradient = CGGradient(
             colorsSpace: CGColorSpaceCreateDeviceRGB(),
-            colors: [solidColor, UIColor.green.withAlphaComponent(0.1).cgColor] as CFArray,
+            colors: [solidColor, UIColor.clear.cgColor] as CFArray,
             locations: [0.0, 1.0]
         ) else { return }
 
