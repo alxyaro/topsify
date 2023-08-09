@@ -3,12 +3,13 @@
 import UIKit
 
 final class QueueViewController: UIViewController {
+    static let backgroundColor: UIColor = .init(named: "Player/Queue/BackgroundColor")
 
     private let topBarView: PlayerTopBarView
     private let queueListView: QueueListView
     private let selectionMenuView: QueueSelectionMenuView
 
-    private let controlsBackgroundView = GradientFadeView(color: .appBackground, direction: .up)
+    private let controlsBackgroundView = GradientFadeView(color: backgroundColor, direction: .up)
 
     private let controlsView = PlayerControlsView(
         // TODO: inject elsewhere
@@ -53,7 +54,7 @@ final class QueueViewController: UIViewController {
     }
 
     private func setUpView() {
-        view.backgroundColor = .appBackground
+        view.backgroundColor = Self.backgroundColor
 
         view.addSubview(topBarView)
         topBarView.constrainEdges(to: view.safeAreaLayoutGuide, excluding: .bottom)

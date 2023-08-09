@@ -16,7 +16,7 @@ final class QueueListHeaderView: UICollectionReusableView, Reusable {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = .appBackground
+        backgroundColor = QueueViewController.backgroundColor
 
         addSubview(headerLabel)
         headerLabel.constrainEdgesToSuperview(withInsets: .init(top: 8, leading: 16, bottom: 8, trailing: 8), withPriorities: .forCellSizing)
