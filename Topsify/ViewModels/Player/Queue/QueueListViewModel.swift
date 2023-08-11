@@ -35,7 +35,7 @@ final class QueueListViewModel {
 
     private func bind(inputs: Inputs, playbackQueue: some PlaybackQueueType) -> Outputs {
 
-        let resendState = CurrentValueSubject<Void, Never>(())
+        let resendState = PassthroughSubject<Void, Never>()
 
         inputs.movedItem
             .sink { from, to in

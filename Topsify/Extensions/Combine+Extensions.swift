@@ -48,7 +48,7 @@ extension Publisher {
     func reEmit(onOutputFrom publisher: some Publisher) -> AnyPublisher<Output, Failure> {
         Publishers.CombineLatest(
             self,
-            publisher.catch { _ in AnyPublisher.never() }
+            publisher.mapToVoid().prepend(()).catch { _ in AnyPublisher.never() }
         )
         .map(\.0)
         .eraseToAnyPublisher()
