@@ -10,6 +10,7 @@ final class GradientFadeView: UIView {
     }
 
     enum Easing {
+        case linear
         case quadOut
         case quadInOut
         case cubicOut
@@ -17,6 +18,8 @@ final class GradientFadeView: UIView {
 
         func ease(_ x: CGFloat) -> CGFloat {
             switch self {
+            case .linear:
+                return x
             case .quadOut:
                 return 1 - pow(1 - x, 2)
             case .quadInOut:
@@ -74,7 +77,7 @@ final class GradientFadeView: UIView {
             return
         }
 
-        let stops = Int(bounds.height / 10).clamped(to: 2...100)
+        let stops = easing == .linear ? 2 : Int(bounds.height / 10).clamped(to: 2...100)
 
         var colors = [CGColor]()
         var locations = [CGFloat]()

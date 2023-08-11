@@ -34,8 +34,8 @@ final class AlbumViewController: UIViewController {
         }
     }()
 
-    private lazy var collectionView: UICollectionView = {
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
+    private lazy var collectionView: CollectionWithLayoutCallback = {
+        let collectionView = CollectionWithLayoutCallback(frame: .zero, collectionViewLayout: collectionViewLayout)
         collectionView.backgroundColor = .clear
         collectionView.indicatorStyle = .white
 
@@ -101,10 +101,12 @@ final class AlbumViewController: UIViewController {
         super.viewDidLoad()
         setUpView()
 
+        // TODO: remove temp:
         var snapshot = DataSnapshot()
         snapshot.appendSections([.songs])
         snapshot.appendItems(Array(0..<20), toSection: .songs)
         dataSource.apply(snapshot)
+        title = FakeAlbums.catchTheseVibes.title
     }
 
     private func setUpView() {
@@ -112,11 +114,38 @@ final class AlbumViewController: UIViewController {
 
         view.addSubview(collectionView)
         collectionView.constrainEdgesToSuperview()
+    }
+}
 
-        view.addSubview(playButton)
-        playButton.useAutoLayout()
-        playButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
-        playButton.centerYAnchor.constraint(greaterThanOrEqualTo: view.safeAreaLayoutGuide.topAnchor, constant: 50).isActive = true
+extension AlbumViewController: NavBarConfiguring {
+
+    var navBarAccentColor: UIColor {
+        .init(hexString: FakeAlbums.catchTheseVibes.accentColorHex)
+    }
+
+    var navBarPlayButton: PlayButton? {
+        playButton
+    }
+
+    var navBarVisibilityManagingView: UIView? {
+        bannerView?.viewManagingNavBarVisibility
+    }
+
+    var navBarVisibilityManagingViewMovedPublisher: AnyPublisher<Void, Never> {
+        Publishers.Merge(
+            collectionView.didLayoutSubviewsPublisher.prefix(1),
+            collectionView.didScrollPublisher
+        )
+        .handleEvents(receiveOutput: { [weak self] in
+            /// UIKit doesn't seem to layout the supplementary view as part of the UICollectionView's `layoutSubviews`
+            /// (despite setting its frame), so we perform a manual layout here if necessary.
+            self?.bannerView?.layoutIfNeeded()
+        })
+        .eraseToAnyPublisher()
+    }
+
+    private var bannerView: ArtworkBannerView? {
+        collectionView.bannerView(type: ArtworkBannerView.self)
     }
 }
 

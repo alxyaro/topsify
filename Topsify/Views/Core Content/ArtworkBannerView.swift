@@ -59,6 +59,10 @@ final class ArtworkBannerView: BannerView {
         return view
     }()
 
+    var viewManagingNavBarVisibility: UIView {
+        titleLabel
+    }
+
     private var artworkPlaceholderViewTopConstraint: NSLayoutConstraint?
     private var scrollAmount: CGFloat = 0
     private var disposeBag = DisposeBag()
