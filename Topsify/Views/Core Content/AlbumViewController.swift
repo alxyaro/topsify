@@ -73,7 +73,7 @@ final class AlbumViewController: UIViewController {
                 let view = collectionView.dequeueBannerView(type: ArtworkBannerView.self)
                 view.configure(
                     scrollAmountPublisher: collectionView.scrollAmountPublisher,
-                    topInset: collectionView.safeAreaInsets.top,
+                    topInset: self.view.safeAreaInsets.top - additionalSafeAreaInsets.top,
                     playButton: playButton
                 )
                 return view
@@ -114,6 +114,12 @@ final class AlbumViewController: UIViewController {
 
         view.addSubview(collectionView)
         collectionView.constrainEdgesToSuperview()
+    }
+
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+
+        collectionView.verticalScrollIndicatorInsets.top = -additionalSafeAreaInsets.top
     }
 }
 
