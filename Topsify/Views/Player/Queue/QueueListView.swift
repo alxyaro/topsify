@@ -7,8 +7,6 @@ import UIKit
 final class QueueListView: UIView {
 
     enum Section: Int, CaseIterable, Hashable {
-        /// As the compositional layout doesn't support adding spacing above sections, this is used as a workaround.
-        case topEmptySpacer = 0
         case nowPlaying
         case nextInQueue
         case nextFromSource
@@ -44,6 +42,7 @@ final class QueueListView: UIView {
 
         collectionView.registerEmptyCell()
         collectionView.registerEmptySupplementaryView(ofKind: UICollectionView.elementKindSectionHeader)
+        collectionView.registerEmptySupplementaryView(ofKind: QueueListLayout.topEmptySpacerViewKind)
         collectionView.register(cellType: SongListCell.self)
         collectionView.register(supplementaryViewType: QueueListHeaderView.self, ofKind: UICollectionView.elementKindSectionHeader)
 
@@ -64,7 +63,7 @@ final class QueueListView: UIView {
                 viewModel = content.nextInQueue[safe: indexPath.item]?.viewModel
             case .nextFromSource:
                 viewModel = content.nextFromSource[safe: indexPath.item]?.viewModel
-            case .topEmptySpacer, .none:
+            case .none:
                 break
             }
 
@@ -210,8 +209,6 @@ final class QueueListView: UIView {
 
     private func headerText(for section: Section) -> String {
         switch section {
-        case .topEmptySpacer:
-            return ""
         case .nowPlaying:
             return NSLocalizedString("Now Playing", comment: "Queue screen header")
         case .nextInQueue:
@@ -244,7 +241,7 @@ final class QueueListView: UIView {
             return nil
         }
         switch section {
-        case .topEmptySpacer, .nowPlaying:
+        case .nowPlaying:
             return nil
         case .nextInQueue:
             return .nextInQueue(index: indexPath.item)

@@ -3,7 +3,8 @@
 import UIKit
 
 final class QueueListLayout: UICollectionViewCompositionalLayout {
-    private static let topEmptySpacerSectionIndex = QueueListView.Section.topEmptySpacer.index
+    static let topEmptySpacerViewKind = "EmptySpacer"
+
     private static let queueSectionIndex = QueueListView.Section.nextInQueue.index
     private static let upNextSectionIndex = QueueListView.Section.nextFromSource.index
 
@@ -32,14 +33,10 @@ final class QueueListLayout: UICollectionViewCompositionalLayout {
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitems: [item])
                 let section = NSCollectionLayoutSection(group: group)
 
-                if sectionIndex == Self.topEmptySpacerSectionIndex {
-                    section.contentInsets.bottom = 20
-                    return section
-                }
-
+                let headerHeight = QueueListHeaderView.computePreferredHeight()
                 let headerSize = NSCollectionLayoutSize(
                     widthDimension: .fractionalWidth(1),
-                    heightDimension: .absolute(QueueListHeaderView.computePreferredHeight())
+                    heightDimension: .absolute(headerHeight)
                 )
                 let header = NSCollectionLayoutBoundarySupplementaryItem(
                     layoutSize: headerSize,
@@ -60,6 +57,25 @@ final class QueueListLayout: UICollectionViewCompositionalLayout {
                         /// empty section a little easier (the drag will be easier to control and more predictable).
                         section.contentInsets.bottom = 24
                     }
+                }
+
+                /// If we're at the first section, we want to prepend some extra spacing, much like you see in the real app.
+                /// Since the compositional layout doesn't support adding spacing above sections, an empty supplementary
+                /// view is used as a nifty workaround. The alternative would be an empty section, which is not as elegant.
+                /// The real app likely uses a UITableView (or a compositional list layout) to get that extra spacing by default.
+                if sectionIndex == 0 {
+                    let spacerSize = NSCollectionLayoutSize(
+                        widthDimension: .fractionalWidth(1),
+                        /// Unfortunately, supplementary items are simply overlaid by compositional layout, not vertically stacked.
+                        /// Therefore, we need to also add the height of the actual header, which will hover above the spacer.
+                        heightDimension: .absolute(headerHeight + 20)
+                    )
+                    let spacer = NSCollectionLayoutBoundarySupplementaryItem(
+                        layoutSize: spacerSize,
+                        elementKind: Self.topEmptySpacerViewKind,
+                        alignment: .top
+                    )
+                    section.boundarySupplementaryItems.insert(spacer, at: 0)
                 }
 
                 return section
