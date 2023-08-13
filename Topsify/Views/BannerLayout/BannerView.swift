@@ -15,6 +15,7 @@ class BannerView: UICollectionReusableView, Reusable {
         color: .clear,
         direction: .down,
         easing: .quadOut,
+        distanceBetweenEasingStops: 100,
         redrawOnBoundsChange: false
     )
 
@@ -57,7 +58,7 @@ class BannerView: UICollectionReusableView, Reusable {
         let bounceAmount = -scrollAmount
 
         backgroundGradientView.frame = bounds.expanded(top: max(0, bounceAmount))
-        backgroundGradientView.frame.size.height += 100
+        backgroundGradientView.frame.size.height += 150 // extend gradient a bit below banner
         backgroundGradientView.alpha = 1 - scrollAmount.pctInRange(bounds.height * 0.7 ... bounds.height)
     }
 }

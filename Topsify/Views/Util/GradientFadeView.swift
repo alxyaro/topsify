@@ -42,21 +42,26 @@ final class GradientFadeView: UIView {
 
     var color: UIColor {
         didSet {
-            setNeedsDisplay()
+            if oldValue != color {
+                setNeedsDisplay()
+            }
         }
     }
     private let direction: Direction
     private let easing: Easing
+    private let distanceBetweenEasingStops: Int
 
     init(
         color: UIColor,
         direction: Direction,
         easing: Easing = .cubicInOut,
+        distanceBetweenEasingStops: Int = 10,
         redrawOnBoundsChange: Bool = true
     ) {
         self.color = color
         self.direction = direction
         self.easing = easing
+        self.distanceBetweenEasingStops = max(1, distanceBetweenEasingStops)
 
         super.init(frame: .zero)
 
@@ -77,7 +82,12 @@ final class GradientFadeView: UIView {
             return
         }
 
-        let stops = easing == .linear ? 2 : Int(bounds.height / 10).clamped(to: 2...100)
+        let stops: Int
+        if easing == .linear {
+            stops = 2
+        } else {
+            stops = Int(bounds.height / CGFloat(distanceBetweenEasingStops)).clamped(to: 2...40)
+        }
 
         var colors = [CGColor]()
         var locations = [CGFloat]()

@@ -13,7 +13,14 @@ final class ArtworkBannerView: BannerView {
         return view
     }()
 
-    private let artworkView = RemoteImageView()
+    private let artworkView: RemoteImageView = {
+        let imageView = RemoteImageView()
+        imageView.layer.shadowColor = UIColor.black.cgColor
+        imageView.layer.shadowOpacity = 0.4
+        imageView.layer.shadowRadius = 25
+        imageView.layer.shadowOffset = .zero
+        return imageView
+    }()
 
     private let titleLabel: UILabel = {
         let label = UILabel()
@@ -51,7 +58,11 @@ final class ArtworkBannerView: BannerView {
     private let downloadButton = createSideButton(icon: "Icons/download")
     private let optionsButton = createSideButton(icon: "Icons/options")
 
-    private let shuffleButton = AppIconButton(icon: "Icons/shuffle", scale: 1.2)
+    private let shuffleButton: AppIconButton = {
+        let button = AppIconButton(icon: "Icons/shuffle", scale: 1.2)
+        button.tintColor = .secondaryIcon
+        return button
+    }()
 
     private let playButtonPlaceholderView: UIView = {
         let view = UIView()
@@ -172,6 +183,8 @@ final class ArtworkBannerView: BannerView {
             artworkView.center.y += scrollAmount - shrinkAmount / 2
             artworkView.alpha = 1 - (shrinkAmount / maxShrinkAmount)
         }
+
+        artworkView.layer.shadowPath = UIBezierPath(rect: artworkView.bounds).cgPath
     }
 
     static func createSideButton(icon: String) -> AppIconButton {
