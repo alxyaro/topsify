@@ -90,6 +90,16 @@ final class TopsifyNavigationBar: UIView {
         viewSizeDeterminedSubject.send()
     }
 
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        let result = super.hitTest(point, with: event)
+        if backgroundView.alpha == 0 {
+            if result == self || result == contentView {
+                return nil
+            }
+        }
+        return result
+    }
+
     private func setUpLayout() {
         addSubview(backgroundView)
         backgroundView.constrainEdgesToSuperview()
