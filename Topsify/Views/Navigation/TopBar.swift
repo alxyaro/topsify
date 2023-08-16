@@ -3,8 +3,10 @@
 import Combine
 import UIKit
 
-final class TopsifyNavigationBar: UIView {
-    static let contentHeight: CGFloat = 56
+final class TopBar: UIView {
+    static let safeAreaHeight: CGFloat = 56
+
+    // MARK: Subviews
 
     private lazy var backgroundView: UIView = {
         let view = UIView()
@@ -17,7 +19,7 @@ final class TopsifyNavigationBar: UIView {
     private let backButton: AppIconButton = {
         let button = AppIconButton(icon: "Icons/chevronLeft", scale: 0.8, expandedTouchBoundary: .init(uniform: 12))
         // TODO: have navigation controller manage visibility:
-        button.isHidden = false
+        button.isHidden = false // true
         return button
     }()
 
@@ -36,42 +38,74 @@ final class TopsifyNavigationBar: UIView {
         return view
     }()
 
+    // MARK: Public Properties
+
+    var title: String = "" {
+        didSet {
+            titleLabel.text = title
+        }
+    }
+
+    var accentColor: UIColor = .clear {
+        didSet {
+            backgroundView.backgroundColor = accentColor.mixed(withColor: .appBackground, weight: 0.3)
+        }
+    }
+
+    // MARK: Private State
+
     private let playButton: PlayButton?
-    private var playButtonConstraints = [NSLayoutConstraint]()
+    private var playButtonConstrainsApplied = false
     private var visibilityOffsetCancellable: AnyCancellable?
     private let viewSizeDeterminedSubject = PassthroughSubject<Void, Never>()
 
-    convenience init(
-        title: String,
-        configurator: NavBarConfiguring
-    ) {
-        self.init(
-            title: title,
-            accentColor: configurator.navBarAccentColor,
-            playButton: configurator.navBarPlayButton,
-            visibilityManagingViewGetter: { configurator.navBarVisibilityManagingView },
-            visibilityManagingViewMovedPublisher: configurator.navBarVisibilityManagingViewMovedPublisher
-        )
-    }
+    // MARK: Init
 
+    /// - Parameters:
+    ///   - playButton: The play button active alongside this top bar. Constraints will be added to position the play button.
+    ///   - visibilityManagingViewPublisher:
+    ///     If this publisher emits a view, the nav bar visibility will be controlled by the position of that view.
+    ///     - If the view is below the nav bar, the nav bar is transparent.
+    ///     - If the view is at or above the nav bar, the nav bar is opaque.
+    ///     - As the view transitions from below to above the nav bar, the nav bar smoothly fades in/out.
+    ///
+    ///     The visibility of the nav bar based on the position of the view is updated whenever this publisher emits.
     init(
-        title: String,
-        accentColor: UIColor,
         playButton: PlayButton?,
-        visibilityManagingViewGetter: @escaping () -> UIView?,
-        visibilityManagingViewMovedPublisher: AnyPublisher<Void, Never>
+        visibilityManagingViewPublisher: some Publisher<UIView?, Never>
     ) {
         self.playButton = playButton
 
         super.init(frame: .zero)
 
-        backgroundView.backgroundColor = accentColor.mixed(withColor: .appBackground, weight: 0.3)
-        titleLabel.text = title
-
         setUpLayout()
         setUpVisibilityReactivity(
-            viewGetter: visibilityManagingViewGetter,
-            viewMovedPublisher: visibilityManagingViewMovedPublisher
+            viewPublisher: visibilityManagingViewPublisher.eraseToAnyPublisher()
+        )
+    }
+
+    static func createForBannerCollectionView<BannerType: BannerView & TopBarVisibilityManagingViewProviding>(
+        _ collectionView: LayoutCallbackCollectionView,
+        bannerType: BannerType.Type,
+        playButton: PlayButton?
+    ) -> TopBar {
+        let visibilityManagingViewPublisher = Publishers.Merge(
+            collectionView.didLayoutSubviewsPublisher.prefix(1),
+            collectionView.didScrollPublisher
+        ).map { () -> UIView? in
+            guard let banner = collectionView.bannerView(type: bannerType) else { return nil }
+
+            /// The view returned should always have an accurate frame (have been laid out before).
+            /// UIKit doesn't seem to layout supplementary views as part of the UICollectionView's `layoutSubviews`
+            /// invocation (despite setting the view's frame), so we perform a manual layout here if necessary.
+            banner.layoutIfNeeded()
+
+            return banner.topBarVisibilityManagingView
+        }
+
+        return TopBar(
+            playButton: playButton,
+            visibilityManagingViewPublisher: visibilityManagingViewPublisher
         )
     }
 
@@ -79,9 +113,17 @@ final class TopsifyNavigationBar: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func didMoveToSuperview() {
-        super.didMoveToSuperview()
-        playButtonConstraints.forEach { $0.isActive = superview != nil && playButton?.superview != nil }
+    // MARK: Lifecycle
+
+    override func updateConstraints() {
+        if let playButton, !playButtonConstrainsApplied {
+            playButton.useAutoLayout()
+            playButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16).isActive = true
+            playButton.centerYAnchor.constraint(greaterThanOrEqualTo: bottomAnchor).isActive = true
+            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: playButton.leadingAnchor, constant: -8).isActive = true
+            playButtonConstrainsApplied = true
+        }
+        super.updateConstraints()
     }
 
     override func layoutSubviews() {
@@ -100,13 +142,21 @@ final class TopsifyNavigationBar: UIView {
         return result
     }
 
+    // MARK: Public Functions
+
+    func constrainToSuperview() {
+        constrainEdgesToSuperview(excluding: .bottom)
+    }
+
+    // MARK: Private Functions
+
     private func setUpLayout() {
         addSubview(backgroundView)
         backgroundView.constrainEdgesToSuperview()
 
         addSubview(contentView)
         contentView.constrainEdges(to: safeAreaLayoutGuide)
-        contentView.constrainHeight(to: Self.contentHeight)
+        contentView.constrainHeight(to: Self.safeAreaHeight)
 
         contentView.addSubview(backButton)
         backButton.useAutoLayout()
@@ -116,24 +166,15 @@ final class TopsifyNavigationBar: UIView {
         contentView.addSubview(titleLabel)
         titleLabel.constrainInCenter(of: contentView.layoutMarginsGuide)
         titleLabel.leadingAnchor.constraint(greaterThanOrEqualTo: backButton.trailingAnchor, constant: 8).isActive = true
-
-        if let playButton {
-            playButtonConstraints += [
-                playButton.centerYAnchor.constraint(greaterThanOrEqualTo: bottomAnchor),
-                titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: playButton.leadingAnchor, constant: -8)
-            ]
-        }
     }
 
     private func setUpVisibilityReactivity(
-        viewGetter: @escaping () -> UIView?,
-        viewMovedPublisher: AnyPublisher<Void, Never>
+        viewPublisher: AnyPublisher<UIView?, Never>
     ) {
-        visibilityOffsetCancellable = viewMovedPublisher
-            .prepend(())
+        visibilityOffsetCancellable = viewPublisher
+            .prepend(nil)
             .combineLatest(viewSizeDeterminedSubject)
             .map(\.0)
-            .map(viewGetter)
             .map { [weak self] visibilityManagingView in
                 guard let self, let visibilityManagingView else {
                     return CGFloat.greatestFiniteMagnitude
@@ -155,7 +196,7 @@ final class TopsifyNavigationBar: UIView {
                 titleLabel.alpha = titleOpacity
 
                 let titleOffset = 1 - Self.easeOutQuad(x: titleOpacity)
-                titleLabel.transform = .init(translationX: 0, y: titleOffset * Self.contentHeight / 4)
+                titleLabel.transform = .init(translationX: 0, y: titleOffset * Self.safeAreaHeight / 4)
             }
     }
 

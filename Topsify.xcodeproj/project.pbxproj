@@ -105,9 +105,7 @@
 		6B8D0FF12A80049B00457DCF /* PlayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8D0FF02A80049B00457DCF /* PlayButton.swift */; };
 		6B8D0FF32A809C7E00457DCF /* UICollectionView+Reactive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8D0FF22A809C7E00457DCF /* UICollectionView+Reactive.swift */; };
 		6B8D0FF52A80A05000457DCF /* Arithmetic+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8D0FF42A80A05000457DCF /* Arithmetic+Extensions.swift */; };
-		6B8D0FFB2A81EC2A00457DCF /* NavBarConfiguring.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8D0FFA2A81EC2A00457DCF /* NavBarConfiguring.swift */; };
-		6B8D0FFD2A827E2600457DCF /* TopsifyNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8D0FFC2A827E2600457DCF /* TopsifyNavigationController.swift */; };
-		6B8D10032A82970900457DCF /* TopsifyNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8D10022A82970900457DCF /* TopsifyNavigationBar.swift */; };
+		6B8D10032A82970900457DCF /* TopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8D10022A82970900457DCF /* TopBar.swift */; };
 		6B8D10122A83192300457DCF /* UIView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8D10112A83192300457DCF /* UIView+Extensions.swift */; };
 		6B92DDFA29B3C01300C0231C /* Reusable in Frameworks */ = {isa = PBXBuildFile; productRef = 6B92DDF929B3C01300C0231C /* Reusable */; };
 		6B9A535829B01145001D4C2A /* HomeSimpleHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9A535729B01145001D4C2A /* HomeSimpleHeaderCell.swift */; };
@@ -122,7 +120,8 @@
 		6B9B44CD29D0CC4F00F6BA94 /* PlayerSliderContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9B44CC29D0CC4F00F6BA94 /* PlayerSliderContainerView.swift */; };
 		6B9B44CF29D2242300F6BA94 /* MarqueeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9B44CE29D2242300F6BA94 /* MarqueeView.swift */; };
 		6B9B44D129D28C6E00F6BA94 /* PlayerTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9B44D029D28C6E00F6BA94 /* PlayerTitleView.swift */; };
-		6B9B46C02A859F6A002042F6 /* CollectionWithLayoutCallback.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9B46BF2A859F6A002042F6 /* CollectionWithLayoutCallback.swift */; };
+		6B9B46C02A859F6A002042F6 /* LayoutCallbackCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9B46BF2A859F6A002042F6 /* LayoutCallbackCollectionView.swift */; };
+		6B9B46E22A8C76EA002042F6 /* TopBarVisibilityManagingViewProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B9B46E12A8C76EA002042F6 /* TopBarVisibilityManagingViewProviding.swift */; };
 		6BAE1B61298721110092E53E /* RemoteImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAE1B60298721110092E53E /* RemoteImageView.swift */; };
 		6BAE1B63298726EA0092E53E /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAE1B62298726EA0092E53E /* Environment.swift */; };
 		6BAE1B6529872CE90092E53E /* Combine+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BAE1B6429872CE90092E53E /* Combine+Extensions.swift */; };
@@ -321,9 +320,7 @@
 		6B8D0FF02A80049B00457DCF /* PlayButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayButton.swift; sourceTree = "<group>"; };
 		6B8D0FF22A809C7E00457DCF /* UICollectionView+Reactive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionView+Reactive.swift"; sourceTree = "<group>"; };
 		6B8D0FF42A80A05000457DCF /* Arithmetic+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Arithmetic+Extensions.swift"; sourceTree = "<group>"; };
-		6B8D0FFA2A81EC2A00457DCF /* NavBarConfiguring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavBarConfiguring.swift; sourceTree = "<group>"; };
-		6B8D0FFC2A827E2600457DCF /* TopsifyNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopsifyNavigationController.swift; sourceTree = "<group>"; };
-		6B8D10022A82970900457DCF /* TopsifyNavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopsifyNavigationBar.swift; sourceTree = "<group>"; };
+		6B8D10022A82970900457DCF /* TopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopBar.swift; sourceTree = "<group>"; };
 		6B8D10112A83192300457DCF /* UIView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extensions.swift"; sourceTree = "<group>"; };
 		6B9A535729B01145001D4C2A /* HomeSimpleHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeSimpleHeaderCell.swift; sourceTree = "<group>"; };
 		6B9A535929B016BF001D4C2A /* HomeArtistHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeArtistHeaderCell.swift; sourceTree = "<group>"; };
@@ -337,7 +334,8 @@
 		6B9B44CC29D0CC4F00F6BA94 /* PlayerSliderContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerSliderContainerView.swift; sourceTree = "<group>"; };
 		6B9B44CE29D2242300F6BA94 /* MarqueeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarqueeView.swift; sourceTree = "<group>"; };
 		6B9B44D029D28C6E00F6BA94 /* PlayerTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerTitleView.swift; sourceTree = "<group>"; };
-		6B9B46BF2A859F6A002042F6 /* CollectionWithLayoutCallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionWithLayoutCallback.swift; sourceTree = "<group>"; };
+		6B9B46BF2A859F6A002042F6 /* LayoutCallbackCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutCallbackCollectionView.swift; sourceTree = "<group>"; };
+		6B9B46E12A8C76EA002042F6 /* TopBarVisibilityManagingViewProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopBarVisibilityManagingViewProviding.swift; sourceTree = "<group>"; };
 		6BAE1B60298721110092E53E /* RemoteImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteImageView.swift; sourceTree = "<group>"; };
 		6BAE1B62298726EA0092E53E /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		6BAE1B6429872CE90092E53E /* Combine+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Combine+Extensions.swift"; sourceTree = "<group>"; };
@@ -662,9 +660,8 @@
 				6B3572222803411E007CBDF6 /* AppNavigationController.swift */,
 				6B3572242803430C007CBDF6 /* AppNavigationBar.swift */,
 				6B35722828034DB1007CBDF6 /* AppNavigationBarButton.swift */,
-				6B8D0FFC2A827E2600457DCF /* TopsifyNavigationController.swift */,
-				6B8D10022A82970900457DCF /* TopsifyNavigationBar.swift */,
-				6B8D0FFA2A81EC2A00457DCF /* NavBarConfiguring.swift */,
+				6B8D10022A82970900457DCF /* TopBar.swift */,
+				6B9B46E12A8C76EA002042F6 /* TopBarVisibilityManagingViewProviding.swift */,
 			);
 			path = Navigation;
 			sourceTree = "<group>";
@@ -685,7 +682,7 @@
 				6B444BBA2A40F4AC0063DBD5 /* HorizontalGradientMaskView.swift */,
 				6B04D59E2A4644F000DA0FC2 /* TransitionPanGestureHandler.swift */,
 				6BF3DD242A608B7E00E5F2D0 /* InverseMaskView.swift */,
-				6B9B46BF2A859F6A002042F6 /* CollectionWithLayoutCallback.swift */,
+				6B9B46BF2A859F6A002042F6 /* LayoutCallbackCollectionView.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -1094,8 +1091,9 @@
 				6B444BAA2A3622260063DBD5 /* BottomAreaViewController.swift in Sources */,
 				6B35722928034DB1007CBDF6 /* AppNavigationBarButton.swift in Sources */,
 				6B85F7C92A4F21D400EFB21E /* PlayBarViewModel.swift in Sources */,
-				6B8D10032A82970900457DCF /* TopsifyNavigationBar.swift in Sources */,
+				6B8D10032A82970900457DCF /* TopBar.swift in Sources */,
 				6B9B44C329CF658700F6BA94 /* PlayerViewController.swift in Sources */,
+				6B9B46E22A8C76EA002042F6 /* TopBarVisibilityManagingViewProviding.swift in Sources */,
 				6B0D781527F0E4BC001BA64E /* RootViewController.swift in Sources */,
 				6B444BB72A40963C0063DBD5 /* PlayBarDetailsView.swift in Sources */,
 				6B35723328078144007CBDF6 /* NavigationTransitionController.swift in Sources */,
@@ -1184,14 +1182,12 @@
 				6B0C39C9281DD85E00B59313 /* LatePublished.swift in Sources */,
 				6BFAA33929ABD83B0017E807 /* HomeViewController+CollectionManager.swift in Sources */,
 				6BF3DD212A6034B500E5F2D0 /* QueueListViewModel.swift in Sources */,
-				6B9B46C02A859F6A002042F6 /* CollectionWithLayoutCallback.swift in Sources */,
+				6B9B46C02A859F6A002042F6 /* LayoutCallbackCollectionView.swift in Sources */,
 				6B403C6829E20EAE00CA6DE0 /* ContentService.swift in Sources */,
 				6B8D0FF12A80049B00457DCF /* PlayButton.swift in Sources */,
 				6B0D784727F10B3E001BA64E /* HomeViewController.swift in Sources */,
-				6B8D0FFB2A81EC2A00457DCF /* NavBarConfiguring.swift in Sources */,
 				6B35720927FBDCD8007CBDF6 /* NSLayoutConstraint+Additions.swift in Sources */,
 				6B46C8DF29E9E508006DEDBB /* PlayerStageViewModel.swift in Sources */,
-				6B8D0FFD2A827E2600457DCF /* TopsifyNavigationController.swift in Sources */,
 				6BE368B729A2903900687D48 /* FakeUtils.swift in Sources */,
 				6BFAA33D29ABEB660017E807 /* EmptyCollectionViewCell.swift in Sources */,
 				6B357244280BB8DA007CBDF6 /* RecentActivityItemCell.swift in Sources */,

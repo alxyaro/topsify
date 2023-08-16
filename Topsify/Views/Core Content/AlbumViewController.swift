@@ -34,10 +34,17 @@ final class AlbumViewController: UIViewController {
         }
     }()
 
-    private lazy var collectionView: CollectionWithLayoutCallback = {
-        let collectionView = CollectionWithLayoutCallback(frame: .zero, collectionViewLayout: collectionViewLayout)
+    private lazy var topBar = TopBar.createForBannerCollectionView(
+        collectionView,
+        bannerType: ArtworkBannerView.self,
+        playButton: playButton
+    )
+
+    private lazy var collectionView: LayoutCallbackCollectionView = {
+        let collectionView = LayoutCallbackCollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
         collectionView.backgroundColor = .clear
         collectionView.indicatorStyle = .white
+        collectionView.contentInset.top = TopBar.safeAreaHeight
 
         collectionView.registerBannerViewType(ArtworkBannerView.self)
         collectionView.register(cellType: SongListCell.self)
@@ -73,7 +80,7 @@ final class AlbumViewController: UIViewController {
                 let view = collectionView.dequeueBannerView(type: ArtworkBannerView.self)
                 view.configure(
                     scrollAmountPublisher: collectionView.scrollAmountPublisher,
-                    topInset: self.view.safeAreaInsets.top - additionalSafeAreaInsets.top,
+                    topInset: collectionView.safeAreaInsets.top,
                     playButton: playButton
                 )
                 return view
@@ -106,7 +113,9 @@ final class AlbumViewController: UIViewController {
         snapshot.appendSections([.songs])
         snapshot.appendItems(Array(0..<20), toSection: .songs)
         dataSource.apply(snapshot)
-        title = FakeAlbums.catchTheseVibes.title
+
+        topBar.title = FakeAlbums.catchTheseVibes.title
+        topBar.accentColor = .init(hexString: FakeAlbums.catchTheseVibes.accentColorHex)
     }
 
     private func setUpView() {
@@ -114,44 +123,11 @@ final class AlbumViewController: UIViewController {
 
         view.addSubview(collectionView)
         collectionView.constrainEdgesToSuperview()
-    }
 
-    override func viewSafeAreaInsetsDidChange() {
-        super.viewSafeAreaInsetsDidChange()
+        view.addSubview(topBar)
+        topBar.constrainToSuperview()
 
-        collectionView.verticalScrollIndicatorInsets.top = -additionalSafeAreaInsets.top
-    }
-}
-
-extension AlbumViewController: NavBarConfiguring {
-
-    var navBarAccentColor: UIColor {
-        .init(hexString: FakeAlbums.catchTheseVibes.accentColorHex)
-    }
-
-    var navBarPlayButton: PlayButton? {
-        playButton
-    }
-
-    var navBarVisibilityManagingView: UIView? {
-        bannerView?.viewManagingNavBarVisibility
-    }
-
-    var navBarVisibilityManagingViewMovedPublisher: AnyPublisher<Void, Never> {
-        Publishers.Merge(
-            collectionView.didLayoutSubviewsPublisher.prefix(1),
-            collectionView.didScrollPublisher
-        )
-        .handleEvents(receiveOutput: { [weak self] in
-            /// UIKit doesn't seem to layout the supplementary view as part of the UICollectionView's `layoutSubviews`
-            /// (despite setting its frame), so we perform a manual layout here if necessary.
-            self?.bannerView?.layoutIfNeeded()
-        })
-        .eraseToAnyPublisher()
-    }
-
-    private var bannerView: ArtworkBannerView? {
-        collectionView.bannerView(type: ArtworkBannerView.self)
+        view.addSubview(playButton)
     }
 }
 

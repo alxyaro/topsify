@@ -70,10 +70,6 @@ final class ArtworkBannerView: BannerView {
         return view
     }()
 
-    var viewManagingNavBarVisibility: UIView {
-        titleLabel
-    }
-
     private var artworkPlaceholderViewTopConstraint: NSLayoutConstraint?
     private var scrollAmount: CGFloat = 0
     private var disposeBag = DisposeBag()
@@ -192,5 +188,12 @@ final class ArtworkBannerView: BannerView {
         icon.constrainHeight(to: 24)
         icon.tintColor = .secondaryIcon
         return icon
+    }
+}
+
+extension ArtworkBannerView: TopBarVisibilityManagingViewProviding {
+
+    var topBarVisibilityManagingView: UIView {
+        titleLabel
     }
 }
