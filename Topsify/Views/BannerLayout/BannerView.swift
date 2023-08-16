@@ -6,7 +6,7 @@ import UIKit
 
 class BannerView: UICollectionReusableView, Reusable {
     static let kind = "BannerView"
-    static let indexPath = IndexPath(item: 0, section: 0)
+    static let indexPath = IndexPath(index: 0)
 
     private var lastSize = CGSize.zero
     private var scrollAmount = CGFloat.zero
@@ -70,8 +70,8 @@ extension UICollectionView {
         registerEmptySupplementaryView(ofKind: BannerView.kind)
     }
 
-    func dequeueBannerView<BV: BannerView>(type: BV.Type = BV.self) -> BV {
-        dequeueReusableSupplementaryView(ofKind: BannerView.kind, for: BannerView.indexPath, viewType: type)
+    func dequeueBannerView<BV: BannerView>(for indexPath: IndexPath, type: BV.Type = BV.self) -> BV {
+        dequeueReusableSupplementaryView(ofKind: BannerView.kind, for: indexPath, viewType: type)
     }
 
     func bannerView<BV: BannerView>(type: BV.Type = BV.self) -> BV? {

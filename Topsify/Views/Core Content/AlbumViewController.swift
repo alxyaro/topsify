@@ -77,7 +77,7 @@ final class AlbumViewController: UIViewController {
             }
             switch kind {
             case ArtworkBannerView.kind:
-                let view = collectionView.dequeueBannerView(type: ArtworkBannerView.self)
+                let view = collectionView.dequeueBannerView(for: indexPath, type: ArtworkBannerView.self)
                 view.configure(
                     scrollAmountPublisher: collectionView.scrollAmountPublisher,
                     topInset: collectionView.safeAreaInsets.top,

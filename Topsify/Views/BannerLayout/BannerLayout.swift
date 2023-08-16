@@ -16,25 +16,20 @@ final class BannerLayout: UICollectionViewCompositionalLayout {
         sectionProvider: @escaping UICollectionViewCompositionalLayoutSectionProvider,
         configuration: UICollectionViewCompositionalLayoutConfiguration = .init()
     ) {
+        let bannerSize = NSCollectionLayoutSize(
+            widthDimension: .fractionalWidth(1),
+            heightDimension: .estimated(200)
+        )
+        let banner = NSCollectionLayoutBoundarySupplementaryItem(
+            layoutSize: bannerSize,
+            elementKind: BannerView.kind,
+            alignment: .top
+        )
+
+        configuration.boundarySupplementaryItems.insert(banner, at: 0)
+
         super.init(
-            sectionProvider: { sectionIndex, layoutEnvironment in
-                guard let section = sectionProvider(sectionIndex, layoutEnvironment) else {
-                    return nil
-                }
-                if sectionIndex == 0 {
-                    let bannerSpacerSize = NSCollectionLayoutSize(
-                        widthDimension: .fractionalWidth(1),
-                        heightDimension: .estimated(200)
-                    )
-                    let bannerSpacer = NSCollectionLayoutBoundarySupplementaryItem(
-                        layoutSize: bannerSpacerSize,
-                        elementKind: BannerView.kind,
-                        alignment: .top
-                    )
-                    section.boundarySupplementaryItems.insert(bannerSpacer, at: 0)
-                }
-                return section
-            },
+            sectionProvider: sectionProvider,
             configuration: configuration
         )
     }
