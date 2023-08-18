@@ -8,7 +8,7 @@ import TestHelpers
 final class PlaybackQueueTests: XCTestCase {
 
     func test_initialState() {
-        let sut = PlaybackQueue(dependencies: .mock())
+        let sut = PlaybackQueue()
 
         let source = TestSubscriber.subscribe(to: sut.source)
         let state = TestSubscriber.subscribe(to: sut.stateWithContext)
@@ -34,120 +34,10 @@ final class PlaybackQueueTests: XCTestCase {
         XCTAssertEqual(hasNextItem.pollValues(), [false])
     }
 
-    // MARK: - load(with:)
-
-    func test_loadWithSingleSong() {
-        let song = Song.mock()
-        let sut = PlaybackQueue(dependencies: .mock(
-            contentService: .init(
-                fetchSongs: { _ in .just([song]) }
-            )
-        ))
-
-        let source = TestSubscriber.subscribe(to: sut.source)
-        let state = TestSubscriber.subscribe(to: sut.stateWithContext)
-        let hasPreviousItem = TestSubscriber.subscribe(to: sut.hasPreviousItem)
-        let hasNextItem = TestSubscriber.subscribe(to: sut.hasNextItem)
-
-        XCTAssertEqual(source.pollValues().count, 1)
-        XCTAssertEqual(state.pollValues().count, 1)
-        XCTAssertEqual(hasPreviousItem.pollValues().count, 1)
-        XCTAssertEqual(hasNextItem.pollValues().count, 1)
-
-        let album = Album.mock()
-
-        // perform load
-        sut.load(with: .album(album))
-        // duplicates should be ignored
-        sut.load(with: .album(album))
-
-        XCTAssertEqual(source.pollValues(), [.album(album)])
-
-        assertState(
-            state,
-            activeItemSong: song,
-            upNext: []
-        ) { state in
-            XCTAssertEqual(state[itemAt: .history(0)], nil)
-            XCTAssertEqual(state[itemAt: .activeItem]?.song, song)
-            XCTAssertEqual(state[itemAt: .userQueue(0)], nil)
-            XCTAssertEqual(state[itemAt: .upNext(0)], nil)
-        }
-
-        XCTAssertEqual(hasPreviousItem.pollValues(), [false])
-        XCTAssertEqual(hasNextItem.pollValues(), [false])
-    }
-
-    func test_loadWithMultipleSongs() {
-        let songs = [Song].mock(count: 3)
-        let songsPublisher = TestPublisher<[Song], Error>()
-
-        let sut = PlaybackQueue(dependencies: .mock(
-            contentService: MockContentService(
-                fetchSongs: { _ in songsPublisher.eraseToAnyPublisher() }
-            )
-        ))
-
-        let source = TestSubscriber.subscribe(to: sut.source)
-        let state = TestSubscriber.subscribe(to: sut.stateWithContext)
-        let hasPreviousItem = TestSubscriber.subscribe(to: sut.hasPreviousItem)
-        let hasNextItem = TestSubscriber.subscribe(to: sut.hasNextItem)
-
-        XCTAssertEqual(source.pollValues(), [nil])
-        XCTAssertEqual(state.pollValues().count, 1)
-        XCTAssertEqual(hasPreviousItem.pollValues().count, 1)
-        XCTAssertEqual(hasNextItem.pollValues().count, 1)
-
-        let album = Album.mock()
-
-        // perform load
-        sut.load(with: .album(album))
-        // duplicates should be ignored
-        sut.load(with: .album(album))
-
-        XCTAssertEqual(source.pollValues(), [.album(album)])
-        XCTAssertEqual(state.pollValues().isEmpty, true)
-        XCTAssertEqual(hasPreviousItem.pollValues(), [])
-        XCTAssertEqual(hasNextItem.pollValues(), [])
-
-        songsPublisher.send(songs)
-
-        XCTAssertEqual(source.pollValues(), [])
-        assertState(
-            state,
-            activeItemSong: songs[0],
-            upNext: songs[1...]
-        )
-        XCTAssertEqual(hasPreviousItem.pollValues(), [false])
-        XCTAssertEqual(hasNextItem.pollValues(), [true])
-    }
-
-    func test_load_clearsSource_whenErrorOccurs() {
-        let songsPublisher = TestPublisher<[Song], Error>()
-        let sut = PlaybackQueue(dependencies: .mock(
-            contentService: MockContentService(
-                fetchSongs: { _ in songsPublisher.eraseToAnyPublisher() }
-            )
-        ))
-
-        let source = TestSubscriber.subscribe(to: sut.source)
-
-        XCTAssertEqual(source.pollValues(), [nil])
-
-        let playlist = Playlist.mock()
-        sut.load(with: .playlist(playlist))
-
-        XCTAssertEqual(source.pollValues(), [.playlist(playlist)])
-
-        songsPublisher.send(completion: .failure(GenericError(message: "d'oh!")))
-
-        XCTAssertEqual(source.pollValues(), [nil])
-    }
-
     // MARK: - addToQueue
 
     func test_addToQueue() {
-        let sut = PlaybackQueue(dependencies: .mock())
+        let sut = PlaybackQueue()
 
         let state = TestSubscriber.subscribe(to: sut.stateWithContext)
 
@@ -178,14 +68,10 @@ final class PlaybackQueueTests: XCTestCase {
     // MARK: - goToNextItem() and goToPreviousItem()
 
     func test_goToNextItem() {
-        let songs = [Song].mock(count: 3)
-        let sut = PlaybackQueue(dependencies: .mock(
-            contentService: MockContentService(
-                fetchSongs: { _ in .just(songs) }
-            )
-        ))
+        let sut = PlaybackQueue()
 
-        sut.load(with: .playlist(.mock()))
+        let songs = [Song].mock(count: 3)
+        sut.load(with: songs, source: nil)
 
         let state = TestSubscriber.subscribe(to: sut.stateWithContext)
         let hasPreviousItem = TestSubscriber.subscribe(to: sut.hasPreviousItem)
@@ -232,14 +118,10 @@ final class PlaybackQueueTests: XCTestCase {
     }
 
     func test_goToPreviousItem() {
-        let songs = [Song].mock(count: 3)
-        let sut = PlaybackQueue(dependencies: .mock(
-            contentService: MockContentService(
-                fetchSongs: { _ in .just(songs) }
-            )
-        ))
+        let sut = PlaybackQueue()
 
-        sut.load(with: .playlist(.mock()))
+        let songs = [Song].mock(count: 3)
+        sut.load(with: songs, source: nil)
         sut.goToNextItem()
         sut.goToNextItem()
         sut.goToNextItem()
@@ -289,7 +171,7 @@ final class PlaybackQueueTests: XCTestCase {
     }
 
     func test_goToNextItem_takesUserQueueItemIfAvailable() {
-        let sut = PlaybackQueue(dependencies: .mock())
+        let sut = PlaybackQueue()
 
         let song = Song.mock()
         let song2 = Song.mock()
@@ -306,7 +188,7 @@ final class PlaybackQueueTests: XCTestCase {
     }
 
     func test_goToNextItem_takesUserQueueItemIfAvailable_whenNoActiveItem() {
-        let sut = PlaybackQueue(dependencies: .mock())
+        let sut = PlaybackQueue()
 
         let songs = [Song].mock(count: 2)
         songs.forEach(sut.addToQueue(_:))
@@ -321,7 +203,7 @@ final class PlaybackQueueTests: XCTestCase {
     }
 
     func test_goToNextItem_doesNotAddUserQueueItemsToHistory() {
-        let sut = PlaybackQueue(dependencies: .mock())
+        let sut = PlaybackQueue()
 
         let song = Song.mock()
         sut.addToQueue(song)
@@ -344,7 +226,7 @@ final class PlaybackQueueTests: XCTestCase {
     }
 
     func test_goToPreviousItem_doesNotAddUserQueueItemsToHistory() {
-        let sut = PlaybackQueue(dependencies: .mock())
+        let sut = PlaybackQueue()
 
         let song = Song.mock()
         let queueSong = Song.mock()
@@ -367,7 +249,7 @@ final class PlaybackQueueTests: XCTestCase {
     // MARK: - goToItem(atIndex:)
 
     func test_goToItemAtIndex_forActiveItemIndex() {
-        let sut = PlaybackQueue(dependencies: .mock())
+        let sut = PlaybackQueue()
 
         let songs = [Song].mock(count: 5)
         sut.load(with: songs, source: nil)
@@ -382,7 +264,7 @@ final class PlaybackQueueTests: XCTestCase {
     }
 
     func test_goToItemAtIndex_forHistoryIndex() {
-        let sut = PlaybackQueue(dependencies: .mock())
+        let sut = PlaybackQueue()
 
         let songs = [Song].mock(count: 5)
         sut.load(with: songs, source: nil)
@@ -409,7 +291,7 @@ final class PlaybackQueueTests: XCTestCase {
     }
 
     func test_goToItemAtIndex_forUserQueueIndex() {
-        let sut = PlaybackQueue(dependencies: .mock())
+        let sut = PlaybackQueue()
 
         let songs = [Song].mock(count: 5)
         let queueSongs = [Song].mock(count: 3)
@@ -437,7 +319,7 @@ final class PlaybackQueueTests: XCTestCase {
     }
 
     func test_goToItemAtIndex_forUpNextIndex() {
-        let sut = PlaybackQueue(dependencies: .mock())
+        let sut = PlaybackQueue()
 
         let songs = [Song].mock(count: 5)
         let queueSong = Song.mock()
@@ -465,7 +347,7 @@ final class PlaybackQueueTests: XCTestCase {
     }
 
     func test_goToItemAtIndex_forUpNextIndex_withoutEmptyUserQueueIfUpNextIndex() {
-        let sut = PlaybackQueue(dependencies: .mock())
+        let sut = PlaybackQueue()
 
         let songs = [Song].mock(count: 5)
         let queueSong = Song.mock()
@@ -653,7 +535,7 @@ final class PlaybackQueueTests: XCTestCase {
     // MARK: - moveItemsToQueue(at:)
 
     func test_moveItemsToQueue_withEmptyInput() {
-        let sut = PlaybackQueue(dependencies: .mock())
+        let sut = PlaybackQueue()
 
         sut.load(with: .mock(count: 5), source: nil)
 
@@ -666,7 +548,7 @@ final class PlaybackQueueTests: XCTestCase {
     }
 
     func test_moveItemsToQueue_withInvalidIndices() {
-        let sut = PlaybackQueue(dependencies: .mock())
+        let sut = PlaybackQueue()
 
         sut.load(with: .mock(count: 5), source: nil)
 
@@ -684,7 +566,7 @@ final class PlaybackQueueTests: XCTestCase {
     }
 
     func test_moveItemsToQueue_withValidAndInvalidIndices() {
-        let sut = PlaybackQueue(dependencies: .mock())
+        let sut = PlaybackQueue()
 
         let songs = makeSongs(count: 11)
         let userQueueSongs = makeSongs(count: 5)
@@ -745,7 +627,7 @@ final class PlaybackQueueTests: XCTestCase {
     // MARK: - removeItems(at:)
 
     func test_removeItems_withEmptyInput() {
-        let sut = PlaybackQueue(dependencies: .mock())
+        let sut = PlaybackQueue()
 
         let songs = makeSongs(count: 5)
         let queueSongs = makeSongs(count: 3)
@@ -761,7 +643,7 @@ final class PlaybackQueueTests: XCTestCase {
     }
 
     func test_removeItems_fromInvalidIndices_isNoOp() {
-        let sut = PlaybackQueue(dependencies: .mock())
+        let sut = PlaybackQueue()
 
         let songs = makeSongs(count: 1)
         sut.load(with: songs, source: nil)
@@ -781,7 +663,7 @@ final class PlaybackQueueTests: XCTestCase {
     }
 
     func test_removeItems_fromValidAndInvalidIndices() {
-        let sut = PlaybackQueue(dependencies: .mock())
+        let sut = PlaybackQueue()
 
         let songs = makeSongs(count: 11)
         let queueSongs = makeSongs(count: 5)
@@ -848,7 +730,7 @@ final class PlaybackQueueTests: XCTestCase {
     // MARK: - Helpers
 
     private func makeSamplePlaybackQueue() -> (historyItem: Song, activeItem: Song, userQueueItem: Song, upNextItem: Song, playbackQueue: PlaybackQueue) {
-        let sut = PlaybackQueue(dependencies: .mock())
+        let sut = PlaybackQueue()
 
         let songs = [Song].mock(count: 3)
         let queueSong = Song.mock()
@@ -917,15 +799,5 @@ final class PlaybackQueueTests: XCTestCase {
         XCTAssertEqual(state.activeItemIndex, state.activeItem != nil ? history.count : nil, "invalid activeItemIndex", line: line)
 
         XCTAssertEqual(context, expectedContext, line: line)
-    }
-}
-
-private extension PlaybackQueue.Dependencies {
-    static func mock(
-        contentService: MockContentService = .init()
-    ) -> Self {
-        .init(
-            contentService: contentService
-        )
     }
 }

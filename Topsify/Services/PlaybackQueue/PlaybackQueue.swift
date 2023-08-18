@@ -14,7 +14,6 @@ protocol PlaybackQueueType {
     var hasPreviousItem: AnyPublisher<Bool, Never> { get }
     var hasNextItem: AnyPublisher<Bool, Never> { get }
 
-    func load(with content: ContentObject)
     func load(with songs: [Song], source: ContentObject?)
     func addToQueue(_ song: Song)
 
@@ -51,11 +50,7 @@ extension PlaybackQueueType {
 final class PlaybackQueue: PlaybackQueueType {
     typealias Item = PlaybackQueueItem
 
-    struct Dependencies {
-        let contentService: ContentServiceType
-    }
-
-    // MARK: - Public Interface
+    // MARK: - Public Interface Properties
 
     var source: AnyPublisher<ContentObject?, Never> {
         sourceSubject.eraseToAnyPublisher()
@@ -78,31 +73,7 @@ final class PlaybackQueue: PlaybackQueueType {
         }
     }
 
-    private let dependencies: Dependencies
-    private var dataLoadCancellable: AnyCancellable?
-
-    // MARK: - Initializer
-
-    init(dependencies: Dependencies) {
-        self.dependencies = dependencies
-    }
-
-    func load(with content: ContentObject) {
-        guard sourceSubject.value != content else { return }
-        sourceSubject.send(content)
-
-        dataLoadCancellable?.cancel()
-        dataLoadCancellable = dependencies.contentService
-            .fetchSongs(for: content)
-            .sink(receiveCompletion: { [weak sourceSubject] in
-                if case .failure = $0 {
-                    sourceSubject?.send(nil)
-                }
-            }, receiveValue: { [weak self] in
-                guard let self else { return }
-                currentState.load(with: $0)
-            })
-    }
+    // MARK: - Public Interface Methods
 
     func load(with songs: [Song], source: ContentObject?) {
         sourceSubject.send(source)
@@ -249,7 +220,7 @@ final class PlaybackQueue: PlaybackQueueType {
     }
 
     func moveItemsToQueue(at indices: [PlaybackQueueIndex]) {
-        guard var (state, removedItems) = stateForRemovedItems(at: indices) else {
+        guard case (var state, let removedItems)? = stateForRemovedItems(at: indices) else {
             return
         }
         state.userQueue.append(contentsOf: removedItems.map {
@@ -335,13 +306,5 @@ extension PlaybackQueue {
                 upNext = Deque<Item>(minimumCapacity: 1)
             }
         }
-    }
-}
-
-extension PlaybackQueue.Dependencies {
-    static func live() -> Self {
-        .init(
-            contentService: ContentService()
-        )
     }
 }
