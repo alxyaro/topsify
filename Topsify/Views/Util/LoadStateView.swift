@@ -3,7 +3,7 @@
 import Combine
 import UIKit
 
-final class LoadStateView<ErrorType: Error & Equatable>: UIView {
+final class LoadStateView: UIView {
 
     private let activityIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView()
@@ -26,31 +26,33 @@ final class LoadStateView<ErrorType: Error & Equatable>: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(loadState: AnyPublisher<LoadState<ErrorType>, Never>) {
+    func configure(loadState: some Publisher<LoadState<some UserFacingError>, Never>) {
         disposeBag = DisposeBag()
 
-        loadState
-            .map(\.isLoading)
-            .sink { [weak activityIndicator] isLoading in
-                if isLoading {
-                    activityIndicator?.startAnimating()
-                } else {
-                    activityIndicator?.stopAnimating()
+        UIView.performWithoutAnimation {
+            loadState
+                .map(\.isLoading)
+                .sink { [weak activityIndicator] isLoading in
+                    if isLoading {
+                        activityIndicator?.startAnimating()
+                    } else {
+                        activityIndicator?.stopAnimating()
+                    }
                 }
-            }
-            .store(in: &disposeBag)
+                .store(in: &disposeBag)
 
-        loadState
-            .map(\.isLoaded)
-            .sink { [weak self] isLoaded in
-                if isLoaded {
-                    self?.fadeOut()
-                } else {
-                    self?.fadeIn()
+            loadState
+                .map(\.isLoaded)
+                .sink { [weak self] isLoaded in
+                    if isLoaded {
+                        self?.fadeOut()
+                    } else {
+                        self?.fadeIn()
+                    }
                 }
-            }
-            .store(in: &disposeBag)
+                .store(in: &disposeBag)
 
-        // TODO: error view
+            // TODO: error view
+        }
     }
 }

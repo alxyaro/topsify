@@ -132,7 +132,9 @@ extension Publisher where Output == Void, Failure == Never {
         let loadStateRelay = CurrentValueRelay<LoadState<P.Failure>>(.initial)
 
         let data = self.map {
-            loadStateRelay.accept(.loading)
+            if !loadStateRelay.value.isLoading {
+                loadStateRelay.accept(.loading)
+            }
             return fetchData().materialize()
         }
             .switchToLatest()
@@ -140,7 +142,9 @@ extension Publisher where Output == Void, Failure == Never {
                 receiveOutput: { event in
                     switch event {
                     case .value:
-                        loadStateRelay.accept(.loaded)
+                        if !loadStateRelay.value.isLoaded {
+                            loadStateRelay.accept(.loaded)
+                        }
                     case .failure(let error):
                         loadStateRelay.accept(.error(error))
                     default: break
@@ -151,7 +155,7 @@ extension Publisher where Output == Void, Failure == Never {
 
         return (
             data.values().eraseToAnyPublisher(),
-            loadStateRelay.removeDuplicates().eraseToAnyPublisher()
+            loadStateRelay.eraseToAnyPublisher()
         )
     }
 }

@@ -32,7 +32,7 @@ struct HomeViewModel {
 
         let fetchSpotlight = {
             dependencies.contentService.spotlightEntries()
-                .mapError(HomeError.failedToLoadSpotlight)
+                .mapError(HomeError.failedToLoad)
         }
 
         let (sections, loadState) = reloadTrigger
@@ -114,17 +114,13 @@ extension HomeViewModel {
         let now: () -> Date
     }
 
-    enum HomeError: LocalizedError {
-        case failedToLoadSpotlight
+    enum HomeError: UserFacingError {
+        case failedToLoad
 
-        var errorDescription: String? {
-            NSLocalizedString("Failed to load the homescreen", comment: "Homescreen error description")
-        }
-
-        var failureReason: String? {
+        var message: String {
             switch self {
-            case .failedToLoadSpotlight:
-                return NSLocalizedString("The spotlight could not be loaded", comment: "")
+            case .failedToLoad:
+                return NSLocalizedString("Failed to load the homescreen content.", comment: "Homescreen error description")
             }
         }
     }

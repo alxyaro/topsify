@@ -20,7 +20,7 @@ final class HomeViewController: AppNavigableController {
         return layer
     }()
 
-    private let loadStateView = LoadStateView<HomeViewModel.HomeError>()
+    private let loadStateView = LoadStateView()
 
     private let viewDidAppearRelay = PassthroughRelay<Void>()
 
@@ -77,6 +77,9 @@ final class HomeViewController: AppNavigableController {
                 self?.updateGradientPosition()
             }
             .store(in: &disposeBag)
+
+        view.addSubview(loadStateView)
+        loadStateView.constrainEdgesToSuperview()
     }
 
     private func setUpNavigationBar() {

@@ -2,11 +2,11 @@
 
 import Foundation
 
-enum LoadState<E: Error & Equatable>: Equatable {
+enum LoadState<ErrorType: Error> {
     case initial
     case loading
     case loaded
-    case error(E)
+    case error(ErrorType)
 
     var isLoading: Bool {
         switch self {
@@ -35,7 +35,7 @@ enum LoadState<E: Error & Equatable>: Equatable {
         }
     }
 
-    var error: E? {
+    var error: ErrorType? {
         switch self {
         case let .error(error):
             return error
@@ -48,6 +48,8 @@ enum LoadState<E: Error & Equatable>: Equatable {
         [lhs, rhs].combined()
     }
 }
+
+extension LoadState: Equatable where ErrorType: Equatable {}
 
 extension LoadState: CustomDebugStringConvertible {
 
