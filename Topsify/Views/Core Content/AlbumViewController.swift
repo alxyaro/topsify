@@ -79,6 +79,7 @@ final class AlbumViewController: UIViewController {
             case ArtworkBannerView.kind:
                 let view = collectionView.dequeueBannerView(for: indexPath, type: ArtworkBannerView.self)
                 view.configure(
+                    with: .init(album: FakeAlbums.catchTheseVibes, dependencies: .init(calendar: .current)),
                     scrollAmountPublisher: collectionView.scrollAmountPublisher,
                     topInset: collectionView.safeAreaInsets.top,
                     playButton: playButton

@@ -79,12 +79,6 @@ final class ArtworkBannerView: BannerView {
 
         downloadButton.isEnabled = false
 
-        artworkView.configure(with: FakeAlbums.catchTheseVibes.imageURL)
-        titleLabel.text = FakeAlbums.catchTheseVibes.title
-        artistsLabel.text = FakeUsers.pnbRock.name
-        artistAvatarImageView.configure(with: FakeUsers.pnbRock.avatarURL)
-        detailsLabel.text = "Album \u{2022} 2017"
-
         directionalLayoutMargins = .init(horizontal: 16, vertical: 0)
 
         addSubview(artworkPlaceholderView)
@@ -139,14 +133,38 @@ final class ArtworkBannerView: BannerView {
     @available(*, unavailable)
     override func configure(gradientColor: UIColor, scrollAmountPublisher: AnyPublisher<CGFloat, Never>) {}
 
+    override func prepareForReuse() {
+        super.prepareForReuse()
+
+        artworkView.reset()
+        titleLabel.text = nil
+        artistsLabel.text = nil
+        artistAvatarImageView.reset()
+        detailsLabel.text = nil
+    }
+
     func configure(
+        with viewModel: ArtworkBannerViewModel,
         scrollAmountPublisher: AnyPublisher<CGFloat, Never>,
         topInset: CGFloat,
         playButton: PlayButton
     ) {
-        super.configure(gradientColor: UIColor(hexString: FakeAlbums.catchTheseVibes.accentColorHex), scrollAmountPublisher: scrollAmountPublisher)
-
         disposeBag = DisposeBag()
+
+        let outputs = viewModel.bind(inputs: .init())
+
+        super.configure(gradientColor: outputs.accentColor.uiColor, scrollAmountPublisher: scrollAmountPublisher)
+
+        artworkView.configure(with: outputs.artworkURL)
+        titleLabel.text = outputs.title
+
+        // TODO: implement view to support multiple artists:
+        if let firstUserInfo = outputs.userInfo.first {
+            artistsLabel.text = firstUserInfo.name
+            artistAvatarImageView.configure(with: firstUserInfo.avatarURL)
+        }
+
+        detailsLabel.text = outputs.details
 
         artworkPlaceholderViewTopConstraint?.constant = topInset + 12
         playButton.centerYAnchor.constraint(greaterThanOrEqualTo: playButtonPlaceholderView.centerYAnchor).isActive = true

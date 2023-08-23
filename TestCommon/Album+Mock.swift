@@ -9,6 +9,8 @@ extension Album {
         artists: [User] = [.mock()],
         imageURL: URL = .imageMockWithRandomID(),
         title: String = "Test Album",
+        type: AlbumType = .album,
+        releaseDate: Date = .init(timeIntervalSince1970: 1692417172),
         accentColorHex: String = "#0011ee"
     ) -> Self {
         .init(
@@ -16,6 +18,8 @@ extension Album {
             artists: artists,
             imageURL: imageURL,
             title: title,
+            type: type,
+            releaseDate: releaseDate,
             accentColorHex: accentColorHex
         )
     }
