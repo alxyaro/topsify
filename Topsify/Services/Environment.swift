@@ -19,7 +19,7 @@ extension Environment {
     static func live() -> Environment {
         .init(
             imageProvider: ImageProvider(),
-            playbackQueue: PlaybackQueue(dependencies: .live())
+            playbackQueue: PlaybackQueue()
         )
     }
 }
