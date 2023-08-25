@@ -61,6 +61,10 @@ extension AnyPublisher {
         Just(o).setFailureType(to: Failure.self).eraseToAnyPublisher()
     }
 
+    static func fail(_ e: Failure) -> AnyPublisher<Output, Failure> {
+        Fail(error: e).eraseToAnyPublisher()
+    }
+
     static func never() -> AnyPublisher<Output, Failure> {
         Empty(completeImmediately: false).eraseToAnyPublisher()
     }
@@ -129,11 +133,11 @@ extension Publishers {
 extension Publisher where Output == Void, Failure == Never {
 
     func dataWithLoadState<P: Publisher>(_ fetchData: @escaping () -> P) -> (AnyPublisher<P.Output, Never>, AnyPublisher<LoadState<P.Failure>, Never>) {
-        let loadStateRelay = CurrentValueRelay<LoadState<P.Failure>>(.initial)
+        let loadStateSubject = CurrentValueSubject<LoadState<P.Failure>, Never>(.initial)
 
         let data = self.map {
-            if !loadStateRelay.value.isLoading {
-                loadStateRelay.accept(.loading)
+            if !loadStateSubject.value.isLoading {
+                loadStateSubject.send(.loading)
             }
             return fetchData().materialize()
         }
@@ -142,20 +146,20 @@ extension Publisher where Output == Void, Failure == Never {
                 receiveOutput: { event in
                     switch event {
                     case .value:
-                        if !loadStateRelay.value.isLoaded {
-                            loadStateRelay.accept(.loaded)
+                        if !loadStateSubject.value.isLoaded {
+                            loadStateSubject.send(.loaded)
                         }
                     case .failure(let error):
-                        loadStateRelay.accept(.error(error))
+                        loadStateSubject.send(.error(error))
                     default: break
                     }
                 }
             )
-            .share()
+            .share(replay: 1)
 
         return (
             data.values().eraseToAnyPublisher(),
-            loadStateRelay.eraseToAnyPublisher()
+            loadStateSubject.eraseToAnyPublisher()
         )
     }
 }

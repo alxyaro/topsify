@@ -38,6 +38,13 @@ final class BannerLayout: UICollectionViewCompositionalLayout {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func reloadBannerSize() {
+        let context = UICollectionViewLayoutInvalidationContext()
+        context.invalidateSupplementaryElements(ofKind: BannerView.kind, at: [BannerView.indexPath])
+        invalidateLayout(with: context)
+        collectionView?.layoutIfNeeded()
+    }
+
     override func shouldInvalidateLayout(
         forPreferredLayoutAttributes preferredAttributes: UICollectionViewLayoutAttributes,
         withOriginalAttributes originalAttributes: UICollectionViewLayoutAttributes

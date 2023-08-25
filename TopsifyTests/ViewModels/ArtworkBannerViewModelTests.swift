@@ -63,7 +63,7 @@ final class ArtworkBannerViewModelTests: XCTestCase {
     }
 }
 
-private extension ArtworkBannerViewModel.Inputs {
+extension ArtworkBannerViewModel.Inputs {
 
     static func mock() -> Self {
         .init()

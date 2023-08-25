@@ -5,15 +5,20 @@ import Foundation
 import Combine
 import TestHelpers
 
-public struct MockContentService: ContentServiceType {
+struct MockContentService: ContentServiceType {
     var spotlightEntriesPublisher: AnyPublisher<[SpotlightEntryModel], Error> = .just([])
-    var fetchSongs: (ContentObject) -> AnyPublisher<[Song], Error> = { _ in .just([])}
+    var fetchAlbum: (UUID) -> AnyPublisher<Album, ContentServiceErrors.FetchError> = { _ in .fail(.notFound) }
+    var fetchSongsForAlbum: (UUID) -> AnyPublisher<[Song], ContentServiceErrors.FetchError> = { _ in .just([]) }
 
-    public func spotlightEntries() -> Future<[SpotlightEntryModel], Error> {
+    func spotlightEntries() -> Future<[SpotlightEntryModel], Error> {
         spotlightEntriesPublisher.toFuture()
     }
 
-    public func fetchSongs(for content: ContentObject) -> Future<[Song], Error> {
-        fetchSongs(content).toFuture()
+    func fetchAlbum(withID id: UUID) -> Future<Album, ContentServiceErrors.FetchError> {
+        fetchAlbum(id).toFuture()
+    }
+
+    func fetchSongs(forAlbumID id: UUID) -> Future<[Song], ContentServiceErrors.FetchError> {
+        fetchSongsForAlbum(id).toFuture()
     }
 }
