@@ -153,7 +153,7 @@ final class AlbumViewController: UIViewController {
 
     private func bindViewModel() {
         let outputs = viewModel.bind(inputs: .init(
-            tappedReloadButton: .never() // TODO: actually hook up
+            reloadRequested: loadStateView.retryButtonTapPublisher
         ))
 
         UIView.performWithoutAnimation {

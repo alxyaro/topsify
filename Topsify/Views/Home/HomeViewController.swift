@@ -99,7 +99,7 @@ final class HomeViewController: AppNavigableController {
     private func bindViewModel() {
         let outputs = viewModel.bind(inputs: .init(
             viewDidAppear: viewDidAppearRelay.eraseToAnyPublisher(),
-            tappedReloadButton: Empty(completeImmediately: false).eraseToAnyPublisher()
+            tappedReloadButton: loadStateView.retryButtonTapPublisher
         ))
 
         loadStateView.configure(loadState: outputs.loadState)

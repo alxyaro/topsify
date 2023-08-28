@@ -17,7 +17,7 @@ final class AlbumViewModel {
 
     func bind(inputs: Inputs) -> Outputs {
 
-        let (data, loadState) = inputs.tappedReloadButton
+        let (data, loadState) = inputs.reloadRequested
             .prepend(())
             .dataWithLoadState { [dependencies, albumID] in
                 Publishers.CombineLatest(
@@ -69,7 +69,7 @@ extension AlbumViewModel {
     }
 
     struct Inputs {
-        let tappedReloadButton: AnyPublisher<Void, Never>
+        let reloadRequested: AnyPublisher<Void, Never>
     }
 
     struct Outputs {

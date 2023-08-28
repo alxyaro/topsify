@@ -23,8 +23,8 @@ final class AlbumViewModelTests: XCTestCase {
 
         let tappedReloadButton = TestPublisher<Void, Never>()
 
-        let outputs = viewModel.bind(inputs: .init(
-            tappedReloadButton: tappedReloadButton.eraseToAnyPublisher()
+        let outputs = viewModel.bind(inputs: .mock(
+            reloadRequested: tappedReloadButton.eraseToAnyPublisher()
         ))
 
         let loadState = TestSubscriber.subscribe(to: outputs.loadState)
@@ -63,9 +63,7 @@ final class AlbumViewModelTests: XCTestCase {
             )
         )
 
-        let outputs = viewModel.bind(inputs: .init(
-            tappedReloadButton: .never()
-        ))
+        let outputs = viewModel.bind(inputs: .mock())
 
         let loadState = TestSubscriber.subscribe(to: outputs.loadState)
         _ = TestSubscriber.subscribe(to: outputs.bannerViewModel)
@@ -99,9 +97,7 @@ final class AlbumViewModelTests: XCTestCase {
             )
         )
 
-        let outputs = viewModel.bind(inputs: .init(
-            tappedReloadButton: .never()
-        ))
+        let outputs = viewModel.bind(inputs: .mock())
 
         let bannerViewModel = TestSubscriber.subscribe(to: outputs.bannerViewModel)
 
@@ -122,9 +118,7 @@ final class AlbumViewModelTests: XCTestCase {
             )
         )
 
-        let outputs = viewModel.bind(inputs: .init(
-            tappedReloadButton: .never()
-        ))
+        let outputs = viewModel.bind(inputs: .mock())
 
         let songListViewModels = TestSubscriber.subscribe(to: outputs.songListViewModels)
 
@@ -151,13 +145,20 @@ final class AlbumViewModelTests: XCTestCase {
             )
         )
 
-        let outputs = viewModel.bind(inputs: .init(
-            tappedReloadButton: .never()
-        ))
+        let outputs = viewModel.bind(inputs: .mock())
 
         let loadState = TestSubscriber.subscribe(to: outputs.loadState)
         _ = TestSubscriber.subscribe(to: outputs.bannerViewModel)
 
         XCTAssertEqual(loadState.pollValues(), [.initial, .loading, expected], line: line)
+    }
+}
+
+extension AlbumViewModel.Inputs {
+
+    static func mock(
+        reloadRequested: AnyPublisher<Void, Never> = .never()
+    ) -> Self {
+        .init(reloadRequested: reloadRequested)
     }
 }
