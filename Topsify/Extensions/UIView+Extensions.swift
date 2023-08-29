@@ -28,7 +28,9 @@ extension UIView {
         UIView.animate(withDuration: duration, delay: 0, options: [.beginFromCurrentState, .curveEaseInOut]) {
             self.alpha = 0
         } completion: { completed in
-            if completed {
+            /// If a fade-in starts right before the fade-out ends, it's possible UIKit will say the fade-out completed.
+            /// To prevent this, the alpha value is also checked, which will be >0 if the fade-in has started.
+            if completed && self.alpha == 0 {
                 self.isHidden = true
             }
             completion?(completed)
