@@ -88,6 +88,9 @@ final class AlbumViewController: UIViewController {
 
     private let playButton = PlayButton()
 
+    private let titleSubject = CurrentValueSubject<String?, Never>(nil)
+    private let accentColorSubject = CurrentValueSubject<UIColor?, Never>(nil)
+
     private let viewModel: AlbumViewModel
     private var bannerViewModel: ArtworkBannerViewModel?
     private var songListViewModels = [SongListCellViewModel]()
@@ -151,6 +154,17 @@ final class AlbumViewController: UIViewController {
 
         loadStateView.configure(loadState: outputs.loadState)
 
+        outputs.title
+            .mapOptional()
+            .subscribe(titleSubject)
+            .store(in: &disposeBag)
+
+        outputs.accentColor
+            .map(\.uiColor)
+            .mapOptional()
+            .subscribe(accentColorSubject)
+            .store(in: &disposeBag)
+
         outputs.bannerViewModel
             .sink { [weak self] bannerViewModel in
                 guard let self else { return }
@@ -188,11 +202,11 @@ final class AlbumViewController: UIViewController {
 extension AlbumViewController: TopBarConfiguring {
 
     var topBarTitlePublisher: AnyPublisher<String?, Never> {
-        .just(FakeAlbums.catchTheseVibes.title)
+        titleSubject.eraseToAnyPublisher()
     }
 
     var topBarAccentColorPublisher: AnyPublisher<UIColor?, Never> {
-        .just(.init(hexString: FakeAlbums.catchTheseVibes.accentColorHex))
+        accentColorSubject.eraseToAnyPublisher()
     }
 
     var topBarPlayButton: PlayButton? {

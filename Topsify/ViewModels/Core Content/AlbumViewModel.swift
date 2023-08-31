@@ -40,6 +40,8 @@ final class AlbumViewModel {
 
         return Outputs(
             loadState: loadState.eraseToAnyPublisher(),
+            title: album.map(\.title).eraseToAnyPublisher(),
+            accentColor: album.map { HexColor($0.accentColorHex) }.eraseToAnyPublisher(),
             bannerViewModel: album
                 .map { [dependencies] in
                     ArtworkBannerViewModel(
@@ -74,6 +76,8 @@ extension AlbumViewModel {
 
     struct Outputs {
         let loadState: AnyPublisher<LoadState<LoadError>, Never>
+        let title: AnyPublisher<String, Never>
+        let accentColor: AnyPublisher<HexColor, Never>
         let bannerViewModel: AnyPublisher<ArtworkBannerViewModel, Never>
         let songListViewModels: AnyPublisher<[SongListCellViewModel], Never>
     }

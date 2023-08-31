@@ -85,6 +85,42 @@ final class AlbumViewModelTests: XCTestCase {
         assertLoadState(fetchAlbum: .just(.mock()), fetchSongsForAlbumError: .just([]), expected: .loaded)
     }
 
+    func testOutput_title_derivedFromContentServiceAlbumResponse() {
+        let album = Album.mock(title: "Eternal Atake")
+        let viewModel = AlbumViewModel(
+            albumID: album.id,
+            dependencies: .init(
+                calendar: .testCalendar,
+                contentService: MockContentService(
+                    fetchAlbum: { _ in .just(album) }
+                )
+            )
+        )
+
+        let outputs = viewModel.bind(inputs: .mock())
+        let title = TestSubscriber.subscribe(to: outputs.title)
+
+        XCTAssertEqual(try title.pollOnlyValue(), "Eternal Atake")
+    }
+
+    func testOutput_accentColor_derivedFromContentServiceAlbumResponse() {
+        let album = Album.mock(accentColorHex: "#592c69")
+        let viewModel = AlbumViewModel(
+            albumID: album.id,
+            dependencies: .init(
+                calendar: .testCalendar,
+                contentService: MockContentService(
+                    fetchAlbum: { _ in .just(album) }
+                )
+            )
+        )
+
+        let outputs = viewModel.bind(inputs: .mock())
+        let accentColor = TestSubscriber.subscribe(to: outputs.accentColor)
+
+        XCTAssertEqual(try accentColor.pollOnlyValue(), .init("#592c69"))
+    }
+
     func testOutput_bannerViewModel_derivedFromContentServiceResponse() {
         let album = Album.mock(title: "GTTM: Goin Thru the Motions")
         let viewModel = AlbumViewModel(
