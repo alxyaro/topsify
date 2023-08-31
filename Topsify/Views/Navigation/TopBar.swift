@@ -6,8 +6,6 @@ import UIKit
 final class TopBar: UIView {
     static let safeAreaHeight: CGFloat = 56
 
-    // MARK: Subviews
-
     private lazy var backgroundView: UIView = {
         let view = UIView()
         let gradientView = GradientFadeView(color: .appBackground.withAlphaComponent(0.4), direction: .up, easing: .linear)
@@ -38,82 +36,25 @@ final class TopBar: UIView {
         return view
     }()
 
-    // MARK: Public Properties
-
-    var title: String = "" {
-        didSet {
-            titleLabel.text = title
-        }
-    }
-
-    var accentColor: UIColor = .clear {
-        didSet {
-            backgroundView.backgroundColor = accentColor.mixed(withColor: .appBackground, weight: 0.3)
-        }
-    }
-
-    // MARK: Private State
-
     private let playButton: PlayButton?
     private var playButtonConstrainsApplied = false
     private var visibilityOffsetCancellable: AnyCancellable?
     private let viewSizeDeterminedSubject = PassthroughSubject<Void, Never>()
+    private var disposeBag = DisposeBag()
 
-    // MARK: Init
-
-    /// - Parameters:
-    ///   - playButton: The play button active alongside this top bar. Constraints will be added to position the play button.
-    ///   - visibilityManagingViewPublisher:
-    ///     If this publisher emits a view, the nav bar visibility will be controlled by the position of that view.
-    ///     - If the view is below the nav bar, the nav bar is transparent.
-    ///     - If the view is at or above the nav bar, the nav bar is opaque.
-    ///     - As the view transitions from below to above the nav bar, the nav bar smoothly fades in/out.
-    ///
-    ///     The visibility of the nav bar based on the position of the view is updated whenever this publisher emits.
-    init(
-        playButton: PlayButton?,
-        visibilityManagingViewPublisher: some Publisher<UIView?, Never>
-    ) {
-        self.playButton = playButton
+    init(configurator: TopBarConfiguring) {
+        self.playButton = configurator.topBarPlayButton
 
         super.init(frame: .zero)
 
         setUpLayout()
-        setUpVisibilityReactivity(
-            viewPublisher: visibilityManagingViewPublisher.eraseToAnyPublisher()
-        )
-    }
-
-    static func createForBannerCollectionView<BannerType: BannerView & TopBarVisibilityManagingViewProviding>(
-        _ collectionView: LayoutCallbackCollectionView,
-        bannerType: BannerType.Type,
-        playButton: PlayButton?
-    ) -> TopBar {
-        let visibilityManagingViewPublisher = Publishers.Merge(
-            collectionView.didLayoutSubviewsPublisher.prefix(1),
-            collectionView.didScrollPublisher
-        ).map { () -> UIView? in
-            guard let banner = collectionView.bannerView(type: bannerType) else { return nil }
-
-            /// The view returned should always have an accurate frame (have been laid out before).
-            /// UIKit doesn't seem to layout supplementary views as part of the UICollectionView's `layoutSubviews`
-            /// invocation (despite setting the view's frame), so we perform a manual layout here if necessary.
-            banner.layoutIfNeeded()
-
-            return banner.topBarVisibilityManagingView
-        }
-
-        return TopBar(
-            playButton: playButton,
-            visibilityManagingViewPublisher: visibilityManagingViewPublisher
-        )
+        bindState(configurator: configurator)
+        setUpVisibilityReactivity(visibility: configurator.topBarVisibility)
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    // MARK: Lifecycle
 
     override func updateConstraints() {
         if let playButton, !playButtonConstrainsApplied {
@@ -142,21 +83,15 @@ final class TopBar: UIView {
         return result
     }
 
-    // MARK: Public Functions
-
-    func constrainToSuperview() {
-        constrainEdgesToSuperview(excluding: .bottom)
-    }
-
-    // MARK: Private Functions
-
     private func setUpLayout() {
         addSubview(backgroundView)
         backgroundView.constrainEdgesToSuperview()
 
         addSubview(contentView)
-        contentView.constrainEdges(to: safeAreaLayoutGuide)
+        contentView.constrainEdgesToSuperview(excluding: .top)
         contentView.constrainHeight(to: Self.safeAreaHeight)
+        contentView.insetsLayoutMarginsFromSafeArea = false
+        contentView.topAnchor.constraint(equalTo: topAnchor).priority(.justLessThanRequired).isActive = true
 
         contentView.addSubview(backButton)
         backButton.useAutoLayout()
@@ -168,10 +103,18 @@ final class TopBar: UIView {
         titleLabel.leadingAnchor.constraint(greaterThanOrEqualTo: backButton.trailingAnchor, constant: 8).isActive = true
     }
 
-    private func setUpVisibilityReactivity(
-        viewPublisher: AnyPublisher<UIView?, Never>
-    ) {
-        visibilityOffsetCancellable = viewPublisher
+    private func bindState(configurator: TopBarConfiguring) {
+        configurator.topBarTitlePublisher
+            .assign(to: \.text, on: titleLabel)
+            .store(in: &disposeBag)
+
+        configurator.topBarAccentColorPublisher
+            .assign(to: \.backgroundColor, on: backgroundView)
+            .store(in: &disposeBag)
+    }
+
+    private func setUpVisibilityReactivity(visibility: TopBarVisibility) {
+        visibility.viewPublisher
             .prepend(nil)
             .combineLatest(viewSizeDeterminedSubject)
             .map(\.0)
@@ -198,9 +141,22 @@ final class TopBar: UIView {
                 let titleOffset = 1 - Self.easeOutQuad(x: titleOpacity)
                 titleLabel.transform = .init(translationX: 0, y: titleOffset * Self.safeAreaHeight / 4)
             }
+            .store(in: &disposeBag)
     }
 
     private static func easeOutQuad(x: CGFloat) -> CGFloat {
         1 - pow(1 - x, 2)
+    }
+}
+
+private extension TopBarVisibility {
+
+    var viewPublisher: AnyPublisher<UIView?, Never> {
+        switch self {
+        case .alwaysVisible:
+            return .just(nil)
+        case .controlledByView(let viewPublisher):
+            return viewPublisher
+        }
     }
 }

@@ -209,9 +209,9 @@ final class ArtworkBannerView: BannerView {
     }
 }
 
-extension ArtworkBannerView: TopBarVisibilityManagingViewProviding {
+extension ArtworkBannerView: TopBarVisibilityControllingViewProviding {
 
-    var topBarVisibilityManagingView: UIView {
+    var topBarVisibilityControllingView: UIView? {
         titleLabel
     }
 }

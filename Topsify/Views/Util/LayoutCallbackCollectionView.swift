@@ -9,6 +9,9 @@ import UIKit
 /// See: https://stackoverflow.com/questions/14020027/how-do-i-know-that-the-uicollectionview-has-been-loaded-completely
 class LayoutCallbackCollectionView: UICollectionView {
 
+    /// This fires after an invocation of `layoutSubviews`. Notably, the `didScroll` delegate callback
+    /// (`didScrollPublisher` with CombineCocoa) is called at the same time, but this publisher has the
+    /// benefit of emitting whenever *any* layout changes occur within the collection.
     var didLayoutSubviewsPublisher: AnyPublisher<Void, Never> {
         didLayoutSubviewsSubject.eraseToAnyPublisher()
     }

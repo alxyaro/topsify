@@ -16,12 +16,6 @@ final class AlbumViewController: UIViewController {
     typealias DataSource = UICollectionViewDiffableDataSource<Section, AnyHashable>
     typealias DataSnapshot = NSDiffableDataSourceSnapshot<Section, AnyHashable>
 
-    private lazy var topBar = TopBar.createForBannerCollectionView(
-        collectionView,
-        bannerType: ArtworkBannerView.self,
-        playButton: playButton
-    )
-
     private let loadStateView = LoadStateView()
 
     private let collectionViewLayout: BannerLayout = {
@@ -46,7 +40,6 @@ final class AlbumViewController: UIViewController {
         let collectionView = LayoutCallbackCollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
         collectionView.backgroundColor = .clear
         collectionView.indicatorStyle = .white
-        collectionView.contentInset.top = TopBar.safeAreaHeight
 
         collectionView.registerBannerViewType(ArtworkBannerView.self)
         collectionView.register(cellType: SongListCell.self)
@@ -117,15 +110,6 @@ final class AlbumViewController: UIViewController {
         setUpView()
         setUpInitialDataSourceSnapshot()
         bindViewModel()
-
-        // TODO: move to a VM
-        topBar.title = FakeAlbums.catchTheseVibes.title
-        topBar.accentColor = .init(hexString: FakeAlbums.catchTheseVibes.accentColorHex)
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        navigationController?.setNavigationBarHidden(true, animated: animated)
-        super.viewWillAppear(animated)
     }
 
     private func setUpView() {
@@ -136,11 +120,6 @@ final class AlbumViewController: UIViewController {
 
         view.addSubview(loadStateView)
         loadStateView.constrainEdgesToSuperview()
-
-        view.addSubview(topBar)
-        topBar.constrainToSuperview()
-
-        view.addSubview(playButton)
     }
 
     private func setUpInitialDataSourceSnapshot() {
@@ -200,9 +179,28 @@ final class AlbumViewController: UIViewController {
         bannerView.configure(
             with: bannerViewModel,
             scrollAmountPublisher: collectionView.scrollAmountPublisher,
-            topInset: collectionView.safeAreaInsets.top,
+            topInset: view.safeAreaInsets.top - additionalSafeAreaInsets.top,
             playButton: playButton
         )
+    }
+}
+
+extension AlbumViewController: TopBarConfiguring {
+
+    var topBarTitlePublisher: AnyPublisher<String?, Never> {
+        .just(FakeAlbums.catchTheseVibes.title)
+    }
+
+    var topBarAccentColorPublisher: AnyPublisher<UIColor?, Never> {
+        .just(.init(hexString: FakeAlbums.catchTheseVibes.accentColorHex))
+    }
+
+    var topBarPlayButton: PlayButton? {
+        playButton
+    }
+
+    var topBarVisibility: TopBarVisibility {
+        .controlledByBannerInCollectionView(collectionView, bannerType: ArtworkBannerView.self)
     }
 }
 
