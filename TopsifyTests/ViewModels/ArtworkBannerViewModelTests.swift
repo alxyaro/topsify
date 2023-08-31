@@ -20,14 +20,14 @@ final class ArtworkBannerViewModelTests: XCTestCase {
             title: "Best Album",
             type: .album,
             releaseDate: .testDate(.august, 22, 2024),
-            accentColorHex: "#123456"
+            accentColor: .init("#123456")
         )
 
         let viewModel = createViewModel(album: album)
 
         let outputs = viewModel.bind(inputs: .mock())
 
-        XCTAssertEqual(outputs.accentColor, .init(album.accentColorHex))
+        XCTAssertEqual(outputs.accentColor, album.accentColor)
         XCTAssertEqual(outputs.artworkURL, album.imageURL)
         XCTAssertEqual(outputs.title, album.title)
         XCTAssertEqual(outputs.userInfo, [.init(avatarURL: artist.avatarURL, name: artist.name)])

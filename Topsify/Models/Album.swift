@@ -14,5 +14,5 @@ struct Album: Identifiable, Equatable {
     let title: String
     let type: AlbumType
     let releaseDate: Date
-    let accentColorHex: String
+    let accentColor: HexColor
 }

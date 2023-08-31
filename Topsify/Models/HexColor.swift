@@ -7,11 +7,15 @@ import UIKit
 struct HexColor: Equatable {
     let hexString: String
 
+    init(unchecked hexString: String) {
+        self.hexString = hexString
+    }
+
     init(_ hexString: String) {
         self.hexString = DynamicColor(hexString: hexString).toHexString()
     }
 
-    init(_ hexString: String, shadedBy shade: CGFloat) {
-        self.hexString = DynamicColor(hexString: hexString).shaded(amount: shade).toHexString()
+    func shaded(by amount: CGFloat) -> Self {
+        .init(DynamicColor(hexString: hexString).shaded(amount: amount).toHexString())
     }
 }

@@ -42,7 +42,7 @@ final class PlayBarViewModel {
                 .map(\.imageURL)
                 .eraseToAnyPublisher(),
             backgroundColor: activeSongPublisher
-                .map { HexColor($0.accentColorHex, shadedBy: 0.6) }
+                .map { $0.accentColor.shaded(by: 0.6) }
                 .eraseToAnyPublisher()
         )
     }

@@ -119,9 +119,9 @@ final class PlayBarViewModelTests: XCTestCase {
     }
 
     func testOutput_backgroundColor_derivedFromActiveItemOfPlaybackQueue() throws {
-        let accentColorHex = "#d6121e"
+        let accentColor = HexColor("#d6121e")
         let playbackQueue = MockPlaybackQueue()
-        playbackQueue.stateValue.activeItem = .init(song: .mock(accentColorHex: accentColorHex))
+        playbackQueue.stateValue.activeItem = .init(song: .mock(accentColor: accentColor))
 
         let viewModel = PlayBarViewModel(dependencies: .init(playbackQueue: playbackQueue))
 
@@ -132,7 +132,7 @@ final class PlayBarViewModelTests: XCTestCase {
         let backgroundColorSubscriber = TestSubscriber.subscribe(to: outputs.backgroundColor)
         let backgroundColor = try backgroundColorSubscriber.pollOnlyValue()
 
-        XCTAssertEqual(backgroundColor, HexColor(accentColorHex, shadedBy: 0.6))
+        XCTAssertEqual(backgroundColor, accentColor.shaded(by: 0.6))
     }
 }
 

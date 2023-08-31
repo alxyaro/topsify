@@ -19,7 +19,7 @@ final class ArtworkBannerViewModel {
     ) {
         self.dependencies = dependencies
 
-        accentColor = .init(album.accentColorHex)
+        accentColor = album.accentColor
         artworkURL = album.imageURL
         title = album.title
         userInfo = album.artists.map { UserInfo(avatarURL: $0.avatarURL, name: $0.name) }

@@ -13,7 +13,7 @@ struct Song: Identifiable, Equatable {
     let albumID: UUID?
     let imageURL: URL
     let title: String
-    let accentColorHex: String
+    let accentColor: HexColor
     let isExplicit: Bool
 }
 

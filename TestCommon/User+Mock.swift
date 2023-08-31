@@ -9,14 +9,14 @@ extension User {
         avatarURL: URL = .imageMockWithRandomID(),
         name: String = "Alex Yaro",
         isArtist: Bool = false,
-        accentColorHex: String = "#0011ee"
+        accentColor: HexColor = .init("#0011ee")
     ) -> Self {
         .init(
             id: id,
             avatarURL: avatarURL,
             name: name,
             isArtist: isArtist,
-            accentColorHex: accentColorHex
+            accentColor: accentColor
         )
     }
 }

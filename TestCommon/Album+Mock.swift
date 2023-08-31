@@ -11,7 +11,7 @@ extension Album {
         title: String = "Test Album",
         type: AlbumType = .album,
         releaseDate: Date = .init(timeIntervalSince1970: 1692417172),
-        accentColorHex: String = "#0011ee"
+        accentColor: HexColor = .init("#0011ee")
     ) -> Self {
         .init(
             id: id,
@@ -20,7 +20,7 @@ extension Album {
             title: title,
             type: type,
             releaseDate: releaseDate,
-            accentColorHex: accentColorHex
+            accentColor: accentColor
         )
     }
 }

@@ -41,7 +41,7 @@ final class AlbumViewModel {
         return Outputs(
             loadState: loadState.eraseToAnyPublisher(),
             title: album.map(\.title).eraseToAnyPublisher(),
-            accentColor: album.map { HexColor($0.accentColorHex) }.eraseToAnyPublisher(),
+            accentColor: album.map(\.accentColor).eraseToAnyPublisher(),
             bannerViewModel: album
                 .map { [dependencies] in
                     ArtworkBannerViewModel(

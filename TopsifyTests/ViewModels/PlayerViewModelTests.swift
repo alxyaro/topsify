@@ -27,9 +27,9 @@ final class PlayerViewModelTests: XCTestCase {
     }
 
     func testOutput_backgroundGradient_derivedFromActiveItemOfPlaybackQueue() throws {
-        let accentColorHex = "#d6121e"
+        let accentColor = HexColor("#d6121e")
         let playbackQueue = MockPlaybackQueue()
-        playbackQueue.stateValue.activeItem = .init(song: .mock(accentColorHex: accentColorHex))
+        playbackQueue.stateValue.activeItem = .init(song: .mock(accentColor: accentColor))
 
         let viewModel = PlayerViewModel(dependencies: .init(playbackQueue: playbackQueue))
 
@@ -38,8 +38,8 @@ final class PlayerViewModelTests: XCTestCase {
         let backgroundGradientSubscriber = TestSubscriber.subscribe(to: outputs.backgroundGradient)
         let backgroundGradient = try backgroundGradientSubscriber.pollOnlyValue()
 
-        XCTAssertEqual(backgroundGradient.top, HexColor(accentColorHex, shadedBy: 0.2))
-        XCTAssertEqual(backgroundGradient.bottom, HexColor(accentColorHex, shadedBy: 0.7))
+        XCTAssertEqual(backgroundGradient.top, accentColor.shaded(by: 0.2))
+        XCTAssertEqual(backgroundGradient.bottom, accentColor.shaded(by: 0.7))
     }
 
     func testOutput_dismiss_derivedFromTopBarViewModel() {

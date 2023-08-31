@@ -15,5 +15,5 @@ struct Playlist: Identifiable, Equatable {
     let description: String
     let isOfficial: Bool
     let isCoverSelfDescriptive: Bool
-    let accentColorHex: String
+    let accentColor: HexColor
 }

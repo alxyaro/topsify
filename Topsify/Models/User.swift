@@ -12,5 +12,5 @@ struct User: Identifiable, Equatable {
     let avatarURL: URL
     let name: String
     let isArtist: Bool
-    let accentColorHex: String
+    let accentColor: HexColor
 }

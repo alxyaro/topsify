@@ -104,7 +104,7 @@ final class AlbumViewModelTests: XCTestCase {
     }
 
     func testOutput_accentColor_derivedFromContentServiceAlbumResponse() {
-        let album = Album.mock(accentColorHex: "#592c69")
+        let album = Album.mock(accentColor: .init("#592c69"))
         let viewModel = AlbumViewModel(
             albumID: album.id,
             dependencies: .init(
@@ -118,7 +118,7 @@ final class AlbumViewModelTests: XCTestCase {
         let outputs = viewModel.bind(inputs: .mock())
         let accentColor = TestSubscriber.subscribe(to: outputs.accentColor)
 
-        XCTAssertEqual(try accentColor.pollOnlyValue(), .init("#592c69"))
+        XCTAssertEqual(try accentColor.pollOnlyValue(), album.accentColor)
     }
 
     func testOutput_bannerViewModel_derivedFromContentServiceResponse() {

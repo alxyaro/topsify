@@ -33,11 +33,11 @@ final class PlayerViewModel {
     private func bind(inputs: Inputs, playbackQueue: some PlaybackQueueType) -> Outputs {
         return Outputs(
             backgroundGradient: playbackQueue.state
-                .compactMap { $0[itemAt: .activeItem]?.song.accentColorHex }
-                .map { accentColorHex in
+                .compactMap { $0[itemAt: .activeItem]?.song.accentColor }
+                .map { accentColor in
                     return (
-                        top: HexColor(accentColorHex, shadedBy: 0.2),
-                        bottom: HexColor(accentColorHex, shadedBy: 0.7)
+                        top: accentColor.shaded(by: 0.2),
+                        bottom: accentColor.shaded(by: 0.7)
                     )
                 }
                 .eraseToAnyPublisher(),

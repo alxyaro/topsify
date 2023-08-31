@@ -12,7 +12,7 @@ extension Playlist {
         description: String = "Just a test playlist",
         isOfficial: Bool = false,
         isCoverSelfDescriptive: Bool = false,
-        accentColorHex: String = "#0011ee"
+        accentColor: HexColor = .init("#0011ee")
     ) -> Self {
         .init(
             id: id,
@@ -22,7 +22,7 @@ extension Playlist {
             description: description,
             isOfficial: isOfficial,
             isCoverSelfDescriptive: isCoverSelfDescriptive,
-            accentColorHex: accentColorHex
+            accentColor: accentColor
         )
     }
 }

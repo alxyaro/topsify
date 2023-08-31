@@ -572,6 +572,7 @@
 				6B0C39AD2818B02600B59313 /* User.swift */,
 				6B0C39AF2818B17000B59313 /* ContentObject.swift */,
 				6B0C39CA281E198300B59313 /* SpotlightEntryModel.swift */,
+				6B4854ED2A54795800B52E25 /* HexColor.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -600,7 +601,6 @@
 				6B46C8DA29E9E4E3006DEDBB /* Player */,
 				6B357245280BB98B007CBDF6 /* Home */,
 				6B0C39CE282091F500B59313 /* Common */,
-				6B4854EC2A54792600B52E25 /* Util */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -777,14 +777,6 @@
 				6BDC889229F1CE19003B7290 /* MockPlaybackQueue.swift */,
 			);
 			path = TestCommon;
-			sourceTree = "<group>";
-		};
-		6B4854EC2A54792600B52E25 /* Util */ = {
-			isa = PBXGroup;
-			children = (
-				6B4854ED2A54795800B52E25 /* HexColor.swift */,
-			);
-			path = Util;
 			sourceTree = "<group>";
 		};
 		6B4854EF2A547A1700B52E25 /* Extensions */ = {
