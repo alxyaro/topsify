@@ -6,9 +6,14 @@ import UIKit
 final class TopBar: UIView {
     static let safeAreaHeight: CGFloat = 56
 
+    enum BackButtonVisibility {
+        case hidden
+        case shown(onTap: () -> Void)
+    }
+
     private lazy var backgroundView: UIView = {
         let view = UIView()
-        let gradientView = GradientFadeView(color: .appBackground.withAlphaComponent(0.4), direction: .up, easing: .linear)
+        let gradientView = GradientFadeView(color: .appBackground.withAlphaComponent(0.6), direction: .up, easing: .linear)
         view.addSubview(gradientView)
         gradientView.constrainEdgesToSuperview()
         return view
@@ -16,8 +21,7 @@ final class TopBar: UIView {
 
     private let backButton: AppIconButton = {
         let button = AppIconButton(icon: "Icons/chevronLeft", scale: 0.8, expandedTouchBoundary: .init(uniform: 12))
-        // TODO: have navigation controller manage visibility:
-        button.isHidden = false // true
+        button.isHidden = true
         return button
     }()
 
@@ -42,12 +46,16 @@ final class TopBar: UIView {
     private let viewSizeDeterminedSubject = PassthroughSubject<Void, Never>()
     private var disposeBag = DisposeBag()
 
-    init(configurator: TopBarConfiguring) {
+    init(
+        configurator: TopBarConfiguring,
+        backButtonVisibility: BackButtonVisibility
+    ) {
         self.playButton = configurator.topBarPlayButton
 
         super.init(frame: .zero)
 
         setUpLayout()
+        setUpBackButton(visibility: backButtonVisibility)
         bindState(configurator: configurator)
         setUpVisibilityReactivity(visibility: configurator.topBarVisibility)
     }
@@ -101,6 +109,15 @@ final class TopBar: UIView {
         contentView.addSubview(titleLabel)
         titleLabel.constrainInCenter(of: contentView.layoutMarginsGuide)
         titleLabel.leadingAnchor.constraint(greaterThanOrEqualTo: backButton.trailingAnchor, constant: 8).isActive = true
+    }
+
+    private func setUpBackButton(visibility: BackButtonVisibility) {
+        if case let .shown(tapAction) = visibility {
+            backButton.isHidden = false
+            backButton.tapPublisher
+                .sink(receiveValue: tapAction)
+                .store(in: &disposeBag)
+        }
     }
 
     private func bindState(configurator: TopBarConfiguring) {

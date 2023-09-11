@@ -22,12 +22,26 @@ final class NewAppNavigationController: UINavigationController {
 
     }
 
-    private func setUpTopBarIfNeeded(for viewController: UIViewController, topBarConfiguring: TopBarConfiguring) {
+    private func setUpTopBarIfNeeded(
+        for viewController: UIViewController,
+        topBarConfiguring: TopBarConfiguring,
+        withBackButton: Bool
+    ) {
         guard !viewController.view.subviews.contains(where: { $0 is TopBar }) else {
             return
         }
 
-        let topBar = TopBar(configurator: topBarConfiguring)
+        var backButtonVisibility = TopBar.BackButtonVisibility.hidden
+        if withBackButton {
+            backButtonVisibility = .shown { [weak self] in
+                self?.popViewController(viewController, animated: true)
+            }
+        }
+
+        let topBar = TopBar(
+            configurator: topBarConfiguring,
+            backButtonVisibility: backButtonVisibility
+        )
 
         viewController.view.addSubview(topBar)
         viewController.additionalSafeAreaInsets.top = TopBar.safeAreaHeight
@@ -45,7 +59,11 @@ extension NewAppNavigationController: UINavigationControllerDelegate {
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         if let topBarConfiguring = viewController as? TopBarConfiguring {
             setNavigationBarHidden(true, animated: animated)
-            setUpTopBarIfNeeded(for: viewController, topBarConfiguring: topBarConfiguring)
+            setUpTopBarIfNeeded(
+                for: viewController,
+                topBarConfiguring: topBarConfiguring,
+                withBackButton: viewControllers.firstIndex(of: viewController) != 0
+            )
         } else {
             // Note: This delegate method is called after viewDidLoad/viewWillAppear, so this would override VC
             // visibility preference of the native navbar. In the future, we may want to have a regular VC
