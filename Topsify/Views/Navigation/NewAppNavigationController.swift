@@ -57,18 +57,19 @@ final class NewAppNavigationController: UINavigationController {
 extension NewAppNavigationController: UINavigationControllerDelegate {
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        let hideNavigationBar = viewController is TopBarConfiguring || viewController is NavigationHeaderProviding
+
+        // Note: This delegate method is called after viewDidLoad/viewWillAppear, so this would override VC
+        // visibility preference of the native navbar. In the future, we may want to have a regular VC
+        // that hides the native navbar.
+        setNavigationBarHidden(hideNavigationBar, animated: animated)
+
         if let topBarConfiguring = viewController as? TopBarConfiguring {
-            setNavigationBarHidden(true, animated: animated)
             setUpTopBarIfNeeded(
                 for: viewController,
                 topBarConfiguring: topBarConfiguring,
                 withBackButton: viewControllers.firstIndex(of: viewController) != 0
             )
-        } else {
-            // Note: This delegate method is called after viewDidLoad/viewWillAppear, so this would override VC
-            // visibility preference of the native navbar. In the future, we may want to have a regular VC
-            // that hides the native navbar.
-            setNavigationBarHidden(false, animated: animated)
         }
     }
 }

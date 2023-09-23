@@ -48,6 +48,7 @@ final class HomeViewModelTests: XCTestCase {
         XCTAssertEqual(loadStateSubscriber.pollValues(), [.loaded])
         XCTAssertEqual(sectionsSubscriber.pollValues(), [
             [
+                .navigationHeader,
                 .recentActivity([.init(from: .song(FakeSongs.loveMusic))]),
                 .generic(title: "Test Section", contentTiles: [.init(from: .album(FakeAlbums.catchTheseVibes))])
             ]
@@ -97,6 +98,7 @@ final class HomeViewModelTests: XCTestCase {
         XCTAssertEqual(loadStateSubscriber.pollValues(), [.loading, .loaded])
         XCTAssertEqual(sectionsSubscriber.pollValues(), [
             [
+                .navigationHeader,
                 .moreLike(
                     headerViewModel: .init(from: FakeUsers.alexYaro, captionText: "More like"),
                     contentTiles: [
@@ -132,39 +134,39 @@ final class HomeViewModelTests: XCTestCase {
             tappedReloadButton: .never()
         ))
 
-        let navBarTitleSubscriber = TestSubscriber.subscribe(to: outputs.navBarTitle)
-        let backgroundTintStyleSubscriber = TestSubscriber.subscribe(to: outputs.backgroundTintStyle)
+        let navigationHeaderTitle = TestSubscriber.subscribe(to: outputs.navigationHeaderTitle)
+        let backgroundTintStyle = TestSubscriber.subscribe(to: outputs.backgroundTintStyle)
 
-        XCTAssertEqual(navBarTitleSubscriber.pollValues(), [])
-        XCTAssertEqual(backgroundTintStyleSubscriber.pollValues(), [])
+        XCTAssertEqual(navigationHeaderTitle.pollValues(), [])
+        XCTAssertEqual(backgroundTintStyle.pollValues(), [])
 
         viewDidAppearRelay.accept()
 
-        XCTAssertEqual(navBarTitleSubscriber.pollValues(), ["Good night"])
-        XCTAssertEqual(backgroundTintStyleSubscriber.pollValues(), [.night])
+        XCTAssertEqual(navigationHeaderTitle.pollValues(), ["Good night"])
+        XCTAssertEqual(backgroundTintStyle.pollValues(), [.night])
 
         hourOfDay = 5
         viewDidAppearRelay.accept()
 
-        XCTAssertEqual(navBarTitleSubscriber.pollValues(), ["Good morning"])
-        XCTAssertEqual(backgroundTintStyleSubscriber.pollValues(), [.morning])
+        XCTAssertEqual(navigationHeaderTitle.pollValues(), ["Good morning"])
+        XCTAssertEqual(backgroundTintStyle.pollValues(), [.morning])
 
         hourOfDay = 12
         viewDidAppearRelay.accept()
 
-        XCTAssertEqual(navBarTitleSubscriber.pollValues(), ["Good afternoon"])
-        XCTAssertEqual(backgroundTintStyleSubscriber.pollValues(), [.afternoon])
+        XCTAssertEqual(navigationHeaderTitle.pollValues(), ["Good afternoon"])
+        XCTAssertEqual(backgroundTintStyle.pollValues(), [.afternoon])
 
         hourOfDay = 18
         viewDidAppearRelay.accept()
 
-        XCTAssertEqual(navBarTitleSubscriber.pollValues(), ["Good evening"])
-        XCTAssertEqual(backgroundTintStyleSubscriber.pollValues(), [.evening])
+        XCTAssertEqual(navigationHeaderTitle.pollValues(), ["Good evening"])
+        XCTAssertEqual(backgroundTintStyle.pollValues(), [.evening])
 
         viewDidAppearRelay.accept()
 
         // should not re-emit duplicate values
-        XCTAssertEqual(navBarTitleSubscriber.pollValues(), [])
-        XCTAssertEqual(backgroundTintStyleSubscriber.pollValues(), [])
+        XCTAssertEqual(navigationHeaderTitle.pollValues(), [])
+        XCTAssertEqual(backgroundTintStyle.pollValues(), [])
     }
 }

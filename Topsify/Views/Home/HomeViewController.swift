@@ -9,7 +9,7 @@ import UIKit
 import Combine
 import CombineExt
 
-final class HomeViewController: AppNavigableController {
+final class HomeViewController: AppNavigableController, NavigationHeaderProviding {
     
     private let backgroundGradient: CAGradientLayer = {
         let layer = CAGradientLayer()
@@ -22,11 +22,20 @@ final class HomeViewController: AppNavigableController {
 
     private let loadStateView = LoadStateView()
 
-    private let viewDidAppearRelay = PassthroughRelay<Void>()
+    private let headerNotificationsButton = NavigationHeaderView.Button(icon: "Icons/notifications")
+    private let headerHistoryButton = NavigationHeaderView.Button(icon: "Icons/history")
+    private let headerSettingsButton = NavigationHeaderView.Button(icon: "Icons/settings")
 
-    private let collectionManager = CollectionManager()
+    lazy var navigationHeaderView = NavigationHeaderView(buttons: [
+        headerNotificationsButton,
+        headerHistoryButton,
+        headerSettingsButton
+    ])
+
+    private lazy var collectionManager = CollectionManager(navigationHeaderView: navigationHeaderView)
 
     private let viewModel: HomeViewModel
+    private let viewDidAppearRelay = PassthroughRelay<Void>()
     private var disposeBag = DisposeBag()
     
     init(viewModel: HomeViewModel = .init(dependencies: .live())) {
@@ -104,9 +113,9 @@ final class HomeViewController: AppNavigableController {
 
         loadStateView.configure(loadState: outputs.loadState)
 
-        outputs.navBarTitle
+        outputs.navigationHeaderTitle
             .mapOptional()
-            .assignWeakly(to: \.title, on: self)
+            .assignWeakly(to: \.navigationHeaderView.title, on: self)
             .store(in: &disposeBag)
 
         outputs.backgroundTintStyle

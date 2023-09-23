@@ -4,32 +4,43 @@ import UIKit
 
 extension HomeViewController {
     final class CollectionManager: NSObject {
-        private static let sideSpacing: CGFloat = 16
-
+        private let navigationHeaderView: NavigationHeaderView
         private var sections = [HomeViewModel.Section]()
+
+        init(navigationHeaderView: NavigationHeaderView) {
+            self.navigationHeaderView = navigationHeaderView
+        }
 
         private lazy var collectionViewLayout: UICollectionViewLayout = {
             let config = UICollectionViewCompositionalLayoutConfiguration()
-            config.interSectionSpacing = 24
 
-            return UICollectionViewCompositionalLayout(sectionProvider: { [weak self] sectionIndex, _ in
-                guard let section = self?.sections[safe: sectionIndex] else {
-                    return nil
-                }
+            return UICollectionViewCompositionalLayout(
+                sectionProvider: { [weak self] sectionIndex, _ in
+                    guard let self, let section = sections[safe: sectionIndex] else {
+                        return nil
+                    }
 
-                let sectionLayout: NSCollectionLayoutSection
-                switch section {
-                case .recentActivity:
-                    sectionLayout = Self.createRecentActivitySection()
-                case .generic, .moreLike:
-                    sectionLayout = Self.createContentTileSection()
-                }
+                    let sectionLayout: NSCollectionLayoutSection
+                    switch section {
+                    case .navigationHeader:
+                        sectionLayout = NavigationHeaderView.Cell.compositionalLayoutSection
+                    case .recentActivity:
+                        sectionLayout = Self.createRecentActivitySection()
+                    case .generic, .moreLike:
+                        sectionLayout = Self.createContentTileSection()
+                    }
 
-                sectionLayout.contentInsets.leading = Self.sideSpacing
-                sectionLayout.contentInsets.trailing = Self.sideSpacing
+                    sectionLayout.contentInsets.leading = section.sideSpacing
+                    sectionLayout.contentInsets.trailing = section.sideSpacing
 
-                return sectionLayout
-            }, configuration: config)
+                    if sectionIndex < sections.count-1 {
+                        sectionLayout.contentInsets.bottom = section.spacingToNextSection
+                    }
+
+                    return sectionLayout
+                },
+                configuration: config
+            )
         }()
 
         private(set) lazy var collectionView: UICollectionView = {
@@ -37,11 +48,13 @@ extension HomeViewController {
 
             collectionView.backgroundColor = .clear
             collectionView.dataSource = self
+            collectionView.indicatorStyle = .white
 
             collectionView.registerEmptyCell()
             collectionView.registerEmptySupplementaryView(ofKind: UICollectionView.elementKindSectionHeader)
             collectionView.register(supplementaryViewType: HomeSimpleHeaderCell.self, ofKind: UICollectionView.elementKindSectionHeader)
             collectionView.register(supplementaryViewType: HomeArtistHeaderCell.self, ofKind: UICollectionView.elementKindSectionHeader)
+            collectionView.register(cellType: NavigationHeaderView.Cell.self)
             collectionView.register(cellType: ContentTileCell.self)
             collectionView.register(cellType: RecentActivityItemCell.self)
 
@@ -110,6 +123,8 @@ extension HomeViewController.CollectionManager: UICollectionViewDataSource {
             return 0
         }
         switch section {
+        case .navigationHeader:
+            return 1
         case let .generic(_, contentTiles), let .moreLike(_, contentTiles):
             return contentTiles.count
         case let .recentActivity(viewModels):
@@ -122,6 +137,10 @@ extension HomeViewController.CollectionManager: UICollectionViewDataSource {
             return collectionView.dequeueEmptyCell(for: indexPath)
         }
         switch section {
+        case .navigationHeader:
+            let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: NavigationHeaderView.Cell.self)
+            cell.configure(with: navigationHeaderView)
+            return cell
         case let .generic(_, contentTiles), let .moreLike(_, contentTiles):
             guard let viewModel = contentTiles[safe: indexPath.item] else {
                 return collectionView.dequeueEmptyCell(for: indexPath)
@@ -152,7 +171,7 @@ extension HomeViewController.CollectionManager: UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, for: indexPath, viewType: HomeArtistHeaderCell.self)
             cell.configure(with: headerViewModel)
             return cell
-        case .recentActivity:
+        case .navigationHeader, .recentActivity:
             return collectionView.dequeueEmptySupplementaryView(ofKind: kind, for: indexPath)
         }
     }
@@ -165,5 +184,26 @@ private extension NSCollectionLayoutBoundarySupplementaryItem {
             elementKind: UICollectionView.elementKindSectionHeader,
             alignment: .top
         )
+    }
+}
+
+private extension HomeViewModel.Section {
+
+    var sideSpacing: CGFloat {
+        switch self {
+        case .navigationHeader:
+            return 0
+        case .recentActivity, .generic, .moreLike:
+            return 16
+        }
+    }
+
+    var spacingToNextSection: CGFloat {
+        switch self {
+        case .navigationHeader:
+            return 0
+        case .recentActivity, .generic, .moreLike:
+            return 24
+        }
     }
 }

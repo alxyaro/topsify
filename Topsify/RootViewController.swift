@@ -14,7 +14,7 @@ class RootViewController: UIViewController {
         
         view.backgroundColor = .appBackground
         
-        let homeTabController = AppNavigationController(rootViewController: HomeViewController())
+        let homeTabController = NewAppNavigationController(rootViewController: HomeViewController())
         homeTabController.title = "Home"
         
         let temp1 = UIViewController()

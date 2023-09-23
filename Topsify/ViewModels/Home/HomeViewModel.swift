@@ -43,6 +43,7 @@ struct HomeViewModel {
                 )
                 .map { recentActivity, spotlight in
                     var result = [Section]()
+                    result.append(.navigationHeader)
                     if !recentActivity.isEmpty {
                         result.append(.recentActivity(recentActivity.map { RecentActivityItemViewModel(from: $0) }))
                     }
@@ -67,7 +68,7 @@ struct HomeViewModel {
             }
             .removeDuplicates()
 
-        let navBarTitle = backgroundTintStyle
+        let navigationHeaderTitle = backgroundTintStyle
             .map {
                 switch $0 {
                 case .night:
@@ -83,7 +84,7 @@ struct HomeViewModel {
 
         return Outputs(
             loadState: loadState,
-            navBarTitle: navBarTitle.eraseToAnyPublisher(),
+            navigationHeaderTitle: navigationHeaderTitle.eraseToAnyPublisher(),
             backgroundTintStyle: backgroundTintStyle.eraseToAnyPublisher(),
             sections: sections
         )
@@ -101,7 +102,7 @@ extension HomeViewModel {
 
     struct Outputs {
         let loadState: AnyPublisher<LoadState<HomeError>, Never>
-        let navBarTitle: AnyPublisher<String, Never>
+        let navigationHeaderTitle: AnyPublisher<String, Never>
         let backgroundTintStyle: AnyPublisher<BackgroundTintStyle, Never>
         let sections: AnyPublisher<[Section], Never>
     }
@@ -126,6 +127,7 @@ extension HomeViewModel {
     }
 
     enum Section: Equatable {
+        case navigationHeader
         case recentActivity([RecentActivityItemViewModel])
         case generic(title: String, contentTiles: [ContentTileViewModel])
         case moreLike(headerViewModel: HomeArtistHeaderCellViewModel, contentTiles: [ContentTileViewModel])
