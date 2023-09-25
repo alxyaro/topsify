@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4FBE987A2AC2012600802FF8 /* SwizzleHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FBE98792AC2012600802FF8 /* SwizzleHelper.swift */; };
 		6B005C0E27F14FDF0064929C /* FakeAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6B005C0D27F14FDF0064929C /* FakeAssets.xcassets */; };
 		6B005C1027F29FF30064929C /* AutoLayout+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B005C0F27F29FF30064929C /* AutoLayout+Extensions.swift */; };
 		6B005C1527F3F0EB0064929C /* Album.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B005C1427F3F0EB0064929C /* Album.swift */; };
@@ -242,6 +243,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4FBE98792AC2012600802FF8 /* SwizzleHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwizzleHelper.swift; sourceTree = "<group>"; };
 		6B005C0D27F14FDF0064929C /* FakeAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = FakeAssets.xcassets; sourceTree = "<group>"; };
 		6B005C0F27F29FF30064929C /* AutoLayout+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AutoLayout+Extensions.swift"; sourceTree = "<group>"; };
 		6B005C1427F3F0EB0064929C /* Album.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Album.swift; sourceTree = "<group>"; };
@@ -489,6 +491,7 @@
 				6BD2EA6E29A3E7B900D5F1AD /* GenericError.swift */,
 				6B9B44C829D0B11F00F6BA94 /* DirectionalPanGestureRecognizer.swift */,
 				6B9B46F72A902E2A002042F6 /* UserFacingError.swift */,
+				4FBE98792AC2012600802FF8 /* SwizzleHelper.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -1170,6 +1173,7 @@
 				6BED244929D8BB47002D51C2 /* PlayerStageBasicItemCell.swift in Sources */,
 				6B9B44D129D28C6E00F6BA94 /* PlayerTitleView.swift in Sources */,
 				6B04D59F2A4644F000DA0FC2 /* TransitionPanGestureHandler.swift in Sources */,
+				4FBE987A2AC2012600802FF8 /* SwizzleHelper.swift in Sources */,
 				6B46C22128EA0E2B00E2B80B /* UIViewImplicitlyAnimating+Extensions.swift in Sources */,
 				6BED244B29D9FBD6002D51C2 /* Comparable+Additions.swift in Sources */,
 				6B0C39D228209CCE00B59313 /* ContentTileViewModel.swift in Sources */,
