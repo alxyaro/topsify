@@ -10,7 +10,7 @@ final class HomeViewModelTests: XCTestCase {
 
     func testOutputs_sections_loadState() {
         let recentActivity = TestPublisher<[ContentObject], Error>()
-        let spotlightEntries = TestPublisher<[SpotlightEntryModel], Error>()
+        let spotlightEntries = TestPublisher<[SpotlightEntry], Error>()
 
         let viewModel = HomeViewModel(dependencies: .init(
             accountDataService: MockAccountDataService(
@@ -43,20 +43,43 @@ final class HomeViewModelTests: XCTestCase {
         XCTAssertEqual(sectionsSubscriber.pollValues(), [])
 
         recentActivity.send([.song(FakeSongs.loveMusic)])
-        spotlightEntries.send([.generic(title: "Test Section", content: [.album(FakeAlbums.catchTheseVibes)])])
+        spotlightEntries.send([
+            .generic(.init(
+                title: "Generic Section",
+                items: [
+                    .init(
+                        contentID: ContentID(contentType: .playlist, id: UUID()),
+                        imageURL: .imageMock(id: "image1"),
+                        title: "Going Back in Time",
+                        subtitle: "All the songs from early 2000s"
+                    )
+                ]
+            ))
+        ])
 
         XCTAssertEqual(loadStateSubscriber.pollValues(), [.loaded])
         XCTAssertEqual(sectionsSubscriber.pollValues(), [
             [
                 .navigationHeader,
                 .recentActivity([.init(from: .song(FakeSongs.loveMusic))]),
-                .generic(title: "Test Section", contentTiles: [.init(from: .album(FakeAlbums.catchTheseVibes))])
+                .generic(
+                    header: "Generic Section",
+                    contentTiles: [
+                        .init(
+                            imageURL: .imageMock(id: "image1"),
+                            title: "Going Back in Time",
+                            subtitle: "All the songs from early 2000s",
+                            isCircular: false,
+                            onTap: {}
+                        )
+                    ]
+                )
             ]
         ])
     }
 
     func testOutputs_sections_loadState_withErrorRecovery() {
-        let spotlightEntries = TestPublisher<[SpotlightEntryModel], Error>()
+        let spotlightEntries = TestPublisher<[SpotlightEntry], Error>()
 
         let viewModel = HomeViewModel(dependencies: .init(
             accountDataService: MockAccountDataService(),
@@ -93,16 +116,39 @@ final class HomeViewModelTests: XCTestCase {
         XCTAssertEqual(loadStateSubscriber.pollValues(), [.loading, .error(.failedToLoad)])
 
         reloadButtonRelay.accept()
-        spotlightEntries.send([.moreLike(user: FakeUsers.alexYaro, content: [.playlist(FakePlaylists.vibey)])])
+        spotlightEntries.send([
+            .moreLike(.init(
+                artistInfo: .init(id: UUID(), name: "BNYX", avatarURL: .imageMock(id: "bnyx")),
+                items: [
+                    .init(
+                        contentID: ContentID(contentType: .artist, id: UUID()),
+                        imageURL: .imageMock(id: "trgc"),
+                        title: "TRGC",
+                        subtitle: "Subtitle goes here"
+                    )
+                ]
+            ))
+        ])
 
         XCTAssertEqual(loadStateSubscriber.pollValues(), [.loading, .loaded])
         XCTAssertEqual(sectionsSubscriber.pollValues(), [
             [
                 .navigationHeader,
                 .moreLike(
-                    headerViewModel: .init(from: FakeUsers.alexYaro, captionText: "More like"),
+                    headerViewModel: .init(
+                        avatarURL: .imageMock(id: "bnyx"),
+                        artistName: "BNYX",
+                        captionText: "More like",
+                        onTap: {}
+                    ),
                     contentTiles: [
-                        .init(from: .playlist(FakePlaylists.vibey))
+                        .init(
+                            imageURL: .imageMock(id: "trgc"),
+                            title: "TRGC",
+                            subtitle: "Subtitle goes here",
+                            isCircular: true,
+                            onTap: {}
+                        )
                     ]
                 )
             ]

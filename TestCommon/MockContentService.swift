@@ -6,11 +6,11 @@ import Combine
 import TestHelpers
 
 struct MockContentService: ContentServiceType {
-    var spotlightEntriesPublisher: AnyPublisher<[SpotlightEntryModel], Error> = .just([])
+    var spotlightEntriesPublisher: AnyPublisher<[SpotlightEntry], Error> = .just([])
     var fetchAlbum: (UUID) -> AnyPublisher<Album, ContentServiceErrors.FetchError> = { _ in .fail(.notFound) }
     var fetchSongsForAlbum: (UUID) -> AnyPublisher<[Song], ContentServiceErrors.FetchError> = { _ in .just([]) }
 
-    func spotlightEntries() -> Future<[SpotlightEntryModel], Error> {
+    func spotlightEntries() -> Future<[SpotlightEntry], Error> {
         spotlightEntriesPublisher.toFuture()
     }
 

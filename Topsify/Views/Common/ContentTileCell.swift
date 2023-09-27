@@ -101,7 +101,7 @@ final class ContentTileCell: UICollectionViewCell, Reusable {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.25
         subtitleLabel.attributedText = NSAttributedString(string: viewModel.subtitle, attributes: [.paragraphStyle: paragraphStyle])
-        // explicitly set again so attributedTest is affected
+        // explicitly set again so attributedText is affected
         // https://developer.apple.com/documentation/uikit/uilabel/1620525-linebreakmode
         subtitleLabel.lineBreakMode = .byTruncatingTail
 

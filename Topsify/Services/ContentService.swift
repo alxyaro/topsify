@@ -4,7 +4,7 @@ import Combine
 import Foundation
 
 protocol ContentServiceType {
-    func spotlightEntries() -> Future<[SpotlightEntryModel], Error>
+    func spotlightEntries() -> Future<[SpotlightEntry], Error>
     func fetchAlbum(withID id: UUID) -> Future<Album, ContentServiceErrors.FetchError>
     func fetchSongs(forAlbumID id: UUID) -> Future<[Song], ContentServiceErrors.FetchError>
 }

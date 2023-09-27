@@ -35,6 +35,8 @@ struct HomeViewModel {
                 .mapError(HomeError.failedToLoad)
         }
 
+        let tappedContentSubject = PassthroughSubject<ContentID, Never>()
+
         let (sections, loadState) = reloadTrigger
             .dataWithLoadState {
                 Publishers.combineLatest(
@@ -47,7 +49,7 @@ struct HomeViewModel {
                     if !recentActivity.isEmpty {
                         result.append(.recentActivity(recentActivity.map { RecentActivityItemViewModel(from: $0) }))
                     }
-                    result.append(contentsOf: spotlight.map { Section(from: $0) })
+                    result.append(contentsOf: spotlight.map { Section(from: $0, tappedContentSubject: tappedContentSubject) })
                     return result
                 }
             }
@@ -129,26 +131,16 @@ extension HomeViewModel {
     enum Section: Equatable {
         case navigationHeader
         case recentActivity([RecentActivityItemViewModel])
-        case generic(title: String, contentTiles: [ContentTileViewModel])
-        case moreLike(headerViewModel: HomeArtistHeaderCellViewModel, contentTiles: [ContentTileViewModel])
+        case generic(header: String, contentTiles: [ContentTileViewModel])
+        case moreLike(headerViewModel: ArtistHeaderViewModel, contentTiles: [ContentTileViewModel])
+    }
 
-        init(from model: SpotlightEntryModel) {
-            switch model {
-            case let .generic(title, content):
-                self = .generic(
-                    title: title,
-                    contentTiles: content.map { ContentTileViewModel(from: $0) }
-                )
-            case let .moreLike(user, content):
-                self = .moreLike(
-                    headerViewModel: .init(
-                        from: user,
-                        captionText: NSLocalizedString("More like", comment: "Text preceeding the name of an artist")
-                    ),
-                    contentTiles: content.map { ContentTileViewModel(from: $0) }
-                )
-            }
-        }
+    struct ArtistHeaderViewModel: Equatable {
+        let avatarURL: URL
+        let artistName: String
+        let captionText: String
+
+        @IgnoreEquality private(set) var onTap: () -> Void
     }
 
     enum BackgroundTintStyle {
@@ -156,6 +148,76 @@ extension HomeViewModel {
         case morning
         case afternoon
         case evening
+    }
+}
+
+private extension HomeViewModel.Section {
+
+    init(
+        from spotlightEntry: SpotlightEntry,
+        tappedContentSubject: some Subject<ContentID, Never>
+    ) {
+        switch spotlightEntry {
+        case .generic(let generic):
+            self = .generic(
+                header: generic.title,
+                contentTiles: generic.items.mapToContentTileViewModels(tappedContentSubject: tappedContentSubject)
+            )
+        case .moreLike(let moreLike):
+            self = .moreLike(
+                headerViewModel: HomeViewModel.ArtistHeaderViewModel(
+                    from: moreLike.artistInfo,
+                    caption: NSLocalizedString("More like", comment: "Precedes an artist's name, e.g. 'More like - Post Malone'"),
+                    tappedContentSubject: tappedContentSubject
+                ),
+                contentTiles: moreLike.items.mapToContentTileViewModels(tappedContentSubject: tappedContentSubject)
+            )
+        }
+    }
+}
+
+private extension Array {
+
+    func mapToContentTileViewModels(
+        tappedContentSubject: some Subject<ContentID, Never>
+    ) -> [ContentTileViewModel] where Element == SpotlightEntry.ContentItem {
+        map { .init(from: $0, tappedContentSubject: tappedContentSubject) }
+    }
+}
+
+private extension ContentTileViewModel {
+
+    init(
+        from contentItem: SpotlightEntry.ContentItem,
+        tappedContentSubject: some Subject<ContentID, Never>
+    ) {
+        self.init(
+            imageURL: contentItem.imageURL,
+            title: contentItem.title,
+            subtitle: contentItem.subtitle,
+            isCircular: contentItem.contentID.contentType == .artist,
+            onTap: {
+                tappedContentSubject.send(contentItem.contentID)
+            }
+        )
+    }
+}
+
+private extension HomeViewModel.ArtistHeaderViewModel {
+
+    init(
+        from artistInfo: SpotlightEntry.ArtistInfo,
+        caption: String,
+        tappedContentSubject: some Subject<ContentID, Never>
+    ) {
+        self.init(
+            avatarURL: artistInfo.avatarURL,
+            artistName: artistInfo.name,
+            captionText: caption,
+            onTap: {
+                tappedContentSubject.send(ContentID(contentType: .artist, id: artistInfo.id))
+            }
+        )
     }
 }
 

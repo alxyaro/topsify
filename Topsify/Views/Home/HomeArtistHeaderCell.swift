@@ -63,8 +63,8 @@ final class HomeArtistHeaderCell: UICollectionReusableView, Reusable {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(with viewModel: HomeArtistHeaderCellViewModel) {
-        imageView.configure(with: viewModel.imageURL)
+    func configure(with viewModel: HomeViewModel.ArtistHeaderViewModel) {
+        imageView.configure(with: viewModel.avatarURL)
         captionLabel.text = viewModel.captionText
         artistLabel.text = viewModel.artistName
     }
