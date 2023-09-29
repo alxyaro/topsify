@@ -3,12 +3,16 @@
 @testable import Topsify
 import Foundation
 import Combine
-import CombineSchedulers
 
-public struct MockAccountDataService: AccountDataServiceType {
-    var recentActivityPublisher: AnyPublisher<[ContentObject], Error> = .just([])
+struct MockHomeService: HomeServiceType {
+    var recentActivityPublisher: AnyPublisher<[RecentActivityItem], HomeServiceFetchError> = .just([])
+    var spotlightEntriesPublisher: AnyPublisher<[SpotlightEntry], HomeServiceFetchError> = .just([])
 
-    public func recentActivity() -> Future<[ContentObject], Error> {
+    func fetchRecentActivity() -> Future<[RecentActivityItem], HomeServiceFetchError> {
         recentActivityPublisher.toFuture()
+    }
+
+    func fetchSpotlightEntries() -> Future<[SpotlightEntry], HomeServiceFetchError> {
+        spotlightEntriesPublisher.toFuture()
     }
 }

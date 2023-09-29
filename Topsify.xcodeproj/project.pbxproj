@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4F639A9C2AC5F25A005BF20F /* RecentActivityItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639A9B2AC5F25A005BF20F /* RecentActivityItem.swift */; };
 		4FBE986F2ABFF17C00802FF8 /* ContentID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FBE986E2ABFF17C00802FF8 /* ContentID.swift */; };
 		4FBE98712ABFF1C100802FF8 /* ContentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FBE98702ABFF1C100802FF8 /* ContentType.swift */; };
 		4FBE987A2AC2012600802FF8 /* SwizzleHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FBE98792AC2012600802FF8 /* SwizzleHelper.swift */; };
@@ -67,8 +68,8 @@
 		6B403C6429E200DA00CA6DE0 /* FakeContentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B403C6329E200DA00CA6DE0 /* FakeContentService.swift */; };
 		6B403C6829E20EAE00CA6DE0 /* ContentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B403C6729E20EAE00CA6DE0 /* ContentService.swift */; };
 		6B403C7B29E211D400CA6DE0 /* FakeImageProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B403C7A29E211D400CA6DE0 /* FakeImageProvider.swift */; };
-		6B403C7F29E2154300CA6DE0 /* AccountDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B403C7E29E2154300CA6DE0 /* AccountDataService.swift */; };
-		6B403C8129E2156100CA6DE0 /* FakeAccountDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B403C8029E2156100CA6DE0 /* FakeAccountDataService.swift */; };
+		6B403C7F29E2154300CA6DE0 /* HomeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B403C7E29E2154300CA6DE0 /* HomeService.swift */; };
+		6B403C8129E2156100CA6DE0 /* FakeHomeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B403C8029E2156100CA6DE0 /* FakeHomeService.swift */; };
 		6B403C8429E39E0E00CA6DE0 /* Album+Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B403C8229E39DE100CA6DE0 /* Album+Mock.swift */; };
 		6B444BAA2A3622260063DBD5 /* BottomAreaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B444BA92A3622260063DBD5 /* BottomAreaViewController.swift */; };
 		6B444BAC2A362B9C0063DBD5 /* TabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B444BAB2A362B9C0063DBD5 /* TabBarView.swift */; };
@@ -244,6 +245,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4F639A9B2AC5F25A005BF20F /* RecentActivityItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentActivityItem.swift; sourceTree = "<group>"; };
 		4FBE986E2ABFF17C00802FF8 /* ContentID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentID.swift; sourceTree = "<group>"; };
 		4FBE98702ABFF1C100802FF8 /* ContentType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentType.swift; sourceTree = "<group>"; };
 		4FBE98792AC2012600802FF8 /* SwizzleHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwizzleHelper.swift; sourceTree = "<group>"; };
@@ -308,8 +310,8 @@
 		6B403C6329E200DA00CA6DE0 /* FakeContentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeContentService.swift; sourceTree = "<group>"; };
 		6B403C6729E20EAE00CA6DE0 /* ContentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentService.swift; sourceTree = "<group>"; };
 		6B403C7A29E211D400CA6DE0 /* FakeImageProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeImageProvider.swift; sourceTree = "<group>"; };
-		6B403C7E29E2154300CA6DE0 /* AccountDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDataService.swift; sourceTree = "<group>"; };
-		6B403C8029E2156100CA6DE0 /* FakeAccountDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeAccountDataService.swift; sourceTree = "<group>"; };
+		6B403C7E29E2154300CA6DE0 /* HomeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeService.swift; sourceTree = "<group>"; };
+		6B403C8029E2156100CA6DE0 /* FakeHomeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeHomeService.swift; sourceTree = "<group>"; };
 		6B403C8229E39DE100CA6DE0 /* Album+Mock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Album+Mock.swift"; sourceTree = "<group>"; };
 		6B444BA92A3622260063DBD5 /* BottomAreaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomAreaViewController.swift; sourceTree = "<group>"; };
 		6B444BAB2A362B9C0063DBD5 /* TabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarView.swift; sourceTree = "<group>"; };
@@ -585,6 +587,7 @@
 				6B0C39AD2818B02600B59313 /* User.swift */,
 				6B0C39AF2818B17000B59313 /* ContentObject.swift */,
 				6B0C39CA281E198300B59313 /* SpotlightEntry.swift */,
+				4F639A9B2AC5F25A005BF20F /* RecentActivityItem.swift */,
 				6B4854ED2A54795800B52E25 /* HexColor.swift */,
 			);
 			path = Models;
@@ -625,7 +628,7 @@
 				6B0C39BB281D9B8A00B59313 /* ImageProvider.swift */,
 				6BAE1B62298726EA0092E53E /* Environment.swift */,
 				6B403C6729E20EAE00CA6DE0 /* ContentService.swift */,
-				6B403C7E29E2154300CA6DE0 /* AccountDataService.swift */,
+				6B403C7E29E2154300CA6DE0 /* HomeService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -748,7 +751,7 @@
 				6B0C39B9281A03DF00B59313 /* FakeModelDatabase.swift */,
 				6BE368B629A2903900687D48 /* FakeUtils.swift */,
 				6B403C6329E200DA00CA6DE0 /* FakeContentService.swift */,
-				6B403C8029E2156100CA6DE0 /* FakeAccountDataService.swift */,
+				6B403C8029E2156100CA6DE0 /* FakeHomeService.swift */,
 				6B403C7A29E211D400CA6DE0 /* FakeImageProvider.swift */,
 			);
 			path = Fake;
@@ -1154,7 +1157,7 @@
 				6BBF4FD629F4722800CBA32D /* PlayerViewModel.swift in Sources */,
 				4FBE98712ABFF1C100802FF8 /* ContentType.swift in Sources */,
 				6B8D0FEF2A7FF95A00457DCF /* AlbumViewController.swift in Sources */,
-				6B403C8129E2156100CA6DE0 /* FakeAccountDataService.swift in Sources */,
+				6B403C8129E2156100CA6DE0 /* FakeHomeService.swift in Sources */,
 				6BD2EA7429A435D200D5F1AD /* UIColor+Extensions.swift in Sources */,
 				6B9B44CB29D0BE0400F6BA94 /* Geometry+Extensions.swift in Sources */,
 				6BED244329D75E0A002D51C2 /* UIEdgeInsets+Additions.swift in Sources */,
@@ -1164,6 +1167,7 @@
 				6BED243D29D750C8002D51C2 /* PlayerSubMenuView.swift in Sources */,
 				6BF9690229D726A300EA8B6F /* AppCollectionView.swift in Sources */,
 				6B9B44CF29D2242300F6BA94 /* MarqueeView.swift in Sources */,
+				4F639A9C2AC5F25A005BF20F /* RecentActivityItem.swift in Sources */,
 				6B357240280B2E47007CBDF6 /* OverhangingView.swift in Sources */,
 				6B9B46F62A8FFC05002042F6 /* AlbumType.swift in Sources */,
 				6B5AAE6329BF7C0B00348B1D /* IgnoreEquality.swift in Sources */,
@@ -1193,13 +1197,14 @@
 				6BF3DD162A5C9E3300E5F2D0 /* QueueViewController.swift in Sources */,
 				6B9B46F42A8FC7CD002042F6 /* ArtworkBannerViewModel.swift in Sources */,
 				6B35720727FBDB78007CBDF6 /* UICollectionReusableView+identifier.swift in Sources */,
+				4FBE98732ABFF35400802FF8 /* ContentID+UniqueList.swift in Sources */,
 				6B35721727FCFC8D007CBDF6 /* UIColor+AppColors.swift in Sources */,
 				6B3572252803430C007CBDF6 /* AppNavigationBar.swift in Sources */,
 				6BAE1B7A299053ED0092E53E /* Collections+Extensions.swift in Sources */,
 				6B9B44C729CFB3DC00F6BA94 /* PlayerSlider.swift in Sources */,
 				6B0C39CD28208E9800B59313 /* HomeViewModel.swift in Sources */,
 				6BFE668E283851A000566BED /* TabTransitionController.swift in Sources */,
-				6B403C7F29E2154300CA6DE0 /* AccountDataService.swift in Sources */,
+				6B403C7F29E2154300CA6DE0 /* HomeService.swift in Sources */,
 				6B0C39BA281A03DF00B59313 /* FakeModelDatabase.swift in Sources */,
 				6BED244529D7CDFD002D51C2 /* CALayer+Additions.swift in Sources */,
 				6B357247280BB999007CBDF6 /* RecentActivityItemViewModel.swift in Sources */,

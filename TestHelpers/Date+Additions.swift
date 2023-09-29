@@ -22,9 +22,11 @@ public extension Date {
         _ month: Month,
         _ day: Int,
         _ year: Int,
+        hour: Int? = nil,
         calendar: Calendar = .testCalendar
     ) -> Self! {
         var dateComponents = DateComponents()
+        dateComponents.hour = hour
         dateComponents.day = day
         dateComponents.month = month.rawValue
         dateComponents.year = year

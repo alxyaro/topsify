@@ -25,13 +25,13 @@ struct HomeViewModel {
             .share()
 
         let fetchRecentActivity = {
-            dependencies.accountDataService.recentActivity()
+            dependencies.service.fetchRecentActivity()
                 .replaceError(with: [])
                 .setFailureType(to: HomeError.self)
         }
 
         let fetchSpotlight = {
-            dependencies.contentService.spotlightEntries()
+            dependencies.service.fetchSpotlightEntries()
                 .mapError(HomeError.failedToLoad)
         }
 
@@ -110,8 +110,7 @@ extension HomeViewModel {
     }
 
     struct Dependencies {
-        let accountDataService: AccountDataServiceType
-        let contentService: ContentServiceType
+        let service: HomeServiceType
         let scheduler: AnySchedulerOfDQ
         let calendar: Calendar
         let now: () -> Date
@@ -151,6 +150,8 @@ extension HomeViewModel {
     }
 }
 
+// MARK: - Model Conversion
+
 private extension HomeViewModel.Section {
 
     init(
@@ -161,7 +162,7 @@ private extension HomeViewModel.Section {
         case .generic(let generic):
             self = .generic(
                 header: generic.title,
-                contentTiles: generic.items.mapToContentTileViewModels(tappedContentSubject: tappedContentSubject)
+                contentTiles: generic.items.map { ContentTileViewModel(from: $0, tappedContentSubject: tappedContentSubject) }
             )
         case .moreLike(let moreLike):
             self = .moreLike(
@@ -170,18 +171,17 @@ private extension HomeViewModel.Section {
                     caption: NSLocalizedString("More like", comment: "Precedes an artist's name, e.g. 'More like - Post Malone'"),
                     tappedContentSubject: tappedContentSubject
                 ),
-                contentTiles: moreLike.items.mapToContentTileViewModels(tappedContentSubject: tappedContentSubject)
+                contentTiles: moreLike.items.map { ContentTileViewModel(from: $0, tappedContentSubject: tappedContentSubject) }
             )
         }
     }
 }
 
-private extension Array {
+private extension RecentActivityItemViewModel {
 
-    func mapToContentTileViewModels(
-        tappedContentSubject: some Subject<ContentID, Never>
-    ) -> [ContentTileViewModel] where Element == SpotlightEntry.ContentItem {
-        map { .init(from: $0, tappedContentSubject: tappedContentSubject) }
+    init(from model: RecentActivityItem) {
+        title = model.title
+        imageURL = model.imageURL
     }
 }
 
@@ -221,11 +221,12 @@ private extension HomeViewModel.ArtistHeaderViewModel {
     }
 }
 
+// MARK: - Live Dependencies
+
 extension HomeViewModel.Dependencies {
     static func live() -> Self {
         .init(
-            accountDataService: AccountDataService(),
-            contentService: ContentService(),
+            service: DefaultHomeService(),
             scheduler: .main,
             calendar: .current,
             now: Date.init

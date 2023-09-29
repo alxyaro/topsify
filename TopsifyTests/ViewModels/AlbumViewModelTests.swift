@@ -50,7 +50,7 @@ final class AlbumViewModelTests: XCTestCase {
     }
 
     func testOutput_loadState_isLoading_afterBind() {
-        let albumPublisher = TestPublisher<Album, ContentServiceErrors.FetchError>()
+        let albumPublisher = TestPublisher<Album, ContentServiceFetchError>()
 
         let album = Album.mock()
         let viewModel = AlbumViewModel(
@@ -164,8 +164,8 @@ final class AlbumViewModelTests: XCTestCase {
     // MARK: - Helpers
 
     private func assertLoadState(
-        fetchAlbum: AnyPublisher<Album, ContentServiceErrors.FetchError>,
-        fetchSongsForAlbumError: AnyPublisher<[Song], ContentServiceErrors.FetchError>,
+        fetchAlbum: AnyPublisher<Album, ContentServiceFetchError>,
+        fetchSongsForAlbumError: AnyPublisher<[Song], ContentServiceFetchError>,
         expected: LoadState<AlbumViewModel.LoadError>,
         line: UInt = #line
     ) {

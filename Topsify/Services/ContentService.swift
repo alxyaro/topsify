@@ -4,19 +4,13 @@ import Combine
 import Foundation
 
 protocol ContentServiceType {
-    func spotlightEntries() -> Future<[SpotlightEntry], Error>
-    func fetchAlbum(withID id: UUID) -> Future<Album, ContentServiceErrors.FetchError>
-    func fetchSongs(forAlbumID id: UUID) -> Future<[Song], ContentServiceErrors.FetchError>
+    func fetchAlbum(withID id: UUID) -> Future<Album, ContentServiceFetchError>
+    func fetchSongs(forAlbumID id: UUID) -> Future<[Song], ContentServiceFetchError>
 }
 
-// Simulating live implementation:
-typealias ContentService = FakeContentService
-
-// MARK: - Error Types
-
-enum ContentServiceErrors {
-    enum FetchError: Error {
-        case notFound
-        case generic
-    }
+enum ContentServiceFetchError: Error {
+    case notFound
+    case generic
 }
+
+typealias DefaultContentService = FakeContentService

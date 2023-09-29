@@ -9,19 +9,14 @@ import CombineExt
 final class HomeViewModelTests: XCTestCase {
 
     func testOutputs_sections_loadState() {
-        let recentActivity = TestPublisher<[ContentObject], Error>()
-        let spotlightEntries = TestPublisher<[SpotlightEntry], Error>()
+        let recentActivity = TestPublisher<[RecentActivityItem], HomeServiceFetchError>()
+        let spotlightEntries = TestPublisher<[SpotlightEntry], HomeServiceFetchError>()
 
-        let viewModel = HomeViewModel(dependencies: .init(
-            accountDataService: MockAccountDataService(
-                recentActivityPublisher: recentActivity.eraseToAnyPublisher()
-            ),
-            contentService: MockContentService(
+        let viewModel = HomeViewModel(dependencies: .mock(
+            service: MockHomeService(
+                recentActivityPublisher: recentActivity.eraseToAnyPublisher(),
                 spotlightEntriesPublisher: spotlightEntries.eraseToAnyPublisher()
-            ),
-            scheduler: .immediate,
-            calendar: .current,
-            now: Date.init
+            )
         ))
 
         let viewDidAppear = PassthroughRelay<Void>()
@@ -42,7 +37,13 @@ final class HomeViewModelTests: XCTestCase {
         XCTAssertEqual(loadStateSubscriber.pollValues(), [.loading])
         XCTAssertEqual(sectionsSubscriber.pollValues(), [])
 
-        recentActivity.send([.song(FakeSongs.loveMusic)])
+        recentActivity.send([
+            .init(
+                contentID: ContentID(contentType: .album, id: UUID()),
+                imageURL: .imageMock(id: "love_music"),
+                title: "Love Music"
+            )
+        ])
         spotlightEntries.send([
             .generic(.init(
                 title: "Generic Section",
@@ -61,7 +62,9 @@ final class HomeViewModelTests: XCTestCase {
         XCTAssertEqual(sectionsSubscriber.pollValues(), [
             [
                 .navigationHeader,
-                .recentActivity([.init(from: .song(FakeSongs.loveMusic))]),
+                .recentActivity([
+                    .init(title: "Love Music", imageURL: .imageMock(id: "love_music"))
+                ]),
                 .generic(
                     header: "Generic Section",
                     contentTiles: [
@@ -79,16 +82,12 @@ final class HomeViewModelTests: XCTestCase {
     }
 
     func testOutputs_sections_loadState_withErrorRecovery() {
-        let spotlightEntries = TestPublisher<[SpotlightEntry], Error>()
+        let spotlightEntries = TestPublisher<[SpotlightEntry], HomeServiceFetchError>()
 
-        let viewModel = HomeViewModel(dependencies: .init(
-            accountDataService: MockAccountDataService(),
-            contentService: MockContentService(
+        let viewModel = HomeViewModel(dependencies: .mock(
+            service: MockHomeService(
                 spotlightEntriesPublisher: spotlightEntries.eraseToAnyPublisher()
-            ),
-            scheduler: .immediate,
-            calendar: .current,
-            now: Date.init
+            )
         ))
 
         let viewDidAppearRelay = PassthroughRelay<Void>()
@@ -106,12 +105,12 @@ final class HomeViewModelTests: XCTestCase {
         XCTAssertEqual(sectionsSubscriber.pollValues(), [])
 
         viewDidAppearRelay.accept()
-        spotlightEntries.send(completion: .failure(GenericError(message: "oh no")))
+        spotlightEntries.send(completion: .failure(.generic))
 
         XCTAssertEqual(loadStateSubscriber.pollValues(), [.loading, .error(.failedToLoad)])
 
         viewDidAppearRelay.accept()
-        spotlightEntries.send(completion: .failure(GenericError(message: "oh no again")))
+        spotlightEntries.send(completion: .failure(.generic))
 
         XCTAssertEqual(loadStateSubscriber.pollValues(), [.loading, .error(.failedToLoad)])
 
@@ -158,19 +157,8 @@ final class HomeViewModelTests: XCTestCase {
     func testOutputs_navBarTitle_backgroundTint() {
         var hourOfDay: Int = 0
 
-        let viewModel = HomeViewModel(dependencies: .init(
-            accountDataService: MockAccountDataService(),
-            contentService: MockContentService(),
-            scheduler: .immediate,
-            calendar: .testCalendar,
-            now: {
-                Calendar.testCalendar.date(from: DateComponents(
-                    year: 2023,
-                    month: 3,
-                    day: 19,
-                    hour: hourOfDay
-                ))!
-            }
+        let viewModel = HomeViewModel(dependencies: .mock(
+            now: { .testDate(.march, 19, 2023, hour: hourOfDay) }
         ))
 
         let viewDidAppearRelay = PassthroughRelay<Void>()
@@ -214,5 +202,22 @@ final class HomeViewModelTests: XCTestCase {
         // should not re-emit duplicate values
         XCTAssertEqual(navigationHeaderTitle.pollValues(), [])
         XCTAssertEqual(backgroundTintStyle.pollValues(), [])
+    }
+}
+
+private extension HomeViewModel.Dependencies {
+
+    static func mock(
+        service: HomeServiceType = MockHomeService(),
+        scheduler:AnySchedulerOfDQ = .immediate,
+        calendar: Calendar = .testCalendar,
+        now: @escaping () -> Date = { .testDate(.january, 1, 2022) }
+    ) -> Self {
+        self.init(
+            service: service,
+            scheduler: scheduler,
+            calendar: calendar,
+            now: now
+        )
     }
 }

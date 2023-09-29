@@ -104,7 +104,7 @@ extension AlbumViewModel.Dependencies {
     static func live() -> Self {
         .init(
             calendar: .current,
-            contentService: ContentService()
+            contentService: DefaultContentService()
         )
     }
 }

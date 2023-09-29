@@ -6,19 +6,14 @@ import Combine
 import TestHelpers
 
 struct MockContentService: ContentServiceType {
-    var spotlightEntriesPublisher: AnyPublisher<[SpotlightEntry], Error> = .just([])
-    var fetchAlbum: (UUID) -> AnyPublisher<Album, ContentServiceErrors.FetchError> = { _ in .fail(.notFound) }
-    var fetchSongsForAlbum: (UUID) -> AnyPublisher<[Song], ContentServiceErrors.FetchError> = { _ in .just([]) }
+    var fetchAlbum: (UUID) -> AnyPublisher<Album, ContentServiceFetchError> = { _ in .fail(.notFound) }
+    var fetchSongsForAlbum: (UUID) -> AnyPublisher<[Song], ContentServiceFetchError> = { _ in .just([]) }
 
-    func spotlightEntries() -> Future<[SpotlightEntry], Error> {
-        spotlightEntriesPublisher.toFuture()
-    }
-
-    func fetchAlbum(withID id: UUID) -> Future<Album, ContentServiceErrors.FetchError> {
+    func fetchAlbum(withID id: UUID) -> Future<Album, ContentServiceFetchError> {
         fetchAlbum(id).toFuture()
     }
 
-    func fetchSongs(forAlbumID id: UUID) -> Future<[Song], ContentServiceErrors.FetchError> {
+    func fetchSongs(forAlbumID id: UUID) -> Future<[Song], ContentServiceFetchError> {
         fetchSongsForAlbum(id).toFuture()
     }
 }
