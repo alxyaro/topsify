@@ -25,7 +25,7 @@ final class ArtworkBannerViewModel {
         userInfo = album.artists.map { UserInfo(avatarURL: $0.avatarURL, name: $0.name) }
 
         let releaseYear = dependencies.calendar.component(.year, from: album.releaseDate)
-        details = "\(album.type.localizedName) \u{2022} \(releaseYear)"
+        details = [album.type.displayName, String(releaseYear)].bulletJoined()
 
         sideButtons = [.save, .download, .options]
     }

@@ -7,7 +7,7 @@ enum AlbumType {
     case ep
     case album
 
-    var localizedName: String {
+    var displayName: String {
         switch self {
         case .album:
             return NSLocalizedString("Album", comment: "Album type")

@@ -3,6 +3,9 @@
 import Foundation
 
 extension Collection {
+
+    var isNotEmpty: Bool { !isEmpty }
+
     subscript(safe index: Index) -> Element? {
         guard index >= self.startIndex && index < self.endIndex else {
             return nil
@@ -25,11 +28,11 @@ extension Collection {
 
 extension Sequence where Element == String {
 
-    func joinedBySpacedDot() -> String {
-        self.joined(separator: " \u{00B7} ")
+    func bulletJoined() -> String {
+        filter(\.isNotEmpty).joined(separator: " \u{2022} ")
     }
 
     func commaJoined() -> String {
-        return self.joined(separator: NSLocalizedString(", ", comment: "List item separator"))
+        filter(\.isNotEmpty).joined(separator: NSLocalizedString(", ", comment: "List item separator"))
     }
 }
