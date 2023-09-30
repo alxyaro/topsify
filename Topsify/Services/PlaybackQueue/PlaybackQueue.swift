@@ -8,13 +8,13 @@ protocol PlaybackQueueType {
     associatedtype State: PlaybackQueueState
     typealias StateWithContext = (state: State, context: PlaybackQueueStateContext?)
 
-    var source: AnyPublisher<ContentObject?, Never> { get }
+    var source: AnyPublisher<PlaybackSource?, Never> { get }
     var stateWithContext: AnyPublisher<StateWithContext, Never> { get }
     var state: AnyPublisher<State, Never> { get }
     var hasPreviousItem: AnyPublisher<Bool, Never> { get }
     var hasNextItem: AnyPublisher<Bool, Never> { get }
 
-    func load(with songs: [Song], source: ContentObject?)
+    func load(with songs: [Song], source: PlaybackSource?)
     func addToQueue(_ song: Song)
 
     func goToNextItem()
@@ -52,7 +52,7 @@ final class PlaybackQueue: PlaybackQueueType {
 
     // MARK: - Public Interface Properties
 
-    var source: AnyPublisher<ContentObject?, Never> {
+    var source: AnyPublisher<PlaybackSource?, Never> {
         sourceSubject.eraseToAnyPublisher()
     }
     var stateWithContext: AnyPublisher<StateWithContext, Never> {
@@ -61,7 +61,7 @@ final class PlaybackQueue: PlaybackQueueType {
 
     // MARK: - Private State
 
-    private let sourceSubject = CurrentValueSubject<ContentObject?, Never>(nil)
+    private let sourceSubject = CurrentValueSubject<PlaybackSource?, Never>(nil)
 
     /// Don't emit to this directly; instead, update `currentState`!
     private let _stateWithContextSubject = PassthroughSubject<StateWithContext, Never>()
@@ -75,7 +75,7 @@ final class PlaybackQueue: PlaybackQueueType {
 
     // MARK: - Public Interface Methods
 
-    func load(with songs: [Song], source: ContentObject?) {
+    func load(with songs: [Song], source: PlaybackSource?) {
         sourceSubject.send(source)
         currentState.load(with: songs)
     }

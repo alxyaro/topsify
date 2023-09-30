@@ -17,7 +17,7 @@ final class MockPlaybackQueue: PlaybackQueueType {
 
     // MARK: - Interface
 
-    let sourceSubject = CurrentValueSubject<ContentObject?, Never>(nil)
+    let sourceSubject = CurrentValueSubject<PlaybackSource?, Never>(nil)
     let stateSubject = CurrentValueSubject<State, Never>(.init())
 
     var stateValue: State {
@@ -29,8 +29,7 @@ final class MockPlaybackQueue: PlaybackQueueType {
         }
     }
 
-    let loadWithContentSubject = PassthroughSubject<ContentObject, Never>()
-    let loadWithSongsSubject = PassthroughSubject<(songs: [Song], source: ContentObject?), Never>()
+    let loadWithSongsSubject = PassthroughSubject<(songs: [Song], source: PlaybackSource?), Never>()
     let addToQueueSubject = PassthroughSubject<Song, Never>()
     let goToNextItemSubject = PassthroughSubject<Void, Never>()
     let goToPreviousItemSubject = PassthroughSubject<Void, Never>()
@@ -41,7 +40,7 @@ final class MockPlaybackQueue: PlaybackQueueType {
 
     // MARK: - Mocked Members
 
-    var source: AnyPublisher<ContentObject?, Never> {
+    var source: AnyPublisher<PlaybackSource?, Never> {
         sourceSubject.eraseToAnyPublisher()
     }
 
@@ -49,11 +48,7 @@ final class MockPlaybackQueue: PlaybackQueueType {
         stateSubject.map { (state: $0, context: $0.context) }.eraseToAnyPublisher()
     }
 
-    func load(with content: ContentObject) {
-        loadWithContentSubject.send(content)
-    }
-
-    func load(with songs: [Song], source: ContentObject?) {
+    func load(with songs: [Song], source: PlaybackSource?) {
         loadWithSongsSubject.send((songs, source))
     }
 

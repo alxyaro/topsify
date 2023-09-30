@@ -29,7 +29,7 @@ final class PlayerTopBarViewModelTests: XCTestCase {
 
     func testOutput_title_whenPlaybackQueueHasSource() throws {
         let playbackQueue = MockPlaybackQueue()
-        playbackQueue.sourceSubject.send(.album(.mock(title: "Best Album")))
+        playbackQueue.sourceSubject.send(.init(title: "Best Album", contentID: .mock()))
         playbackQueue.stateValue.activeItem = .init(song: .mock(), isUserQueueItem: false)
 
         let viewModel = PlayerTopBarViewModel(dependencies: .mock(playbackQueue: playbackQueue))
@@ -42,7 +42,7 @@ final class PlayerTopBarViewModelTests: XCTestCase {
 
     func testOutput_title_whenPlaybackQueueItemIsQueueItem() throws {
         let playbackQueue = MockPlaybackQueue()
-        playbackQueue.sourceSubject.send(.album(.mock(title: "Best Album")))
+        playbackQueue.sourceSubject.send(.init(title: "Best Album", contentID: .mock()))
         playbackQueue.stateValue.activeItem = .init(song: .mock(), isUserQueueItem: true)
 
         let viewModel = PlayerTopBarViewModel(dependencies: .mock(playbackQueue: playbackQueue))

@@ -74,7 +74,7 @@ final class QueueListViewModel {
                 .reEmit(onOutputFrom: resendState)
                 .eraseToAnyPublisher(),
             sourceName: playbackQueue.source
-                .map(\.?.textValue)
+                .map(\.?.title)
                 .eraseToAnyPublisher(),
             deselectAllItems: deselectAllItemsSubject
                 .eraseToAnyPublisher()

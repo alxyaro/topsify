@@ -192,7 +192,7 @@ final class QueueListViewModelTests: XCTestCase {
 
     func testOutput_sourceName_matchesPlaybackQueueSource() throws {
         let playbackQueue = MockPlaybackQueue()
-        playbackQueue.sourceSubject.value = .song(.mock(title: "Home"))
+        playbackQueue.sourceSubject.value = .init(title: "Home", contentID: .mock())
 
         let viewModel = QueueListViewModel(dependencies: .init(playbackQueue: playbackQueue))
 

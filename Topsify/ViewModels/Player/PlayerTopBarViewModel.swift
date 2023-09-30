@@ -29,7 +29,7 @@ final class PlayerTopBarViewModel {
                 if let activeItem, activeItem.isUserQueueItem {
                     return NSLocalizedString("Playing from Queue", comment: "Player title label when playing from the queue.")
                 } else if let source {
-                    return source.textValue
+                    return source.title
                 } else {
                     return nil
                 }
