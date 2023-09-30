@@ -10,17 +10,10 @@ import Foundation
 struct Song: Identifiable, Equatable {
     let id: UUID
     let artists: [User]
-    let albumID: UUID?
     let imageURL: URL
     let title: String
     let accentColor: HexColor
     let isExplicit: Bool
-}
-
-extension Song {
-    var isSingle: Bool {
-        albumID == nil
-    }
 }
 
 extension Song: CustomDebugStringConvertible {
