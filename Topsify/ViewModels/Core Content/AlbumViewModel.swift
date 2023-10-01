@@ -45,8 +45,8 @@ final class AlbumViewModel {
             bannerViewModel: album
                 .map { [dependencies] in
                     ArtworkBannerViewModel(
-                        album: $0,
-                        dependencies: .init(calendar: dependencies.calendar)
+                        from: $0,
+                        calendar: dependencies.calendar
                     )
                 }
                 .eraseToAnyPublisher(),
@@ -97,6 +97,24 @@ extension AlbumViewModel {
     }
 }
 
+// MARK: - Private Helpers
+
+private extension ArtworkBannerViewModel {
+
+    init(
+        from album: Album,
+        calendar: Calendar
+    ) {
+        accentColor = album.accentColor
+        artworkURL = album.imageURL
+        title = album.title
+        userInfo = album.artists.map { UserInfo(avatarURL: $0.avatarURL, name: $0.name) }
+
+        let releaseYear = String(calendar.component(.year, from: album.releaseDate))
+        details = [album.type.displayName, releaseYear].bulletJoined()
+    }
+}
+
 // MARK: - Live Dependencies
 
 extension AlbumViewModel.Dependencies {
@@ -107,11 +125,4 @@ extension AlbumViewModel.Dependencies {
             contentService: DefaultContentService()
         )
     }
-}
-
-// MARK: - Localized Strings
-
-private extension String {
-    static let albumNotFound = NSLocalizedString("The album you were looking for could not be found.", comment: "Error message")
-    static let couldNotFetchAlbum = NSLocalizedString("Couldn't fetch the album, please try again later.", comment: "Error message")
 }

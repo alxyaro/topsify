@@ -7,7 +7,6 @@ extension Song {
     static func mock(
         id: UUID = .init(),
         artists: [User] = [.mock()],
-        albumID: UUID? = .init(),
         imageURL: URL = .imageMockWithRandomID(),
         title: String = "Test Song",
         accentColor: HexColor = .init("#0011ee"),
@@ -16,7 +15,6 @@ extension Song {
         .init(
             id: .init(),
             artists: artists,
-            albumID: albumID,
             imageURL: imageURL,
             title: title,
             accentColor: accentColor,

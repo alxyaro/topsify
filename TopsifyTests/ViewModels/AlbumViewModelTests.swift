@@ -122,7 +122,11 @@ final class AlbumViewModelTests: XCTestCase {
     }
 
     func testOutput_bannerViewModel_derivedFromContentServiceResponse() {
-        let album = Album.mock(title: "GTTM: Goin Thru the Motions")
+        let album = Album.mock(
+            artists: [.mock(avatarURL: .imageMock(id: "pnb"), name: "PnB Rock")],
+            title: "GTTM: Goin Thru the Motions"
+        )
+
         let viewModel = AlbumViewModel(
             albumID: album.id,
             dependencies: .init(
@@ -137,8 +141,17 @@ final class AlbumViewModelTests: XCTestCase {
 
         let bannerViewModel = TestSubscriber.subscribe(to: outputs.bannerViewModel)
 
-        let bannerVMOutputs = try? bannerViewModel.pollOnlyValue().bind(inputs: .mock())
-        XCTAssertEqual(bannerVMOutputs?.title, "GTTM: Goin Thru the Motions")
+        let bannerVM = try? bannerViewModel.pollOnlyValue()
+        XCTAssertEqual(
+            bannerVM,
+            .init(
+                accentColor: album.accentColor,
+                artworkURL: album.imageURL,
+                title: album.title,
+                userInfo: [.init(avatarURL: .imageMock(id: "pnb"), name: "PnB Rock")],
+                details: "Album \u{2022} 2023"
+            )
+        )
     }
 
     func testOutput_songListViewModels_derivedFromContentServiceResponse() {

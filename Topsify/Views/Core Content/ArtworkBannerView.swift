@@ -151,20 +151,18 @@ final class ArtworkBannerView: BannerView {
     ) {
         disposeBag = DisposeBag()
 
-        let outputs = viewModel.bind(inputs: .init())
+        super.configure(gradientColor: viewModel.accentColor.uiColor, scrollAmountPublisher: scrollAmountPublisher)
 
-        super.configure(gradientColor: outputs.accentColor.uiColor, scrollAmountPublisher: scrollAmountPublisher)
-
-        artworkView.configure(with: outputs.artworkURL)
-        titleLabel.text = outputs.title
+        artworkView.configure(with: viewModel.artworkURL)
+        titleLabel.text = viewModel.title
 
         // TODO: implement view to support multiple artists:
-        if let firstUserInfo = outputs.userInfo.first {
+        if let firstUserInfo = viewModel.userInfo.first {
             artistsLabel.text = firstUserInfo.name
             artistAvatarImageView.configure(with: firstUserInfo.avatarURL)
         }
 
-        detailsLabel.text = outputs.details
+        detailsLabel.text = viewModel.details
 
         artworkPlaceholderViewTopConstraint?.constant = topInset + 12
         playButton.centerYAnchor.constraint(greaterThanOrEqualTo: playButtonPlaceholderView.centerYAnchor).isActive = true
