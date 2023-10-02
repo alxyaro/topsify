@@ -16,4 +16,5 @@ struct Playlist: Identifiable, Equatable {
     let isOfficial: Bool
     let isCoverSelfDescriptive: Bool
     let accentColor: HexColor
+    let totalDuration: TimeInterval
 }

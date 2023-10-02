@@ -4,8 +4,10 @@ import Combine
 import Foundation
 
 protocol ContentServiceType {
-    func fetchAlbum(withID id: UUID) -> Future<Album, ContentServiceFetchError>
-    func fetchSongs(forAlbumID id: UUID) -> Future<[Song], ContentServiceFetchError>
+    func fetchAlbum(id: UUID) -> Future<Album, ContentServiceFetchError>
+    func fetchAlbumSongs(albumID id: UUID) -> Future<[Song], ContentServiceFetchError>
+    func streamPlaylist(id: UUID) -> AnyPublisher<Playlist, ContentServiceFetchError>
+    func streamPlaylistSongs(playlistID id: UUID) -> AnyPublisher<[Song], ContentServiceFetchError>
 }
 
 enum ContentServiceFetchError: Error {

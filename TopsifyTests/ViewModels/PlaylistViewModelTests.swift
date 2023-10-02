@@ -1,4 +1,4 @@
-// Created by Alex Yaro on 2023-08-22.
+// Created by Alex Yaro on 2023-10-01.
 
 @testable import Topsify
 import XCTest
@@ -6,17 +6,17 @@ import TestHelpers
 import Combine
 import CombineExt
 
-final class AlbumViewModelTests: XCTestCase {
+final class PlaylistViewModelTests: XCTestCase {
 
     func testInput_tappedReloadButton_causesReload() {
         var shouldFetchFail = true
 
-        let viewModel = AlbumViewModel(
-            albumID: .init(),
+        let viewModel = PlaylistViewModel(
+            playlistID: UUID(),
             dependencies: .init(
                 calendar: .testCalendar,
                 contentService: MockContentService(
-                    fetchAlbum: { _ in shouldFetchFail ? .fail(.generic) : .just(.mock()) }
+                    streamPlaylist: { _ in shouldFetchFail ? .fail(.generic) : .just(.mock()) }
                 )
             )
         )
@@ -28,37 +28,26 @@ final class AlbumViewModelTests: XCTestCase {
         ))
 
         let loadState = TestSubscriber.subscribe(to: outputs.loadState)
-        let bannerViewModel = TestSubscriber.subscribe(to: outputs.bannerViewModel)
-        let songsListViewModels = TestSubscriber.subscribe(to: outputs.songListViewModels)
+        _ = TestSubscriber.subscribe(to: outputs.songListViewModels)
 
         XCTAssertEqual(loadState.pollValues(), [.initial, .loading, .error(.failedToLoad)])
-        XCTAssertEqual(bannerViewModel.pollValues().count, 0)
-        XCTAssertEqual(songsListViewModels.pollValues().count, 0)
 
         shouldFetchFail = false
         tappedReloadButton.send()
 
         XCTAssertEqual(loadState.pollValues(), [.loading, .loaded])
-        XCTAssertEqual(bannerViewModel.pollValues().count, 1)
-        XCTAssertEqual(songsListViewModels.pollValues().count, 1)
-
-        tappedReloadButton.send()
-
-        XCTAssertEqual(loadState.pollValues(), [.loading, .loaded])
-        XCTAssertEqual(bannerViewModel.pollValues().count, 1)
-        XCTAssertEqual(songsListViewModels.pollValues().count, 1)
     }
 
     func testOutput_loadState_isLoading_afterBind() {
-        let albumPublisher = TestPublisher<Album, ContentServiceFetchError>()
+        let playlistPublisher = TestPublisher<Playlist, ContentServiceFetchError>()
 
-        let album = Album.mock()
-        let viewModel = AlbumViewModel(
-            albumID: album.id,
+        let playlist = Playlist.mock()
+        let viewModel = PlaylistViewModel(
+            playlistID: playlist.id,
             dependencies: .init(
                 calendar: .testCalendar,
                 contentService: MockContentService(
-                    fetchAlbum: { _ in albumPublisher.eraseToAnyPublisher() }
+                    streamPlaylist: { _ in playlistPublisher.eraseToAnyPublisher() }
                 )
             )
         )
@@ -72,27 +61,27 @@ final class AlbumViewModelTests: XCTestCase {
     }
 
     func testOutput_loadState_isError_onFetchAlbumErrors() {
-        assertLoadState(fetchAlbum: .fail(.notFound), fetchAlbumSongs: .never(), expected: .error(.albumNotFound))
-        assertLoadState(fetchAlbum: .fail(.generic), fetchAlbumSongs: .never(), expected: .error(.failedToLoad))
+        assertLoadState(playlist: .fail(.notFound), playlistSongs: .never(), expected: .error(.playlistNotFound))
+        assertLoadState(playlist: .fail(.generic), playlistSongs: .never(), expected: .error(.failedToLoad))
     }
 
     func testOutput_loadState_isError_onFetchAlbumSongsErrors() {
-        assertLoadState(fetchAlbum: .never(), fetchAlbumSongs: .fail(.notFound), expected: .error(.albumNotFound))
-        assertLoadState(fetchAlbum: .never(), fetchAlbumSongs: .fail(.generic), expected: .error(.failedToLoad))
+        assertLoadState(playlist: .never(), playlistSongs: .fail(.notFound), expected: .error(.playlistNotFound))
+        assertLoadState(playlist: .never(), playlistSongs: .fail(.generic), expected: .error(.failedToLoad))
     }
 
     func testOutput_loadState_isLoaded_onSuccessfulFetches() {
-        assertLoadState(fetchAlbum: .just(.mock()), fetchAlbumSongs: .just([]), expected: .loaded)
+        assertLoadState(playlist: .just(.mock()), playlistSongs: .just([]), expected: .loaded)
     }
 
-    func testOutput_title_derivedFromContentServiceAlbumResponse() {
-        let album = Album.mock(title: "Eternal Atake")
-        let viewModel = AlbumViewModel(
-            albumID: album.id,
+    func testOutput_title_derivedFromContentServiceResponse() {
+        let playlist = Playlist.mock(title: "Evening Drive")
+        let viewModel = PlaylistViewModel(
+            playlistID: playlist.id,
             dependencies: .init(
                 calendar: .testCalendar,
                 contentService: MockContentService(
-                    fetchAlbum: { _ in .just(album) }
+                    streamPlaylist: { _ in .just(playlist) }
                 )
             )
         )
@@ -100,17 +89,17 @@ final class AlbumViewModelTests: XCTestCase {
         let outputs = viewModel.bind(inputs: .mock())
         let title = TestSubscriber.subscribe(to: outputs.title)
 
-        XCTAssertEqual(try title.pollOnlyValue(), "Eternal Atake")
+        XCTAssertEqual(try title.pollOnlyValue(), "Evening Drive")
     }
 
-    func testOutput_accentColor_derivedFromContentServiceAlbumResponse() {
-        let album = Album.mock(accentColor: .init("#592c69"))
-        let viewModel = AlbumViewModel(
-            albumID: album.id,
+    func testOutput_accentColor_derivedFromContentServiceResponse() {
+        let playlist = Playlist.mock(accentColor: .init("#592c69"))
+        let viewModel = PlaylistViewModel(
+            playlistID: playlist.id,
             dependencies: .init(
                 calendar: .testCalendar,
                 contentService: MockContentService(
-                    fetchAlbum: { _ in .just(album) }
+                    streamPlaylist: { _ in .just(playlist) }
                 )
             )
         )
@@ -118,21 +107,22 @@ final class AlbumViewModelTests: XCTestCase {
         let outputs = viewModel.bind(inputs: .mock())
         let accentColor = TestSubscriber.subscribe(to: outputs.accentColor)
 
-        XCTAssertEqual(try accentColor.pollOnlyValue(), album.accentColor)
+        XCTAssertEqual(try accentColor.pollOnlyValue(), playlist.accentColor)
     }
 
     func testOutput_bannerViewModel_derivedFromContentServiceResponse() {
-        let album = Album.mock(
-            artists: [.mock(avatarURL: .imageMock(id: "pnb"), name: "PnB Rock")],
-            title: "GTTM: Goin Thru the Motions"
+        let playlist = Playlist.mock(
+            creator: .mock(avatarURL: .imageMock(id: "sopfity"), name: "Sopfity"),
+            title: "Hot Hits Canada",
+            totalDuration: .hours(4) + .minutes(12)
         )
 
-        let viewModel = AlbumViewModel(
-            albumID: album.id,
+        let viewModel = PlaylistViewModel(
+            playlistID: playlist.id,
             dependencies: .init(
                 calendar: .testCalendar,
                 contentService: MockContentService(
-                    fetchAlbum: { _ in .just(album) }
+                    streamPlaylist: { _ in .just(playlist) }
                 )
             )
         )
@@ -141,28 +131,27 @@ final class AlbumViewModelTests: XCTestCase {
 
         let bannerViewModel = TestSubscriber.subscribe(to: outputs.bannerViewModel)
 
-        let bannerVM = try? bannerViewModel.pollOnlyValue()
         XCTAssertEqual(
-            bannerVM,
+            try bannerViewModel.pollOnlyValue(),
             .init(
-                accentColor: album.accentColor,
-                artworkURL: album.imageURL,
-                title: album.title,
-                userInfo: [.init(avatarURL: .imageMock(id: "pnb"), name: "PnB Rock")],
-                details: "Album \u{2022} 2023"
+                accentColor: playlist.accentColor,
+                artworkURL: playlist.imageURL,
+                title: playlist.title,
+                userInfo: [.init(avatarURL: .imageMock(id: "sopfity"), name: "Sopfity")],
+                details: "Playlist \u{2022} 4h 12m"
             )
         )
     }
 
     func testOutput_songListViewModels_derivedFromContentServiceResponse() {
         let songs = [Song].mock(count: 3)
-        let viewModel = AlbumViewModel(
-            albumID: .init(),
+        let viewModel = PlaylistViewModel(
+            playlistID: UUID(),
             dependencies: .init(
                 calendar: .testCalendar,
                 contentService: MockContentService(
-                    fetchAlbum: { _ in .just(.mock()) },
-                    fetchAlbumSongs: { _ in .just(songs) }
+                    streamPlaylist: { _ in .just(.mock()) },
+                    streamPlaylistSongs: { _ in .just(songs) }
                 )
             )
         )
@@ -171,25 +160,24 @@ final class AlbumViewModelTests: XCTestCase {
 
         let songListViewModels = TestSubscriber.subscribe(to: outputs.songListViewModels)
 
-        XCTAssertEqual(try? songListViewModels.pollOnlyValue().count, 3)
+        XCTAssertEqual(try songListViewModels.pollOnlyValue().count, 3)
     }
 
     // MARK: - Helpers
 
     private func assertLoadState(
-        fetchAlbum: AnyPublisher<Album, ContentServiceFetchError>,
-        fetchAlbumSongs: AnyPublisher<[Song], ContentServiceFetchError>,
-        expected: LoadState<AlbumViewModel.LoadError>,
+        playlist: AnyPublisher<Playlist, ContentServiceFetchError>,
+        playlistSongs: AnyPublisher<[Song], ContentServiceFetchError>,
+        expected: LoadState<PlaylistViewModel.LoadError>,
         line: UInt = #line
     ) {
-        let album = Album.mock()
-        let viewModel = AlbumViewModel(
-            albumID: album.id,
+        let viewModel = PlaylistViewModel(
+            playlistID: Playlist.mock().id,
             dependencies: .init(
                 calendar: .testCalendar,
                 contentService: MockContentService(
-                    fetchAlbum: { _ in fetchAlbum },
-                    fetchAlbumSongs: { _ in fetchAlbumSongs }
+                    streamPlaylist: { _ in playlist },
+                    streamPlaylistSongs: { _ in playlistSongs }
                 )
             )
         )
@@ -203,7 +191,7 @@ final class AlbumViewModelTests: XCTestCase {
     }
 }
 
-extension AlbumViewModel.Inputs {
+extension PlaylistViewModel.Inputs {
 
     static func mock(
         reloadRequested: AnyPublisher<Void, Never> = .never()

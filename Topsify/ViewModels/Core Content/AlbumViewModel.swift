@@ -21,8 +21,8 @@ final class AlbumViewModel {
             .prepend(())
             .dataWithLoadState { [dependencies, albumID] in
                 Publishers.CombineLatest(
-                    dependencies.contentService.fetchAlbum(withID: albumID),
-                    dependencies.contentService.fetchSongs(forAlbumID: albumID)
+                    dependencies.contentService.fetchAlbum(id: albumID),
+                    dependencies.contentService.fetchAlbumSongs(albumID: albumID)
                 )
                 .map { (album: $0.0, songs: $0.1) }
                 .mapError {

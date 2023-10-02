@@ -12,7 +12,8 @@ extension Playlist {
         description: String = "Just a test playlist",
         isOfficial: Bool = false,
         isCoverSelfDescriptive: Bool = false,
-        accentColor: HexColor = .init("#0011ee")
+        accentColor: HexColor = .init("#0011ee"),
+        totalDuration: TimeInterval = .minutes(42)
     ) -> Self {
         .init(
             id: id,
@@ -22,7 +23,8 @@ extension Playlist {
             description: description,
             isOfficial: isOfficial,
             isCoverSelfDescriptive: isCoverSelfDescriptive,
-            accentColor: accentColor
+            accentColor: accentColor,
+            totalDuration: totalDuration
         )
     }
 }
