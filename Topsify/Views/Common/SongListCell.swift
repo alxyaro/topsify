@@ -182,6 +182,13 @@ final class SongListCell: UICollectionViewListCell, Reusable {
         let size = sampleCell.systemLayoutSizeFitting(.init(width: 400, height: 0), withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
         return size.height
     }
+
+    static func compositionalLayoutSection(layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection {
+        var config = UICollectionLayoutListConfiguration(appearance: .plain)
+        config.showsSeparators = false
+        config.backgroundColor = .clear
+        return .list(using: config, layoutEnvironment: layoutEnvironment)
+    }
 }
 
 extension SongListCell: UIGestureRecognizerDelegate {

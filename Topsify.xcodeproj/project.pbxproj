@@ -14,6 +14,7 @@
 		4F639AA62ACA29A1005BF20F /* PlaylistViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639AA52ACA29A1005BF20F /* PlaylistViewModelTests.swift */; };
 		4F639AA82ACA2ABB005BF20F /* TimeInterval+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639AA72ACA2ABB005BF20F /* TimeInterval+Additions.swift */; };
 		4F639AAA2ACBBB8A005BF20F /* PlaylistViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639AA92ACBBB8A005BF20F /* PlaylistViewController.swift */; };
+		4F639AAC2ACBC1AF005BF20F /* BannerCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639AAB2ACBC1AF005BF20F /* BannerCollectionViewController.swift */; };
 		4FBE986F2ABFF17C00802FF8 /* ContentID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FBE986E2ABFF17C00802FF8 /* ContentID.swift */; };
 		4FBE98712ABFF1C100802FF8 /* ContentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FBE98702ABFF1C100802FF8 /* ContentType.swift */; };
 		4FBE987A2AC2012600802FF8 /* SwizzleHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FBE98792AC2012600802FF8 /* SwizzleHelper.swift */; };
@@ -257,6 +258,7 @@
 		4F639AA52ACA29A1005BF20F /* PlaylistViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistViewModelTests.swift; sourceTree = "<group>"; };
 		4F639AA72ACA2ABB005BF20F /* TimeInterval+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeInterval+Additions.swift"; sourceTree = "<group>"; };
 		4F639AA92ACBBB8A005BF20F /* PlaylistViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistViewController.swift; sourceTree = "<group>"; };
+		4F639AAB2ACBC1AF005BF20F /* BannerCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerCollectionViewController.swift; sourceTree = "<group>"; };
 		4FBE986E2ABFF17C00802FF8 /* ContentID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentID.swift; sourceTree = "<group>"; };
 		4FBE98702ABFF1C100802FF8 /* ContentType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentType.swift; sourceTree = "<group>"; };
 		4FBE98792AC2012600802FF8 /* SwizzleHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwizzleHelper.swift; sourceTree = "<group>"; };
@@ -868,6 +870,7 @@
 			children = (
 				6B8D0FE42A7EA01A00457DCF /* BannerLayout.swift */,
 				6B8D0FE62A7EB4E800457DCF /* BannerView.swift */,
+				4F639AAB2ACBC1AF005BF20F /* BannerCollectionViewController.swift */,
 			);
 			path = BannerLayout;
 			sourceTree = "<group>";
@@ -1198,6 +1201,7 @@
 				6BED244929D8BB47002D51C2 /* PlayerStageBasicItemCell.swift in Sources */,
 				6B9B44D129D28C6E00F6BA94 /* PlayerTitleView.swift in Sources */,
 				6B04D59F2A4644F000DA0FC2 /* TransitionPanGestureHandler.swift in Sources */,
+				4F639AAC2ACBC1AF005BF20F /* BannerCollectionViewController.swift in Sources */,
 				4FBE987A2AC2012600802FF8 /* SwizzleHelper.swift in Sources */,
 				6B46C22128EA0E2B00E2B80B /* UIViewImplicitlyAnimating+Extensions.swift in Sources */,
 				6BED244B29D9FBD6002D51C2 /* Comparable+Additions.swift in Sources */,

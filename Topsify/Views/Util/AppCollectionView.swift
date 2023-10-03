@@ -2,7 +2,7 @@
 
 import UIKit
 
-class AppCollectionView: UICollectionView {
+class AppCollectionView: LayoutCallbackCollectionView {
 
     init(collectionViewLayout: UICollectionViewLayout) {
         super.init(frame: .zero, collectionViewLayout: collectionViewLayout)

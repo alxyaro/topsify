@@ -3,85 +3,19 @@
 import Combine
 import UIKit
 
-final class PlaylistViewController: UIViewController {
+final class PlaylistViewController: BannerCollectionViewController<PlaylistViewController.Section, PlaylistViewController> {
 
-    enum Section: Int, Hashable, CaseIterable {
+    enum Section: Int {
         case songs
         case youMightAlsoLike
     }
 
-    typealias DataSource = UICollectionViewDiffableDataSource<Section, AnyHashable>
-    typealias DataSnapshot = NSDiffableDataSourceSnapshot<Section, AnyHashable>
-
     private let loadStateView = LoadStateView()
-
-    private let collectionViewLayout: BannerLayout = {
-        return BannerLayout { sectionIndex, layoutEnvironment in
-            guard let section = Section(rawValue: sectionIndex) else {
-                return nil
-            }
-            switch section {
-            case .songs:
-                return .songs(layoutEnvironment: layoutEnvironment)
-            case .youMightAlsoLike:
-                return nil
-            }
-        }
-    }()
-
-    private lazy var collectionView: LayoutCallbackCollectionView = {
-        let collectionView = LayoutCallbackCollectionView(frame: .zero, collectionViewLayout: collectionViewLayout)
-        collectionView.backgroundColor = .clear
-        collectionView.indicatorStyle = .white
-
-        collectionView.registerBannerViewType(ArtworkBannerView.self)
-        collectionView.register(cellType: SongListCell.self)
-        collectionView.registerEmptySupplementaryView(ofKind: ArtworkBannerView.kind)
-        collectionView.registerEmptyCell()
-
-        return collectionView
-    }()
-
-    private lazy var dataSource: DataSource = {
-        let dataSource = DataSource(collectionView: collectionView) { [weak self] collectionView, indexPath, itemIdentifier in
-            guard let self, let section = Section(rawValue: indexPath.section) else {
-                return collectionView.dequeueEmptyCell(for: indexPath)
-            }
-            switch section {
-            case .songs:
-                guard let viewModel = songListViewModels[safe: indexPath.item] else {
-                    return collectionView.dequeueEmptyCell(for: indexPath)
-                }
-                let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: SongListCell.self)
-                cell.configure(with: viewModel, delegate: nil)
-                return cell
-            case .youMightAlsoLike:
-                return nil
-            }
-        }
-        dataSource.supplementaryViewProvider = { [weak self] collectionView, kind, indexPath in
-            guard let self else {
-                return collectionView.dequeueEmptySupplementaryView(ofKind: kind, for: indexPath)
-            }
-            switch kind {
-            case ArtworkBannerView.kind:
-                let view = collectionView.dequeueBannerView(for: indexPath, type: ArtworkBannerView.self)
-                configureBanner(view)
-                return view
-            default:
-                return collectionView.dequeueEmptySupplementaryView(ofKind: kind, for: indexPath)
-            }
-        }
-
-        return dataSource
-    }()
-
     private let playButton = PlayButton()
 
+    private let viewModel: PlaylistViewModel
     private let titleSubject = CurrentValueSubject<String?, Never>(nil)
     private let accentColorSubject = CurrentValueSubject<UIColor?, Never>(nil)
-
-    private let viewModel: PlaylistViewModel
     private var bannerViewModel: ArtworkBannerViewModel?
     private var songListViewModels = [SongListCellViewModel]()
     private var disposeBag = DisposeBag()
@@ -89,13 +23,13 @@ final class PlaylistViewController: UIViewController {
     init(viewModel: PlaylistViewModel) {
         self.viewModel = viewModel
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
+        delegate = self
 
-        modalPresentationStyle = .fullScreen
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        collectionView.registerBannerViewType(ArtworkBannerView.self)
+        collectionView.register(cellType: SongListCell.self)
+        collectionView.registerEmptySupplementaryView(ofKind: ArtworkBannerView.kind)
+        collectionView.registerEmptyCell()
     }
 
     override func viewDidLoad() {
@@ -106,11 +40,6 @@ final class PlaylistViewController: UIViewController {
     }
 
     private func setUpView() {
-        view.backgroundColor = .appBackground
-
-        view.addSubview(collectionView)
-        collectionView.constrainEdgesToSuperview()
-
         view.addSubview(loadStateView)
         loadStateView.constrainEdgesToSuperview()
     }
@@ -189,6 +118,43 @@ final class PlaylistViewController: UIViewController {
     }
 }
 
+extension PlaylistViewController: BannerCollectionViewControllerDelegate {
+
+    func layoutSection(for section: Section, layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? {
+        switch section {
+        case .songs:
+            return SongListCell.compositionalLayoutSection(layoutEnvironment: layoutEnvironment)
+        case .youMightAlsoLike:
+            return nil
+        }
+    }
+
+    func headerView(collectionView: UICollectionView, ofKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        switch kind {
+        case ArtworkBannerView.kind:
+            let view = collectionView.dequeueBannerView(for: indexPath, type: ArtworkBannerView.self)
+            configureBanner(view)
+            return view
+        default:
+            return collectionView.dequeueEmptySupplementaryView(ofKind: kind, for: indexPath)
+        }
+    }
+
+    func cell(collectionView: UICollectionView, forSection section: Section, at indexPath: IndexPath) -> UICollectionViewCell {
+        switch section {
+        case .songs:
+            guard let viewModel = songListViewModels[safe: indexPath.item] else {
+                return collectionView.dequeueEmptyCell(for: indexPath)
+            }
+            let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: SongListCell.self)
+            cell.configure(with: viewModel, delegate: nil)
+            return cell
+        case .youMightAlsoLike:
+            return collectionView.dequeueEmptyCell(for: indexPath)
+        }
+    }
+}
+
 extension PlaylistViewController: TopBarConfiguring {
 
     var topBarTitlePublisher: AnyPublisher<String?, Never> {
@@ -205,15 +171,5 @@ extension PlaylistViewController: TopBarConfiguring {
 
     var topBarVisibility: TopBarVisibility {
         .controlledByBannerInCollectionView(collectionView, bannerType: ArtworkBannerView.self)
-    }
-}
-
-private extension NSCollectionLayoutSection {
-
-    static func songs(layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection {
-        var config = UICollectionLayoutListConfiguration(appearance: .plain)
-        config.showsSeparators = false
-        config.backgroundColor = .clear
-        return .list(using: config, layoutEnvironment: layoutEnvironment)
     }
 }
