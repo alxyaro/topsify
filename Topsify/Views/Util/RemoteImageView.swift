@@ -52,18 +52,24 @@ final class RemoteImageView: UIImageView {
 
     private func applyErrorStyle() {
         layer.removeAllAnimations()
-        backgroundColor = .black
+        performWithAnimation {
+            self.backgroundColor = .black
+        }
     }
 
     private func applyImage(_ image: UIImage) {
         layer.removeAllAnimations()
-        if UIView.areAnimationsEnabled {
-            /// `UIView.transition` doesn't seem to respect `performWithoutAnimation` on it's own.
-            UIView.transition(with: self, duration: 0.2, options: .transitionCrossDissolve) {
-                self.image = image
-            }
-        } else {
+        performWithAnimation {
             self.image = image
+        }
+    }
+
+    private func performWithAnimation(_ action: @escaping () -> Void) {
+        if UIView.areAnimationsEnabled {
+            /// `UIView.transition` doesn't seem to respect `performWithoutAnimation` on its own.
+            UIView.transition(with: self, duration: 0.2, options: .transitionCrossDissolve, animations: action)
+        } else {
+            action()
         }
     }
 }

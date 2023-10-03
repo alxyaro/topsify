@@ -1,16 +1,13 @@
-// Created by Alex Yaro on 2023-08-06.
+// Created by Alex Yaro on 2023-10-02.
 
 import Combine
 import UIKit
 
-final class AlbumViewController: UIViewController {
+final class PlaylistViewController: UIViewController {
 
     enum Section: Int, Hashable, CaseIterable {
         case songs
-        case releaseInfo
-        case artists
-        // TODO: case recommended
-        case legal
+        case youMightAlsoLike
     }
 
     typealias DataSource = UICollectionViewDiffableDataSource<Section, AnyHashable>
@@ -26,11 +23,7 @@ final class AlbumViewController: UIViewController {
             switch section {
             case .songs:
                 return .songs(layoutEnvironment: layoutEnvironment)
-            case .releaseInfo:
-                return nil
-            case .artists:
-                return nil
-            case .legal:
+            case .youMightAlsoLike:
                 return nil
             }
         }
@@ -62,11 +55,7 @@ final class AlbumViewController: UIViewController {
                 let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: SongListCell.self)
                 cell.configure(with: viewModel, delegate: nil)
                 return cell
-            case .releaseInfo:
-                return nil
-            case .artists:
-                return nil
-            case .legal:
+            case .youMightAlsoLike:
                 return nil
             }
         }
@@ -92,12 +81,12 @@ final class AlbumViewController: UIViewController {
     private let titleSubject = CurrentValueSubject<String?, Never>(nil)
     private let accentColorSubject = CurrentValueSubject<UIColor?, Never>(nil)
 
-    private let viewModel: AlbumViewModel
+    private let viewModel: PlaylistViewModel
     private var bannerViewModel: ArtworkBannerViewModel?
     private var songListViewModels = [SongListCellViewModel]()
     private var disposeBag = DisposeBag()
 
-    init(viewModel: AlbumViewModel) {
+    init(viewModel: PlaylistViewModel) {
         self.viewModel = viewModel
 
         super.init(nibName: nil, bundle: nil)
@@ -200,7 +189,7 @@ final class AlbumViewController: UIViewController {
     }
 }
 
-extension AlbumViewController: TopBarConfiguring {
+extension PlaylistViewController: TopBarConfiguring {
 
     var topBarTitlePublisher: AnyPublisher<String?, Never> {
         titleSubject.eraseToAnyPublisher()
