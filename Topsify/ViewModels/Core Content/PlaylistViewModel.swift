@@ -119,6 +119,15 @@ private extension ArtworkBannerViewModel {
         let playlistTerm = NSLocalizedString("Playlist", comment: "Content type")
         // TODO: for *owned* playlists, add private/public playlist icons to the details string
         details = [playlistTerm, durationStr].bulletJoined()
+
+        actionBarViewModel = BannerActionBarViewModel(
+            sideButtons: [
+                .init(buttonType: .save, onTap: {}),
+                .init(buttonType: .download, onTap: {}),
+                .init(buttonType: .options, onTap: {})
+            ],
+            shuffleButtonVisibility: .shown(onTap: {})
+        )
     }
 }
 

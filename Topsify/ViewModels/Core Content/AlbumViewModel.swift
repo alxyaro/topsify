@@ -112,6 +112,15 @@ private extension ArtworkBannerViewModel {
 
         let releaseYear = String(calendar.component(.year, from: album.releaseDate))
         details = [album.type.displayName, releaseYear].bulletJoined()
+
+        actionBarViewModel = BannerActionBarViewModel(
+            sideButtons: [
+                .init(buttonType: .save, onTap: {}),
+                .init(buttonType: .download, onTap: {}),
+                .init(buttonType: .options, onTap: {})
+            ],
+            shuffleButtonVisibility: .shown(onTap: {})
+        )
     }
 }
 

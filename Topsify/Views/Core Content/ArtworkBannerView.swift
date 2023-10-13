@@ -22,53 +22,8 @@ final class ArtworkBannerView: BannerView {
         return imageView
     }()
 
-    private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .appTextPrimary
-        label.font = .appFont(ofSize: 24, weight: .bold)
-        label.numberOfLines = 1
-        return label
-    }()
-
-    private let artistAvatarImageView: RemoteImageView = {
-        let view = RemoteImageView()
-        view.constrainDimensions(uniform: 20)
-        view.layer.cornerRadius = 10
-        view.clipsToBounds = true
-        return view
-    }()
-
-    private let artistsLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .appTextPrimary
-        label.font = .appFont(ofSize: 13, weight: .bold)
-        label.numberOfLines = 1
-        return label
-    }()
-
-    private let detailsLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .appTextSecondary
-        label.font = .appFont(ofSize: 13)
-        label.numberOfLines = 1
-        return label
-    }()
-
-    private let saveButton = createSideButton(icon: "Icons/save")
-    private let downloadButton = createSideButton(icon: "Icons/download")
-    private let optionsButton = createSideButton(icon: "Icons/options")
-
-    private let shuffleButton: AppIconButton = {
-        let button = AppIconButton(icon: "Icons/shuffle", scale: 1.2)
-        button.tintColor = .secondaryIcon
-        return button
-    }()
-
-    private let playButtonPlaceholderView: UIView = {
-        let view = UIView()
-        view.constrainDimensions(uniform: PlayButton.size)
-        return view
-    }()
+    private let detailsView = BannerDetailsView()
+    private let actionBarView = BannerActionBarView()
 
     private var artworkPlaceholderViewTopConstraint: NSLayoutConstraint?
     private var scrollAmount: CGFloat = 0
@@ -76,8 +31,6 @@ final class ArtworkBannerView: BannerView {
 
     required init(frame: CGRect) {
         super.init(frame: frame)
-
-        downloadButton.isEnabled = false
 
         directionalLayoutMargins = .init(horizontal: 16, vertical: 0)
 
@@ -89,40 +42,13 @@ final class ArtworkBannerView: BannerView {
 
         addSubview(artworkView)
 
-        let artistRowStack = UIStackView(arrangedSubviews: [artistAvatarImageView, artistsLabel])
-        artistRowStack.axis = .horizontal
-        artistRowStack.alignment = .center
-        artistRowStack.spacing = 8
+        addSubview(detailsView)
+        detailsView.constrainEdges(to: layoutMarginsGuide, excluding: .vertical)
+        detailsView.topAnchor.constraint(equalTo: artworkPlaceholderView.bottomAnchor, constant: 16).isActive = true
 
-        let descriptionStack = UIStackView(arrangedSubviews: [titleLabel, artistRowStack, detailsLabel])
-        descriptionStack.axis = .vertical
-        descriptionStack.alignment = .leading
-        descriptionStack.spacing = 8
-        descriptionStack.setCustomSpacing(4, after: titleLabel)
-
-        addSubview(descriptionStack)
-        descriptionStack.useAutoLayout()
-        descriptionStack.topAnchor.constraint(equalTo: artworkPlaceholderView.bottomAnchor, constant: 16).isActive = true
-        descriptionStack.leadingAnchor.constraint(equalTo: layoutMarginsGuide.leadingAnchor).isActive = true
-
-        let bottomButtonsStack = UIStackView(arrangedSubviews: [
-            saveButton,
-            downloadButton,
-            optionsButton,
-            SpacerView(),
-            shuffleButton,
-            playButtonPlaceholderView
-        ])
-        bottomButtonsStack.axis = .horizontal
-        bottomButtonsStack.alignment = .center
-        bottomButtonsStack.spacing = 24
-        bottomButtonsStack.setCustomSpacing(18, after: shuffleButton)
-        bottomButtonsStack.directionalLayoutMargins = .horizontal(16)
-        bottomButtonsStack.isLayoutMarginsRelativeArrangement = true
-
-        addSubview(bottomButtonsStack)
-        bottomButtonsStack.constrainEdgesToSuperview(excluding: .top)
-        bottomButtonsStack.topAnchor.constraint(equalTo: descriptionStack.bottomAnchor).isActive = true
+        addSubview(actionBarView)
+        actionBarView.constrainEdges(to: layoutMarginsGuide, excluding: .top)
+        actionBarView.topAnchor.constraint(equalTo: detailsView.bottomAnchor).isActive = true
     }
 
     override func layoutSubviews() {
@@ -132,16 +58,6 @@ final class ArtworkBannerView: BannerView {
 
     @available(*, unavailable)
     override func configure(gradientColor: UIColor, scrollAmountPublisher: AnyPublisher<CGFloat, Never>) {}
-
-    override func prepareForReuse() {
-        super.prepareForReuse()
-
-        artworkView.reset()
-        titleLabel.text = nil
-        artistsLabel.text = nil
-        artistAvatarImageView.reset()
-        detailsLabel.text = nil
-    }
 
     func configure(
         with viewModel: ArtworkBannerViewModel,
@@ -153,19 +69,17 @@ final class ArtworkBannerView: BannerView {
 
         super.configure(gradientColor: viewModel.accentColor.uiColor, scrollAmountPublisher: scrollAmountPublisher)
 
+        artworkPlaceholderViewTopConstraint?.constant = topInset + 12
         artworkView.configure(with: viewModel.artworkURL)
-        titleLabel.text = viewModel.title
 
         // TODO: implement view to support multiple artists:
+        var artistInfo: BannerDetailsView.ArtistInfo?
         if let firstUserInfo = viewModel.userInfo.first {
-            artistsLabel.text = firstUserInfo.name
-            artistAvatarImageView.configure(with: firstUserInfo.avatarURL)
+            artistInfo = .init(avatarURL: firstUserInfo.avatarURL, name: firstUserInfo.name)
         }
 
-        detailsLabel.text = viewModel.details
-
-        artworkPlaceholderViewTopConstraint?.constant = topInset + 12
-        playButton.centerYAnchor.constraint(greaterThanOrEqualTo: playButtonPlaceholderView.centerYAnchor).isActive = true
+        detailsView.configure(title: viewModel.title, artistInfo: artistInfo, details: viewModel.details)
+        actionBarView.configure(with: viewModel.actionBarViewModel, playButton: playButton)
 
         scrollAmountPublisher
             .sink { [weak self] scrollAmount in
@@ -198,18 +112,11 @@ final class ArtworkBannerView: BannerView {
 
         artworkView.layer.shadowPath = UIBezierPath(rect: artworkView.bounds).cgPath
     }
-
-    static func createSideButton(icon: String) -> AppIconButton {
-        let icon = AppIconButton(icon: icon)
-        icon.constrainHeight(to: 24)
-        icon.tintColor = .secondaryIcon
-        return icon
-    }
 }
 
 extension ArtworkBannerView: TopBarVisibilityControllingViewProviding {
 
     var topBarVisibilityControllingView: UIView? {
-        titleLabel
+        detailsView.topBarVisibilityControllingView
     }
 }

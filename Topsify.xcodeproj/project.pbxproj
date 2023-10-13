@@ -15,6 +15,11 @@
 		4F639AA82ACA2ABB005BF20F /* TimeInterval+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639AA72ACA2ABB005BF20F /* TimeInterval+Additions.swift */; };
 		4F639AAA2ACBBB8A005BF20F /* PlaylistViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639AA92ACBBB8A005BF20F /* PlaylistViewController.swift */; };
 		4F639AAC2ACBC1AF005BF20F /* BannerCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639AAB2ACBC1AF005BF20F /* BannerCollectionViewController.swift */; };
+		4F639AB12ACE6279005BF20F /* BannerDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639AB02ACE6279005BF20F /* BannerDetailsView.swift */; };
+		4F639AB72AD08EFF005BF20F /* BannerActionBarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639AB62AD08EFF005BF20F /* BannerActionBarViewModel.swift */; };
+		4F639AB92AD09262005BF20F /* BannerActionBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639AB82AD09262005BF20F /* BannerActionBarView.swift */; };
+		4F639ABC2AD7763E005BF20F /* ButtonVisibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639ABB2AD7763E005BF20F /* ButtonVisibility.swift */; };
+		4F639ABE2AD78299005BF20F /* ButtonVisibility+UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639ABD2AD78299005BF20F /* ButtonVisibility+UIKit.swift */; };
 		4FBE986F2ABFF17C00802FF8 /* ContentID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FBE986E2ABFF17C00802FF8 /* ContentID.swift */; };
 		4FBE98712ABFF1C100802FF8 /* ContentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FBE98702ABFF1C100802FF8 /* ContentType.swift */; };
 		4FBE987A2AC2012600802FF8 /* SwizzleHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FBE98792AC2012600802FF8 /* SwizzleHelper.swift */; };
@@ -259,6 +264,11 @@
 		4F639AA72ACA2ABB005BF20F /* TimeInterval+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeInterval+Additions.swift"; sourceTree = "<group>"; };
 		4F639AA92ACBBB8A005BF20F /* PlaylistViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistViewController.swift; sourceTree = "<group>"; };
 		4F639AAB2ACBC1AF005BF20F /* BannerCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerCollectionViewController.swift; sourceTree = "<group>"; };
+		4F639AB02ACE6279005BF20F /* BannerDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerDetailsView.swift; sourceTree = "<group>"; };
+		4F639AB62AD08EFF005BF20F /* BannerActionBarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerActionBarViewModel.swift; sourceTree = "<group>"; };
+		4F639AB82AD09262005BF20F /* BannerActionBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerActionBarView.swift; sourceTree = "<group>"; };
+		4F639ABB2AD7763E005BF20F /* ButtonVisibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonVisibility.swift; sourceTree = "<group>"; };
+		4F639ABD2AD78299005BF20F /* ButtonVisibility+UIKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ButtonVisibility+UIKit.swift"; sourceTree = "<group>"; };
 		4FBE986E2ABFF17C00802FF8 /* ContentID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentID.swift; sourceTree = "<group>"; };
 		4FBE98702ABFF1C100802FF8 /* ContentType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentType.swift; sourceTree = "<group>"; };
 		4FBE98792AC2012600802FF8 /* SwizzleHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwizzleHelper.swift; sourceTree = "<group>"; };
@@ -628,6 +638,7 @@
 				6B46C8DA29E9E4E3006DEDBB /* Player */,
 				6B357245280BB98B007CBDF6 /* Home */,
 				6B0C39CE282091F500B59313 /* Common */,
+				4F639ABB2AD7763E005BF20F /* ButtonVisibility.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -814,6 +825,7 @@
 			isa = PBXGroup;
 			children = (
 				6B4854F02A547A4000B52E25 /* HexColor+UIKit.swift */,
+				4F639ABD2AD78299005BF20F /* ButtonVisibility+UIKit.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -861,6 +873,7 @@
 				6B9B46F32A8FC7CD002042F6 /* ArtworkBannerViewModel.swift */,
 				6B9B46E42A8D8C30002042F6 /* AlbumViewModel.swift */,
 				4F639AA32ACA061D005BF20F /* PlaylistViewModel.swift */,
+				4F639AB62AD08EFF005BF20F /* BannerActionBarViewModel.swift */,
 			);
 			path = "Core Content";
 			sourceTree = "<group>";
@@ -871,6 +884,8 @@
 				6B8D0FE42A7EA01A00457DCF /* BannerLayout.swift */,
 				6B8D0FE62A7EB4E800457DCF /* BannerView.swift */,
 				4F639AAB2ACBC1AF005BF20F /* BannerCollectionViewController.swift */,
+				4F639AB02ACE6279005BF20F /* BannerDetailsView.swift */,
+				4F639AB82AD09262005BF20F /* BannerActionBarView.swift */,
 			);
 			path = BannerLayout;
 			sourceTree = "<group>";
@@ -1191,6 +1206,7 @@
 				6B357240280B2E47007CBDF6 /* OverhangingView.swift in Sources */,
 				6B9B46F62A8FFC05002042F6 /* AlbumType.swift in Sources */,
 				6B5AAE6329BF7C0B00348B1D /* IgnoreEquality.swift in Sources */,
+				4F639AB92AD09262005BF20F /* BannerActionBarView.swift in Sources */,
 				6B005C1927F3F1910064929C /* Song.swift in Sources */,
 				6B35721F27FE4DC3007CBDF6 /* AppButton.swift in Sources */,
 				6BF3DD0C2A57BF7D00E5F2D0 /* PlayerTopBarViewModel.swift in Sources */,
@@ -1210,6 +1226,7 @@
 				6BFAA33B29ABDB830017E807 /* UILayoutPriority+Additions.swift in Sources */,
 				6B9B46FA2A915AD6002042F6 /* DiffableDataSource+Extensions.swift in Sources */,
 				6BED243F29D7564F002D51C2 /* SpacerView.swift in Sources */,
+				4F639ABE2AD78299005BF20F /* ButtonVisibility+UIKit.swift in Sources */,
 				6BDC889829F1D175003B7290 /* PlaybackQueueState.swift in Sources */,
 				6BF3DD252A608B7E00E5F2D0 /* InverseMaskView.swift in Sources */,
 				6B3571FC27FBA880007CBDF6 /* ContentTileCell.swift in Sources */,
@@ -1224,6 +1241,7 @@
 				6BAE1B7A299053ED0092E53E /* Collections+Extensions.swift in Sources */,
 				6B9B44C729CFB3DC00F6BA94 /* PlayerSlider.swift in Sources */,
 				6B0C39CD28208E9800B59313 /* HomeViewModel.swift in Sources */,
+				4F639ABC2AD7763E005BF20F /* ButtonVisibility.swift in Sources */,
 				6BFE668E283851A000566BED /* TabTransitionController.swift in Sources */,
 				6B403C7F29E2154300CA6DE0 /* HomeService.swift in Sources */,
 				6B0C39BA281A03DF00B59313 /* FakeModelDatabase.swift in Sources */,
@@ -1259,8 +1277,10 @@
 				6B7C159A2A9EF6F7002CF845 /* TopBarConfiguring.swift in Sources */,
 				6B7C159C2A9FB971002CF845 /* NewAppNavigationController.swift in Sources */,
 				6BBF4FD829F4759600CBA32D /* PlayerTitleViewModel.swift in Sources */,
+				4F639AB72AD08EFF005BF20F /* BannerActionBarViewModel.swift in Sources */,
 				6BBF4FD229F44BF100CBA32D /* PlaybackQueueIndex.swift in Sources */,
 				6B3571FA27FBA669007CBDF6 /* HorizontalCollectionView.swift in Sources */,
+				4F639AB12ACE6279005BF20F /* BannerDetailsView.swift in Sources */,
 				6B9B44CD29D0CC4F00F6BA94 /* PlayerSliderContainerView.swift in Sources */,
 				6BDE70312A6B25B500ACDD86 /* QueueSelectionMenuViewModel.swift in Sources */,
 				6BED244129D75B87002D51C2 /* ExpandedTouchView.swift in Sources */,
