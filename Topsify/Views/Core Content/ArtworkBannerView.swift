@@ -72,13 +72,11 @@ final class ArtworkBannerView: BannerView {
         artworkPlaceholderViewTopConstraint?.constant = topInset + 12
         artworkView.configure(with: viewModel.artworkURL)
 
-        // TODO: implement view to support multiple artists:
-        var artistInfo: BannerDetailsView.ArtistInfo?
-        if let firstUserInfo = viewModel.userInfo.first {
-            artistInfo = .init(avatarURL: firstUserInfo.avatarURL, name: firstUserInfo.name)
-        }
-
-        detailsView.configure(title: viewModel.title, artistInfo: artistInfo, details: viewModel.details)
+        detailsView.configure(
+            title: viewModel.title,
+            artistInfo: viewModel.userInfo.map { .init(avatarURL: $0.avatarURL, name: $0.name) },
+            details: viewModel.details
+        )
         actionBarView.configure(with: viewModel.actionBarViewModel, playButton: playButton)
 
         scrollAmountPublisher

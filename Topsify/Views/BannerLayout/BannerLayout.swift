@@ -39,6 +39,17 @@ final class BannerLayout: UICollectionViewCompositionalLayout {
     }
 
     func reloadBannerSize() {
+
+        /// This is a necessary step, leveraging the quirk noted in the observation comment below.
+        /// By resetting the height (i.e. reducing it), `UICollectionView` will prompty notice that the height of the `UICollectionViewLayoutAttributes`
+        /// for the banner is now smaller than the last recorded preferred height, so it will invalidate the perferred height and call into `shouldInvalidateLayout`
+        /// again.
+        ///
+        /// Without this, if the size of the banner hasn't changed when this is called, the `shouldInvalidateLayout` method won't get called by
+        /// `UICollectionView`, so the layout gets glitched and the height of the banner is set to the estimated height defined above in the initalizer.
+        ///
+        bannerHeight = 0
+
         let context = UICollectionViewLayoutInvalidationContext()
         context.invalidateSupplementaryElements(ofKind: BannerView.kind, at: [BannerView.indexPath])
         invalidateLayout(with: context)
@@ -52,7 +63,6 @@ final class BannerLayout: UICollectionViewCompositionalLayout {
         if preferredAttributes.areForBanner {
 
             /// ### Important observation on how the compositional layout treats preferred sizing:
-            /// *This used to be relevant as the banner view changed size - but is no longer the case.*
             ///
             /// UICollectionView calls this method after the initial call to `layoutAttributesForElements(in)`, if the cell has different size preference
             /// than what was returned. The compositional layout essentially never returns `true` in the super impl of this method, but if the preferred size is

@@ -12,6 +12,14 @@ final class BannerDetailsView: UIView {
         return label
     }()
 
+    private let descriptionLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .appTextSecondary
+        label.font = .appFont(ofSize: 13)
+        label.numberOfLines = 1
+        return label
+    }()
+
     private let artistAvatarImageView: RemoteImageView = {
         let view = RemoteImageView()
         view.constrainDimensions(uniform: 20)
@@ -47,7 +55,7 @@ final class BannerDetailsView: UIView {
     init() {
         super.init(frame: .zero)
 
-        let stackView = UIStackView(arrangedSubviews: [titleLabel, artistRowStackView, detailsLabel])
+        let stackView = UIStackView(arrangedSubviews: [titleLabel, descriptionLabel, artistRowStackView, detailsLabel])
         stackView.axis = .vertical
         stackView.alignment = .leading
         stackView.spacing = 8
@@ -61,15 +69,24 @@ final class BannerDetailsView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(title: String?, artistInfo: ArtistInfo?, details: String) {
+    func configure(
+        title: String? = nil,
+        description: String? = nil,
+        artistInfo: [ArtistInfo]? = nil,
+        details: String
+    ) {
         titleLabel.text = title
         titleLabel.isHidden = title == nil
 
-        if let artistInfo {
+        descriptionLabel.text = description
+        descriptionLabel.isHidden = description == nil
+
+        // TODO: support list of artists
+        if let artistInfo = artistInfo?.first {
             artistsLabel.text = artistInfo.name
             artistAvatarImageView.configure(with: artistInfo.avatarURL)
         }
-        artistRowStackView.isHidden = artistInfo == nil
+        artistRowStackView.isHidden = artistInfo?.first == nil
 
         detailsLabel.text = details
     }

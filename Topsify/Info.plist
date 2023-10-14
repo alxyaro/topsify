@@ -8,6 +8,7 @@
 		<string>CircularStd-Light.otf</string>
 		<string>CircularStd-Medium.otf</string>
 		<string>CircularStd-Bold.otf</string>
+		<string>CircularStd-Black.otf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>

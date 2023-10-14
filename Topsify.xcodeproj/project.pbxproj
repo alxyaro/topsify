@@ -16,6 +16,7 @@
 		4F639AAA2ACBBB8A005BF20F /* PlaylistViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639AA92ACBBB8A005BF20F /* PlaylistViewController.swift */; };
 		4F639AAC2ACBC1AF005BF20F /* BannerCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639AAB2ACBC1AF005BF20F /* BannerCollectionViewController.swift */; };
 		4F639AB12ACE6279005BF20F /* BannerDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639AB02ACE6279005BF20F /* BannerDetailsView.swift */; };
+		4F639AB52AD08E9F005BF20F /* ProminentBannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639AB42AD08E9F005BF20F /* ProminentBannerViewModel.swift */; };
 		4F639AB72AD08EFF005BF20F /* BannerActionBarViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639AB62AD08EFF005BF20F /* BannerActionBarViewModel.swift */; };
 		4F639AB92AD09262005BF20F /* BannerActionBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639AB82AD09262005BF20F /* BannerActionBarView.swift */; };
 		4F639ABC2AD7763E005BF20F /* ButtonVisibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639ABB2AD7763E005BF20F /* ButtonVisibility.swift */; };
@@ -23,6 +24,9 @@
 		4FBE986F2ABFF17C00802FF8 /* ContentID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FBE986E2ABFF17C00802FF8 /* ContentID.swift */; };
 		4FBE98712ABFF1C100802FF8 /* ContentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FBE98702ABFF1C100802FF8 /* ContentType.swift */; };
 		4FBE987A2AC2012600802FF8 /* SwizzleHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FBE98792AC2012600802FF8 /* SwizzleHelper.swift */; };
+		4FFE34772AD8D6DA0070D416 /* ProminentBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFE34762AD8D6DA0070D416 /* ProminentBannerView.swift */; };
+		4FFE34792ADAF8300070D416 /* NSAttributedString+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFE34782ADAF8300070D416 /* NSAttributedString+Additions.swift */; };
+		4FFE347D2ADB14EC0070D416 /* CircularStd-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4FFE347C2ADB14EC0070D416 /* CircularStd-Black.otf */; };
 		6B005C0E27F14FDF0064929C /* FakeAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6B005C0D27F14FDF0064929C /* FakeAssets.xcassets */; };
 		6B005C1027F29FF30064929C /* AutoLayout+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B005C0F27F29FF30064929C /* AutoLayout+Extensions.swift */; };
 		6B005C1527F3F0EB0064929C /* Album.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B005C1427F3F0EB0064929C /* Album.swift */; };
@@ -265,6 +269,7 @@
 		4F639AA92ACBBB8A005BF20F /* PlaylistViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistViewController.swift; sourceTree = "<group>"; };
 		4F639AAB2ACBC1AF005BF20F /* BannerCollectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerCollectionViewController.swift; sourceTree = "<group>"; };
 		4F639AB02ACE6279005BF20F /* BannerDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerDetailsView.swift; sourceTree = "<group>"; };
+		4F639AB42AD08E9F005BF20F /* ProminentBannerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProminentBannerViewModel.swift; sourceTree = "<group>"; };
 		4F639AB62AD08EFF005BF20F /* BannerActionBarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerActionBarViewModel.swift; sourceTree = "<group>"; };
 		4F639AB82AD09262005BF20F /* BannerActionBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerActionBarView.swift; sourceTree = "<group>"; };
 		4F639ABB2AD7763E005BF20F /* ButtonVisibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonVisibility.swift; sourceTree = "<group>"; };
@@ -272,6 +277,9 @@
 		4FBE986E2ABFF17C00802FF8 /* ContentID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentID.swift; sourceTree = "<group>"; };
 		4FBE98702ABFF1C100802FF8 /* ContentType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentType.swift; sourceTree = "<group>"; };
 		4FBE98792AC2012600802FF8 /* SwizzleHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwizzleHelper.swift; sourceTree = "<group>"; };
+		4FFE34762AD8D6DA0070D416 /* ProminentBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProminentBannerView.swift; sourceTree = "<group>"; };
+		4FFE34782ADAF8300070D416 /* NSAttributedString+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+Additions.swift"; sourceTree = "<group>"; };
+		4FFE347C2ADB14EC0070D416 /* CircularStd-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CircularStd-Black.otf"; sourceTree = "<group>"; };
 		6B005C0D27F14FDF0064929C /* FakeAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = FakeAssets.xcassets; sourceTree = "<group>"; };
 		6B005C0F27F29FF30064929C /* AutoLayout+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AutoLayout+Extensions.swift"; sourceTree = "<group>"; };
 		6B005C1427F3F0EB0064929C /* Album.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Album.swift; sourceTree = "<group>"; };
@@ -681,6 +689,7 @@
 				6B9B46F92A915AD6002042F6 /* DiffableDataSource+Extensions.swift */,
 				6BFC1F6F2AA223CB00893821 /* UIViewController+Extensions.swift */,
 				4F639AA72ACA2ABB005BF20F /* TimeInterval+Additions.swift */,
+				4FFE34782ADAF8300070D416 /* NSAttributedString+Additions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -700,6 +709,7 @@
 				6B35721127FCF923007CBDF6 /* CircularStd-Light.otf */,
 				6B35721227FCF923007CBDF6 /* CircularStd-Medium.otf */,
 				6B35721827FCFEA8007CBDF6 /* CircularStd-Bold.otf */,
+				4FFE347C2ADB14EC0070D416 /* CircularStd-Black.otf */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -842,6 +852,7 @@
 			isa = PBXGroup;
 			children = (
 				6B8D0FEA2A7ED84500457DCF /* ArtworkBannerView.swift */,
+				4FFE34762AD8D6DA0070D416 /* ProminentBannerView.swift */,
 				6B8D0FEE2A7FF95A00457DCF /* AlbumViewController.swift */,
 				4F639AA92ACBBB8A005BF20F /* PlaylistViewController.swift */,
 			);
@@ -873,6 +884,7 @@
 				6B9B46F32A8FC7CD002042F6 /* ArtworkBannerViewModel.swift */,
 				6B9B46E42A8D8C30002042F6 /* AlbumViewModel.swift */,
 				4F639AA32ACA061D005BF20F /* PlaylistViewModel.swift */,
+				4F639AB42AD08E9F005BF20F /* ProminentBannerViewModel.swift */,
 				4F639AB62AD08EFF005BF20F /* BannerActionBarViewModel.swift */,
 			);
 			path = "Core Content";
@@ -1127,6 +1139,7 @@
 				6B35721427FCF923007CBDF6 /* CircularStd-Light.otf in Resources */,
 				6B35721927FCFEA8007CBDF6 /* CircularStd-Bold.otf in Resources */,
 				6B005C0E27F14FDF0064929C /* FakeAssets.xcassets in Resources */,
+				4FFE347D2ADB14EC0070D416 /* CircularStd-Black.otf in Resources */,
 				6B35721327FCF923007CBDF6 /* CircularStd-Book.otf in Resources */,
 				6B35721527FCF923007CBDF6 /* CircularStd-Medium.otf in Resources */,
 				6B0D781D27F0E4BE001BA64E /* LaunchScreen.storyboard in Resources */,
@@ -1159,6 +1172,7 @@
 				6B8D0FFF2A828FC500457DCF /* NavigationHeaderView.swift in Sources */,
 				6B0C39CB281E198300B59313 /* SpotlightEntry.swift in Sources */,
 				4F639AA82ACA2ABB005BF20F /* TimeInterval+Additions.swift in Sources */,
+				4FFE34792ADAF8300070D416 /* NSAttributedString+Additions.swift in Sources */,
 				6B8805832A6F62F2000C2B00 /* QueueViewModel.swift in Sources */,
 				6BF3DD0A2A57518200E5F2D0 /* PlayerTopBarView.swift in Sources */,
 				6B9A536629B2BB47001D4C2A /* NSDirectionalEdgeInsets+Additions.swift in Sources */,
@@ -1244,6 +1258,7 @@
 				4F639ABC2AD7763E005BF20F /* ButtonVisibility.swift in Sources */,
 				6BFE668E283851A000566BED /* TabTransitionController.swift in Sources */,
 				6B403C7F29E2154300CA6DE0 /* HomeService.swift in Sources */,
+				4F639AB52AD08E9F005BF20F /* ProminentBannerViewModel.swift in Sources */,
 				6B0C39BA281A03DF00B59313 /* FakeModelDatabase.swift in Sources */,
 				6BED244529D7CDFD002D51C2 /* CALayer+Additions.swift in Sources */,
 				6B357247280BB999007CBDF6 /* RecentActivityItemViewModel.swift in Sources */,
@@ -1275,6 +1290,7 @@
 				4F639AA22AC75101005BF20F /* PlaybackSource.swift in Sources */,
 				6B294C432A23E380009C37C7 /* CACornerMask+Additions.swift in Sources */,
 				6B7C159A2A9EF6F7002CF845 /* TopBarConfiguring.swift in Sources */,
+				4FFE34772AD8D6DA0070D416 /* ProminentBannerView.swift in Sources */,
 				6B7C159C2A9FB971002CF845 /* NewAppNavigationController.swift in Sources */,
 				6BBF4FD829F4759600CBA32D /* PlayerTitleViewModel.swift in Sources */,
 				4F639AB72AD08EFF005BF20F /* BannerActionBarViewModel.swift in Sources */,

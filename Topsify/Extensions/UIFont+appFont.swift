@@ -9,7 +9,7 @@ import UIKit
 
 extension UIFont {
     enum AppFontWeight {
-        case regular, light, medium, bold
+        case regular, light, medium, bold, black
     }
     
     class func appFont(ofSize size: CGFloat, weight: AppFontWeight = .regular) -> UIFont {
@@ -23,6 +23,8 @@ extension UIFont {
             fontName = "Circular Std Medium"
         case .bold:
             fontName = "Circular Std Bold"
+        case .black:
+            fontName = "Circular Std Black"
         }
         return UIFont(name: fontName, size: size)!
     }

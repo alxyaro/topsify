@@ -31,7 +31,6 @@ final class AlbumViewController: BannerCollectionViewController<AlbumViewControl
 
         collectionView.registerBannerViewType(ArtworkBannerView.self)
         collectionView.register(cellType: SongListCell.self)
-        collectionView.registerEmptySupplementaryView(ofKind: ArtworkBannerView.kind)
         collectionView.registerEmptyCell()
     }
 
