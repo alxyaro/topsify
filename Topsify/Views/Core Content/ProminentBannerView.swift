@@ -62,7 +62,8 @@ final class ProminentBannerView: BannerView {
         titleGradientView.constrainEdges(to: backgroundImageFramingView, excluding: .top)
 
         addSubview(titleLabel)
-        titleLabel.constrainEdges(to: backgroundImageFramingView, excluding: .top, withInsets: .init(horizontal: 16, vertical: 8))
+        titleLabel.constrainEdges(to: backgroundImageFramingView, excluding: .vertical, withInsets: .horizontal(16))
+        titleLabel.lastBaselineAnchor.constraint(equalTo: backgroundImageFramingView.bottomAnchor, constant: -16).isActive = true
         titleLabel.topAnchor.constraint(greaterThanOrEqualTo: backgroundImageFramingView.topAnchor).isActive = true
         titleGradientView.topAnchor.constraint(equalTo: titleLabel.topAnchor, constant: -40).isActive = true
 
