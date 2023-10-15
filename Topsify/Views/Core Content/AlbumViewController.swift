@@ -176,6 +176,6 @@ extension AlbumViewController: TopBarConfiguring {
     }
 
     var topBarVisibility: TopBarVisibility {
-        .controlledByBannerInCollectionView(collectionView, bannerType: ArtworkBannerView.self)
+        .controlledByBanner(in: collectionView)
     }
 }

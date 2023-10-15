@@ -12,3 +12,22 @@ extension TimeInterval {
         count * 60 * 60
     }
 }
+
+extension TimeInterval {
+
+    func formatted(
+        units: NSCalendar.Unit,
+        unitsStyle: DateComponentsFormatter.UnitsStyle = .abbreviated
+    ) -> String {
+        let durationFormatter = DateComponentsFormatter()
+        durationFormatter.unitsStyle = unitsStyle
+        durationFormatter.allowedUnits = units
+
+        guard let str = durationFormatter.string(from: self) else {
+            assertionFailure("Couldn't format TimeInterval of \(self)")
+            return "\(self / 60)m"
+        }
+
+        return str
+    }
+}

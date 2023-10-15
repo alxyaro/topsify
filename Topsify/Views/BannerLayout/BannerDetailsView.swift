@@ -72,7 +72,7 @@ final class BannerDetailsView: UIView {
     func configure(
         title: String? = nil,
         description: String? = nil,
-        artistInfo: [ArtistInfo]? = nil,
+        userAttribution: [BannerUserAttribution]? = nil,
         details: String
     ) {
         titleLabel.text = title
@@ -82,11 +82,11 @@ final class BannerDetailsView: UIView {
         descriptionLabel.isHidden = description == nil
 
         // TODO: support list of artists
-        if let artistInfo = artistInfo?.first {
-            artistsLabel.text = artistInfo.name
-            artistAvatarImageView.configure(with: artistInfo.avatarURL)
+        if let userAttribution = userAttribution?.first {
+            artistsLabel.text = userAttribution.name
+            artistAvatarImageView.configure(with: userAttribution.avatarURL)
         }
-        artistRowStackView.isHidden = artistInfo?.first == nil
+        artistRowStackView.isHidden = userAttribution?.first == nil
 
         detailsLabel.text = details
     }

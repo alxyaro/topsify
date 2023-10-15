@@ -42,12 +42,13 @@ final class PlaylistViewModel {
             loadState: loadState.eraseToAnyPublisher(),
             title: playlist.map(\.title).eraseToAnyPublisher(),
             accentColor: playlist.map(\.accentColor).eraseToAnyPublisher(),
-            bannerViewModel: playlist
-                .map { [dependencies] in
-                    ArtworkBannerViewModel(
-                        from: $0,
-                        calendar: dependencies.calendar
-                    )
+            bannerConfig: playlist
+                .map { playlist in
+                    if playlist.isOfficial, let bannerImageURL = playlist.bannerImageURL {
+                        return .prominent(.init(from: playlist, backgroundImageURL: bannerImageURL))
+                    } else {
+                        return .artwork(.init(from: playlist))
+                    }
                 }
                 .removeDuplicates()
                 .eraseToAnyPublisher(),
@@ -79,8 +80,13 @@ extension PlaylistViewModel {
         let loadState: AnyPublisher<LoadState<LoadError>, Never>
         let title: AnyPublisher<String, Never>
         let accentColor: AnyPublisher<HexColor, Never>
-        let bannerViewModel: AnyPublisher<ArtworkBannerViewModel, Never>
+        let bannerConfig: AnyPublisher<BannerConfig, Never>
         let songListViewModels: AnyPublisher<[SongListCellViewModel], Never>
+    }
+
+    enum BannerConfig: Equatable {
+        case artwork(ArtworkBannerViewModel)
+        case prominent(ProminentBannerViewModel)
     }
 
     enum LoadError: UserFacingError {
@@ -103,22 +109,43 @@ extension PlaylistViewModel {
 private extension ArtworkBannerViewModel {
 
     init(
-        from playlist: Playlist,
-        calendar: Calendar
+        from playlist: Playlist
     ) {
         accentColor = playlist.accentColor
         artworkURL = playlist.imageURL
         title = playlist.title
-        userInfo = [playlist.creator].map { UserInfo(avatarURL: $0.avatarURL, name: $0.name) }
-
-        let durationFormatter = DateComponentsFormatter()
-        durationFormatter.unitsStyle = .abbreviated
-        durationFormatter.allowedUnits = [.hour, .minute]
-        let durationStr = durationFormatter.string(from: playlist.totalDuration) ?? ""
+        userAttribution = [playlist.creator].map { BannerUserAttribution(avatarURL: $0.avatarURL, name: $0.name) }
 
         let playlistTerm = NSLocalizedString("Playlist", comment: "Content type")
-        // TODO: for *owned* playlists, add private/public playlist icons to the details string
-        details = [playlistTerm, durationStr].bulletJoined()
+        // TODO: add private/public playlist icons to the details string
+        details = [playlistTerm, playlist.totalDuration.formatted(units: [.hour, .minute])].bulletJoined()
+
+        actionBarViewModel = BannerActionBarViewModel(
+            sideButtons: [
+                .init(buttonType: .save, onTap: {}),
+                .init(buttonType: .download, onTap: {}),
+                .init(buttonType: .options, onTap: {})
+            ],
+            shuffleButtonVisibility: .shown(onTap: {})
+        )
+    }
+}
+
+private extension ProminentBannerViewModel {
+
+    init(
+        from playlist: Playlist,
+        backgroundImageURL: URL
+    ) {
+        accentColor = playlist.accentColor
+        self.backgroundImageURL = backgroundImageURL
+        title = playlist.title
+
+        details = .userAttributed(
+            description: playlist.description,
+            attribution: [playlist.creator].map { BannerUserAttribution(avatarURL: $0.avatarURL, name: $0.name) },
+            details: playlist.totalDuration.formatted(units: [.hour, .minute])
+        )
 
         actionBarViewModel = BannerActionBarViewModel(
             sideButtons: [

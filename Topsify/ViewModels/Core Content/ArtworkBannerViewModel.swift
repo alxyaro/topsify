@@ -6,7 +6,7 @@ struct ArtworkBannerViewModel: Equatable {
     let accentColor: HexColor
     let artworkURL: URL
     let title: String
-    let userInfo: [UserInfo]
+    let userAttribution: [BannerUserAttribution]
     let details: String
     let actionBarViewModel: BannerActionBarViewModel
 }

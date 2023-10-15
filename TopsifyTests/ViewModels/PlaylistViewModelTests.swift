@@ -55,7 +55,7 @@ final class PlaylistViewModelTests: XCTestCase {
         let outputs = viewModel.bind(inputs: .mock())
 
         let loadState = TestSubscriber.subscribe(to: outputs.loadState)
-        _ = TestSubscriber.subscribe(to: outputs.bannerViewModel)
+        _ = TestSubscriber.subscribe(to: outputs.bannerConfig)
 
         XCTAssertEqual(loadState.pollValues(), [.initial, .loading])
     }
@@ -110,11 +110,14 @@ final class PlaylistViewModelTests: XCTestCase {
         XCTAssertEqual(try accentColor.pollOnlyValue(), playlist.accentColor)
     }
 
-    func testOutput_bannerViewModel_derivedFromContentServiceResponse() {
+
+    func testOutput_bannerConfig_whenPlaylistIsNonOfficial_isArtworkType() {
         let playlist = Playlist.mock(
-            creator: .mock(avatarURL: .imageMock(id: "sopfity"), name: "Sopfity"),
-            title: "Hot Hits Canada",
-            totalDuration: .hours(4) + .minutes(12)
+            creator: .mock(avatarURL: .imageMock(id: "fantona"), name: "Music Reviewer"),
+            imageURL: .imageMock(id: "artwork"),
+            title: "Not Goods",
+            isOfficial: false,
+            totalDuration: .hours(64) + .minutes(23)
         )
 
         let viewModel = PlaylistViewModel(
@@ -129,17 +132,81 @@ final class PlaylistViewModelTests: XCTestCase {
 
         let outputs = viewModel.bind(inputs: .mock())
 
-        let bannerViewModel = TestSubscriber.subscribe(to: outputs.bannerViewModel)
+        let bannerConfig = TestSubscriber.subscribe(to: outputs.bannerConfig)
 
         XCTAssertEqual(
-            try bannerViewModel.pollOnlyValue(),
-            .init(
+            try bannerConfig.pollOnlyValue(),
+            .artwork(.init(
                 accentColor: playlist.accentColor,
-                artworkURL: playlist.imageURL,
-                title: playlist.title,
-                userInfo: [.init(avatarURL: .imageMock(id: "sopfity"), name: "Sopfity")],
-                details: "Playlist \u{2022} 4h 12m"
+                artworkURL: .imageMock(id: "artwork"),
+                title: "Not Goods",
+                userAttribution: [
+                    BannerUserAttribution(
+                        avatarURL: .imageMock(id: "fantona"),
+                        name: "Music Reviewer"
+                    )
+                ],
+                details: "Playlist \u{2022} 64h 23m",
+                actionBarViewModel: BannerActionBarViewModel(
+                    sideButtons: [
+                        .init(buttonType: .save, onTap: {}),
+                        .init(buttonType: .download, onTap: {}),
+                        .init(buttonType: .options, onTap: {})
+                    ],
+                    shuffleButtonVisibility: .shown(onTap: {})
+                )
+            ))
+        )
+    }
+
+    func testOutput_bannerConfig_whenPlaylistIsOfficial_isProminentType() {
+        let playlist = Playlist.mock(
+            creator: .mock(avatarURL: .imageMock(id: "sopfity"), name: "Sopfity"),
+            bannerImageURL: .imageMock(id: "banner"),
+            title: "Hot Hits Canada",
+            isOfficial: true,
+            totalDuration: .hours(1) + .minutes(23)
+        )
+
+        let viewModel = PlaylistViewModel(
+            playlistID: playlist.id,
+            dependencies: .init(
+                calendar: .testCalendar,
+                contentService: MockContentService(
+                    streamPlaylist: { _ in .just(playlist) }
+                )
             )
+        )
+
+        let outputs = viewModel.bind(inputs: .mock())
+
+        let bannerConfig = TestSubscriber.subscribe(to: outputs.bannerConfig)
+
+        XCTAssertEqual(
+            try bannerConfig.pollOnlyValue(),
+            .prominent(.init(
+                accentColor: playlist.accentColor,
+                backgroundImageURL: .imageMock(id: "banner"),
+                title: playlist.title,
+                details: .userAttributed(
+                    description: playlist.description,
+                    attribution: [
+                        BannerUserAttribution(
+                            avatarURL: .imageMock(id: "sopfity"),
+                            name: "Sopfity"
+                        )
+                    ],
+                    details: "1h 23m"
+                ),
+                actionBarViewModel: BannerActionBarViewModel(
+                    sideButtons: [
+                        .init(buttonType: .save, onTap: {}),
+                        .init(buttonType: .download, onTap: {}),
+                        .init(buttonType: .options, onTap: {})
+                    ],
+                    shuffleButtonVisibility: .shown(onTap: {})
+                )
+            ))
         )
     }
 
@@ -185,7 +252,7 @@ final class PlaylistViewModelTests: XCTestCase {
         let outputs = viewModel.bind(inputs: .mock())
 
         let loadState = TestSubscriber.subscribe(to: outputs.loadState)
-        _ = TestSubscriber.subscribe(to: outputs.bannerViewModel)
+        _ = TestSubscriber.subscribe(to: outputs.bannerConfig)
 
         XCTAssertEqual(loadState.pollValues(), [.initial, .loading, expected], line: line)
     }

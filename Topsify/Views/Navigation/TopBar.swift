@@ -140,7 +140,7 @@ final class TopBar: UIView {
                     return CGFloat.greatestFiniteMagnitude
                 }
                 let viewMidYPositionInLocalCoordinateSpace = visibilityManagingView.convert(
-                    CGPoint(x: 0, y: visibilityManagingView.frame.midY),
+                    CGPoint(x: 0, y: visibilityManagingView.bounds.midY),
                     to: self
                 ).y
                 return -(viewMidYPositionInLocalCoordinateSpace - self.frame.height)

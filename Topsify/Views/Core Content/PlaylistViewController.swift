@@ -16,7 +16,7 @@ final class PlaylistViewController: BannerCollectionViewController<PlaylistViewC
     private let viewModel: PlaylistViewModel
     private let titleSubject = CurrentValueSubject<String?, Never>(nil)
     private let accentColorSubject = CurrentValueSubject<UIColor?, Never>(nil)
-    private var bannerViewModel: ArtworkBannerViewModel?
+    private var bannerConfig: PlaylistViewModel.BannerConfig?
     private var songListViewModels = [SongListCellViewModel]()
     private var disposeBag = DisposeBag()
 
@@ -27,8 +27,8 @@ final class PlaylistViewController: BannerCollectionViewController<PlaylistViewC
         delegate = self
 
         collectionView.registerBannerViewType(ArtworkBannerView.self)
+        collectionView.registerBannerViewType(ProminentBannerView.self)
         collectionView.register(cellType: SongListCell.self)
-        collectionView.registerEmptySupplementaryView(ofKind: ArtworkBannerView.kind)
         collectionView.registerEmptyCell()
     }
 
@@ -84,14 +84,11 @@ final class PlaylistViewController: BannerCollectionViewController<PlaylistViewC
             .subscribe(accentColorSubject)
             .store(in: &disposeBag)
 
-        outputs.bannerViewModel
-            .sink { [weak self] bannerViewModel in
+        outputs.bannerConfig
+            .sink { [weak self] bannerConfig in
                 guard let self else { return }
-                self.bannerViewModel = bannerViewModel
-                if let bannerView = collectionView.bannerView(type: ArtworkBannerView.self) {
-                    configureBanner(bannerView)
-                }
-                collectionViewLayout.reloadBannerSize()
+                self.bannerConfig = bannerConfig
+                collectionViewLayout.reloadBanner()
             }
             .store(in: &disposeBag)
 
@@ -105,16 +102,6 @@ final class PlaylistViewController: BannerCollectionViewController<PlaylistViewC
                 dataSource.apply(snapshot)
             }
             .store(in: &disposeBag)
-    }
-
-    private func configureBanner(_ bannerView: ArtworkBannerView) {
-        guard let bannerViewModel else { return }
-        bannerView.configure(
-            with: bannerViewModel,
-            scrollAmountPublisher: collectionView.scrollAmountPublisher,
-            topInset: view.safeAreaInsets.top - additionalSafeAreaInsets.top,
-            playButton: playButton
-        )
     }
 }
 
@@ -131,10 +118,33 @@ extension PlaylistViewController: BannerCollectionViewControllerDelegate {
 
     func headerView(collectionView: UICollectionView, ofKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         switch kind {
-        case ArtworkBannerView.kind:
-            let view = collectionView.dequeueBannerView(for: indexPath, type: ArtworkBannerView.self)
-            configureBanner(view)
-            return view
+        case BannerView.kind:
+            guard let bannerConfig else {
+                return collectionView.dequeueEmptySupplementaryView(ofKind: kind, for: indexPath)
+            }
+
+            let topSafeAreaInsetWithoutTopBar = view.safeAreaInsets.top - additionalSafeAreaInsets.top
+
+            switch bannerConfig {
+            case .artwork(let artworkBannerViewModel):
+                let banner = collectionView.dequeueBannerView(for: indexPath, type: ArtworkBannerView.self)
+                banner.configure(
+                    with: artworkBannerViewModel,
+                    scrollAmountPublisher: collectionView.scrollAmountPublisher,
+                    topInset: topSafeAreaInsetWithoutTopBar,
+                    playButton: playButton
+                )
+                return banner
+            case .prominent(let prominentBannerViewModel):
+                let banner = collectionView.dequeueBannerView(for: indexPath, type: ProminentBannerView.self)
+                banner.configure(
+                    with: prominentBannerViewModel,
+                    scrollAmountPublisher: collectionView.scrollAmountPublisher,
+                    topInset: topSafeAreaInsetWithoutTopBar,
+                    playButton: playButton
+                )
+                return banner
+            }
         default:
             return collectionView.dequeueEmptySupplementaryView(ofKind: kind, for: indexPath)
         }
@@ -170,6 +180,6 @@ extension PlaylistViewController: TopBarConfiguring {
     }
 
     var topBarVisibility: TopBarVisibility {
-        .controlledByBannerInCollectionView(collectionView, bannerType: ArtworkBannerView.self)
+        .controlledByBanner(in: collectionView)
     }
 }

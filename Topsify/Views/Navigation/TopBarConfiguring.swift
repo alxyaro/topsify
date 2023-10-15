@@ -20,20 +20,18 @@ enum TopBarVisibility {
 
     /// A convinence creator of `controlledByView` for bannered collection view VCs.
     /// The banner of the collection view will provide the subview that controls the top bar visibility.
-    static func controlledByBannerInCollectionView<BV: BannerView & TopBarVisibilityControllingViewProviding>(
-        _ collectionView: LayoutCallbackCollectionView,
-        bannerType: BV.Type
-    ) -> Self {
+    /// The banner view type must conform to `TopBarVisibilityControllingViewProviding` for this to work.
+    static func controlledByBanner(in collectionView: LayoutCallbackCollectionView) -> Self {
         let viewPublisher = collectionView.didLayoutSubviewsPublisher
             .map { () -> UIView? in
-                guard let banner = collectionView.bannerView(type: bannerType) else { return nil }
+                guard let banner = collectionView.bannerView() else { return nil }
 
                 /// The view returned should always have an accurate frame (have been laid out before).
                 /// UIKit doesn't seem to layout supplementary views as part of the UICollectionView's `layoutSubviews`
                 /// invocation (despite setting the view's frame), so we perform a manual layout here if necessary.
                 banner.layoutIfNeeded()
 
-                return banner.topBarVisibilityControllingView
+                return (banner as? TopBarVisibilityControllingViewProviding)?.topBarVisibilityControllingView
             }
             .eraseToAnyPublisher()
         return .controlledByView(viewPublisher)

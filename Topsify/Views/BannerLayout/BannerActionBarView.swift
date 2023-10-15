@@ -24,7 +24,6 @@ final class BannerActionBarView: UIView {
         return view
     }()
 
-    private var playButtonConstraint: NSLayoutConstraint?
     private var disposeBag = DisposeBag()
 
     init() {
@@ -53,7 +52,6 @@ final class BannerActionBarView: UIView {
         with viewModel: BannerActionBarViewModel,
         playButton: PlayButton?
     ) {
-        playButtonConstraint?.isActive = false
         disposeBag = DisposeBag()
 
         sideButtonsStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
@@ -72,7 +70,7 @@ final class BannerActionBarView: UIView {
 
         if let playButton {
             playButtonPlaceholderView.isHidden = false
-            playButtonConstraint = playButton.centerYAnchor.constraint(greaterThanOrEqualTo: playButtonPlaceholderView.centerYAnchor).isActive(true)
+            playButton.constrainVertically(with: playButtonPlaceholderView.centerYAnchor)
         } else {
             playButtonPlaceholderView.isHidden = true
         }

@@ -148,8 +148,21 @@ final class AlbumViewModelTests: XCTestCase {
                 accentColor: album.accentColor,
                 artworkURL: album.imageURL,
                 title: album.title,
-                userInfo: [.init(avatarURL: .imageMock(id: "pnb"), name: "PnB Rock")],
-                details: "Album \u{2022} 2023"
+                userAttribution: album.artists.map {
+                    BannerUserAttribution(
+                        avatarURL: $0.avatarURL,
+                        name: $0.name
+                    )
+                },
+                details: "Album \u{2022} 2023",
+                actionBarViewModel: BannerActionBarViewModel(
+                    sideButtons: [
+                        .init(buttonType: .save, onTap: {}),
+                        .init(buttonType: .download, onTap: {}),
+                        .init(buttonType: .options, onTap: {})
+                    ],
+                    shuffleButtonVisibility: .shown(onTap: {})
+                )
             )
         )
     }

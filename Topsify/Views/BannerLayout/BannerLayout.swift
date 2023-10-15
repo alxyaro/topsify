@@ -4,6 +4,13 @@ import UIKit
 
 final class BannerLayout: UICollectionViewCompositionalLayout {
     private var bannerHeight: CGFloat = 0
+    private var hideBanner = false
+
+    private let bannerInvalidationContext: UICollectionViewLayoutInvalidationContext = {
+        let context = UICollectionViewLayoutInvalidationContext()
+        context.invalidateSupplementaryElements(ofKind: BannerView.kind, at: [BannerView.indexPath])
+        return context
+    }()
 
     convenience override init(
         section: NSCollectionLayoutSection,
@@ -38,6 +45,15 @@ final class BannerLayout: UICollectionViewCompositionalLayout {
         fatalError("init(coder:) has not been implemented")
     }
 
+    func reloadBanner() {
+        /// By removing and then re-added the banner attributes, the collection view will ask its data source for a new banner view to be provided.
+        for hideBanner in [true, false] {
+            self.hideBanner = hideBanner
+            invalidateLayout(with: bannerInvalidationContext)
+            collectionView?.layoutIfNeeded()
+        }
+    }
+
     func reloadBannerSize() {
 
         /// This is a necessary step, leveraging the quirk noted in the observation comment below.
@@ -50,9 +66,7 @@ final class BannerLayout: UICollectionViewCompositionalLayout {
         ///
         bannerHeight = 0
 
-        let context = UICollectionViewLayoutInvalidationContext()
-        context.invalidateSupplementaryElements(ofKind: BannerView.kind, at: [BannerView.indexPath])
-        invalidateLayout(with: context)
+        invalidateLayout(with: bannerInvalidationContext)
         collectionView?.layoutIfNeeded()
     }
 
@@ -91,8 +105,10 @@ final class BannerLayout: UICollectionViewCompositionalLayout {
     }
 
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        let attributes = super.layoutAttributesForElements(in: rect)
-        if let bannerAttributes = attributes?.first(where: { $0.areForBanner }) {
+        var attributes = super.layoutAttributesForElements(in: rect)
+        if hideBanner {
+            attributes = attributes?.filter { !$0.areForBanner }
+        } else if let bannerAttributes = attributes?.first(where: { $0.areForBanner }) {
             adjustBannerAttributes(bannerAttributes)
         }
         return attributes
@@ -101,6 +117,7 @@ final class BannerLayout: UICollectionViewCompositionalLayout {
     override func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         let attributes = super.layoutAttributesForSupplementaryView(ofKind: elementKind, at: indexPath)
         if let attributes, attributes.areForBanner {
+            if hideBanner { return nil }
             adjustBannerAttributes(attributes)
         }
         return attributes

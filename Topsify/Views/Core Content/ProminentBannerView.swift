@@ -20,7 +20,7 @@ final class ProminentBannerView: BannerView {
         backgroundImageView.constrainEdgesToSuperview(excluding: .bottom)
         backgroundImageView.widthAnchor.constraint(equalTo: backgroundImageView.heightAnchor).priority(.justLessThanRequired).isActive = true
         backgroundImageView.heightAnchor.constraint(greaterThanOrEqualTo: view.heightAnchor).isActive = true
-        
+
         return view
     }()
 
@@ -80,19 +80,13 @@ final class ProminentBannerView: BannerView {
         updateScrollBasedViews()
     }
 
-    override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
-        let result = super.preferredLayoutAttributesFitting(layoutAttributes)
-        print("preferredLayoutAttributesFitting \(result.frame.height)")
-        return result
-    }
-
     @available(*, unavailable)
     override func configure(gradientColor: UIColor, scrollAmountPublisher: AnyPublisher<CGFloat, Never>) {}
 
     func configure(
         with viewModel: ProminentBannerViewModel,
-        topInset: CGFloat,
         scrollAmountPublisher: AnyPublisher<CGFloat, Never>,
+        topInset: CGFloat,
         playButton: PlayButton
     ) {
         disposeBag = DisposeBag()
@@ -112,10 +106,10 @@ final class ProminentBannerView: BannerView {
         switch viewModel.details {
         case let .simple(details):
             detailsView.configure(details: details)
-        case let .userAttributed(description, userInfo, details):
+        case let .userAttributed(description, userAttribution, details):
             detailsView.configure(
                 description: description,
-                artistInfo: userInfo.map { .init(avatarURL: $0.avatarURL, name: $0.name) },
+                userAttribution: userAttribution,
                 details: details
             )
         }

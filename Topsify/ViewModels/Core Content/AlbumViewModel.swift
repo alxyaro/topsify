@@ -108,7 +108,7 @@ private extension ArtworkBannerViewModel {
         accentColor = album.accentColor
         artworkURL = album.imageURL
         title = album.title
-        userInfo = album.artists.map { UserInfo(avatarURL: $0.avatarURL, name: $0.name) }
+        userAttribution = album.artists.map { BannerUserAttribution(avatarURL: $0.avatarURL, name: $0.name) }
 
         let releaseYear = String(calendar.component(.year, from: album.releaseDate))
         details = [album.type.displayName, releaseYear].bulletJoined()

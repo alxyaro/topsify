@@ -74,7 +74,7 @@ final class ArtworkBannerView: BannerView {
 
         detailsView.configure(
             title: viewModel.title,
-            artistInfo: viewModel.userInfo.map { .init(avatarURL: $0.avatarURL, name: $0.name) },
+            userAttribution: viewModel.userAttribution,
             details: viewModel.details
         )
         actionBarView.configure(with: viewModel.actionBarViewModel, playButton: playButton)
