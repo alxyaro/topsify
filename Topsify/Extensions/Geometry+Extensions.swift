@@ -37,4 +37,11 @@ extension CGSize {
     static func uniform(_ size: CGFloat) -> Self {
         .init(width: size, height: size)
     }
+
+    func expanded(byWidth width: CGFloat, height: CGFloat) -> CGSize {
+        var size = self
+        size.width += width
+        size.height += height
+        return size
+    }
 }

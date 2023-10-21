@@ -20,7 +20,8 @@ final class TopBar: UIView {
     }()
 
     private let backButton: AppIconButton = {
-        let button = AppIconButton(icon: "Icons/chevronLeft", scale: 0.8, expandedTouchBoundary: .init(uniform: 12))
+        let button = AppIconButton(icon: "Icons/chevronLeft", expandedTouchBoundary: .init(uniform: 12))
+        button.iconScale = 0.8
         button.isHidden = true
         return button
     }()

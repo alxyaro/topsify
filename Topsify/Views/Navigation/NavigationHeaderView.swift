@@ -7,7 +7,8 @@ final class NavigationHeaderView: UIView {
     private static let height: CGFloat = 64
 
     private let backButton: AppIconButton = {
-        let button = AppIconButton(icon: "Icons/chevronLeft", scale: 1.4, expandedTouchBoundary: .init(uniform: 12))
+        let button = AppIconButton(icon: "Icons/chevronLeft", expandedTouchBoundary: .init(uniform: 12))
+        button.iconScale = 1.4
         button.isHidden = true
         return button
     }()

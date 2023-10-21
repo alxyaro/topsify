@@ -13,7 +13,8 @@ final class BannerActionBarView: UIView {
     }()
 
     private let shuffleButton: AppIconButton = {
-        let button = AppIconButton(icon: "Icons/shuffle", scale: 1.2)
+        let button = AppIconButton(icon: "Icons/shuffle")
+        button.iconScale = 1.2
         button.tintColor = .secondaryIcon
         return button
     }()

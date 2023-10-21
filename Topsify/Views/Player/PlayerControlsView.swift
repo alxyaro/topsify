@@ -60,6 +60,8 @@ final class PlayerControlsView: UIView {
     }
 
     private static func createButton(icon: String, scale: CGFloat) -> AppIconButton {
-        AppIconButton(icon: icon, scale: scale, expandedTouchBoundary: .init(uniform: 12))
+        let button = AppIconButton(icon: icon, expandedTouchBoundary: .init(uniform: 12))
+        button.iconScale = scale
+        return button
     }
 }

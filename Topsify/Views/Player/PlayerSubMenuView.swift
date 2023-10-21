@@ -30,6 +30,8 @@ final class PlayerSubMenuView: UIView {
     }
 
     private static func createButton(icon: String, scale: CGFloat = 1) -> AppButton {
-        AppIconButton(icon: icon, scale: scale)
+        let button = AppIconButton(icon: icon)
+        button.iconScale = scale
+        return button
     }
 }

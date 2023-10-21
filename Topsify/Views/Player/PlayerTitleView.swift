@@ -24,7 +24,8 @@ final class PlayerTitleView: UIView {
     private lazy var marqueeArtistsLabel = MarqueeView(artistsLabel)
 
     private let saveButton: AppIconButton = {
-        let button = AppIconButton(icon: "Icons/save", scale: 1.2, expandedTouchBoundary: .init(uniform: 12))
+        let button = AppIconButton(icon: "Icons/save", expandedTouchBoundary: .init(uniform: 12))
+        button.iconScale = 1.2
         button.setContentHuggingPriority(.required, for: .horizontal)
         button.setContentCompressionResistancePriority(.required, for: .horizontal)
         return button

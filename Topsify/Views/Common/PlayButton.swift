@@ -11,7 +11,10 @@ final class PlayButton: AppIconButton {
     private var verticalConstraint: NSLayoutConstraint?
 
     init() {
-        super.init(icon: Self.playIcon, size: .uniform(Self.size))
+        super.init(icon: Self.playIcon)
+
+        constrainDimensions(uniform: Self.size)
+
         tintColor = .appBackground
         contentView.backgroundColor = .accent
         contentView.layer.cornerRadius = Self.size / 2

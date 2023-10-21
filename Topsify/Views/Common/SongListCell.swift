@@ -20,7 +20,8 @@ final class SongListCell: UICollectionViewListCell, Reusable {
     private let thumbnailView = ThumbnailView()
 
     private let optionsButton: AppIconButton = {
-        let button = AppIconButton(icon: "Icons/options", scale: 0.9)
+        let button = AppIconButton(icon: "Icons/options")
+        button.iconScale = 0.9
         button.tintColor = .appTextSecondary
         button.constrainHeight(to: 30)
         return button
