@@ -58,7 +58,7 @@ final class BottomAreaViewController: UITabBarController {
         tabBar.isHidden = true
 
         setUpViews()
-        setUpPlayBarPanGestureRecognizers()
+        setUpPlayBarGestureRecognizers()
     }
 
     override func viewDidLayoutSubviews() {
@@ -107,7 +107,7 @@ final class BottomAreaViewController: UITabBarController {
         playBarView.bottomAnchor.constraint(equalTo: customTabBar.topAnchor, constant: -6).isActive = true
     }
 
-    private func setUpPlayBarPanGestureRecognizers() {
+    private func setUpPlayBarGestureRecognizers() {
         playBarView.addGestureRecognizer(playBarPanGestureRecognizer)
         playerTransitionHandler = TransitionPanGestureHandler(
             gestureRecognizer: playBarPanGestureRecognizer,
@@ -130,7 +130,7 @@ final class BottomAreaViewController: UITabBarController {
     }
 
     private func updateSafeAreaInset(of viewController: UIViewController) {
-        viewController.additionalSafeAreaInsets.bottom = customTabBar.bounds.height + 16
+        viewController.additionalSafeAreaInsets.bottom = (view.frame.height - playBarView.frame.minY) - view.safeAreaInsets.bottom + 16
     }
 }
 
