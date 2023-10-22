@@ -20,8 +20,14 @@ final class TopBar: UIView {
     }()
 
     private let backButton: AppIconButton = {
-        let button = AppIconButton(icon: "Icons/chevronLeft", expandedTouchBoundary: .init(uniform: 12))
+        let button = AppIconButton(icon: "Icons/chevronLeft")
         button.iconScale = 0.8
+        button.iconVerticalPadding = 8
+        button.iconHorizontalPadding = 8
+        button.iconPosition.x = 0.45
+        button.hasRoundedCorners = true
+        button.widthAnchor.constraint(greaterThanOrEqualTo: button.heightAnchor).isActive = true
+        button.setContentHuggingPriority(.defaultLow - 1, for: .horizontal)
         button.isHidden = true
         return button
     }()
@@ -42,9 +48,11 @@ final class TopBar: UIView {
     }()
 
     private let playButton: PlayButton?
+
+    private var backButtonLeadingConstraint: NSLayoutConstraint?
     private var playButtonConstrainsApplied = false
     private var visibilityOffsetCancellable: AnyCancellable?
-    private let viewSizeDeterminedSubject = PassthroughSubject<Void, Never>()
+    private let didLayoutSubviewsSubject = PassthroughSubject<Void, Never>()
     private var disposeBag = DisposeBag()
 
     init(
@@ -58,7 +66,7 @@ final class TopBar: UIView {
         setUpLayout()
         setUpBackButton(visibility: backButtonVisibility)
         bindState(configurator: configurator)
-        setUpVisibilityReactivity(visibility: configurator.topBarVisibility)
+        setUpDynamicPropertyUpdates(configurator: configurator)
     }
 
     required init?(coder: NSCoder) {
@@ -79,7 +87,7 @@ final class TopBar: UIView {
     override func layoutSubviews() {
         contentView.directionalLayoutMargins.bottom = safeAreaInsets.top > 0 ? 6 : 0
         super.layoutSubviews()
-        viewSizeDeterminedSubject.send()
+        didLayoutSubviewsSubject.send()
     }
 
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
@@ -104,7 +112,7 @@ final class TopBar: UIView {
 
         contentView.addSubview(backButton)
         backButton.useAutoLayout()
-        backButton.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor).isActive = true
+        backButtonLeadingConstraint = backButton.iconLayoutGuide.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor).isActive(true)
         backButton.centerYAnchor.constraint(equalTo: contentView.layoutMarginsGuide.centerYAnchor).isActive = true
 
         contentView.addSubview(titleLabel)
@@ -131,35 +139,75 @@ final class TopBar: UIView {
             .store(in: &disposeBag)
     }
 
-    private func setUpVisibilityReactivity(visibility: TopBarVisibility) {
-        visibility.viewPublisher
-            .prepend(nil)
-            .combineLatest(viewSizeDeterminedSubject)
-            .map(\.0)
-            .map { [weak self] visibilityManagingView in
-                guard let self, let visibilityManagingView else {
-                    return CGFloat.greatestFiniteMagnitude
-                }
-                let viewMidYPositionInLocalCoordinateSpace = visibilityManagingView.convert(
-                    CGPoint(x: 0, y: visibilityManagingView.bounds.midY),
-                    to: self
-                ).y
-                return -(viewMidYPositionInLocalCoordinateSpace - self.frame.height)
+    private func setUpDynamicPropertyUpdates(configurator: TopBarConfiguring) {
+        var lastButtonStyle: TopBarButtonStyle?
+
+        Publishers.CombineLatest(
+            configurator.topBarVisibility.viewPublisher.prepend(nil),
+            didLayoutSubviewsSubject
+        )
+        .map(\.0)
+        .map { [weak self] visibilityManagingView in
+            guard let self, let visibilityManagingView else {
+                return CGFloat.greatestFiniteMagnitude
             }
-            .removeDuplicates()
-            .sink { [weak self] visibilityValue in
+            let viewMidYPositionInLocalCoordinateSpace = visibilityManagingView.convert(
+                CGPoint(x: 0, y: visibilityManagingView.bounds.midY),
+                to: self
+            ).y
+            return -(viewMidYPositionInLocalCoordinateSpace - self.frame.height)
+        }
+        .removeDuplicates()
+        .sink { [weak self, weak configurator] visibilityValue in
+            guard let self else { return }
+
+            let backgroundOpacity = visibilityValue.pctInRange(-50...0)
+            backgroundView.alpha = backgroundOpacity
+
+            let titleOpacity = visibilityValue.pctInRange(0...80)
+            titleLabel.alpha = titleOpacity
+
+            let titleOffset = 1 - Self.easeOutQuad(x: titleOpacity)
+            titleLabel.transform = .init(translationX: 0, y: titleOffset * Self.safeAreaHeight / 4)
+
+            let buttonStyle = configurator?.topBarButtonStyle
+            if lastButtonStyle != buttonStyle {
+                UIView.animate(withDuration: 0.2) { [weak self] in
+                    self?.updateButtons(visibilityValue: visibilityValue, style: buttonStyle)
+                    self?.contentView.layoutIfNeeded()
+                }
+            } else {
+                updateButtons(visibilityValue: visibilityValue, style: buttonStyle)
+            }
+            lastButtonStyle = buttonStyle
+        }
+        .store(in: &disposeBag)
+
+        configurator.topBarScrollAmountPublisher
+            .sink { [weak self, weak configurator] scrollAmount in
                 guard let self else { return }
 
-                let backgroundOpacity = visibilityValue.pctInRange(-50...0)
-                backgroundView.alpha = backgroundOpacity
-
-                let titleOpacity = visibilityValue.pctInRange(0...80)
-                titleLabel.alpha = titleOpacity
-
-                let titleOffset = 1 - Self.easeOutQuad(x: titleOpacity)
-                titleLabel.transform = .init(translationX: 0, y: titleOffset * Self.safeAreaHeight / 4)
+                switch configurator?.topBarButtonStyle {
+                case .none:
+                    backButton.alpha = 1
+                case .prominent:
+                    let backButtonOpacity = scrollAmount.pctInRange(-150 ... -100)
+                    backButton.alpha = backButtonOpacity
+                }
             }
             .store(in: &disposeBag)
+    }
+
+    private func updateButtons(visibilityValue: CGFloat, style: TopBarButtonStyle?) {
+        switch style {
+        case .none:
+            backButtonLeadingConstraint?.constant = 0
+            backButton.contentView.backgroundColor = .clear
+        case .prominent:
+            let backButtonBackgroundStylePct = (1 - visibilityValue.pctInRange(-100 ... -50))
+            backButtonLeadingConstraint?.constant = backButton.iconFrame.minX * backButtonBackgroundStylePct
+            backButton.contentView.backgroundColor = .black.withAlphaComponent(0.3 * backButtonBackgroundStylePct)
+        }
     }
 
     private static func easeOutQuad(x: CGFloat) -> CGFloat {

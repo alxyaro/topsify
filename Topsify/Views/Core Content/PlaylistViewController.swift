@@ -182,4 +182,17 @@ extension PlaylistViewController: TopBarConfiguring {
     var topBarVisibility: TopBarVisibility {
         .controlledByBanner(in: collectionView)
     }
+
+    var topBarButtonStyle: TopBarButtonStyle? {
+        switch bannerConfig {
+        case .prominent:
+            return .prominent
+        case .artwork, .none:
+            return nil
+        }
+    }
+
+    var topBarScrollAmountPublisher: AnyPublisher<CGFloat, Never> {
+        collectionView.scrollAmountPublisher
+    }
 }

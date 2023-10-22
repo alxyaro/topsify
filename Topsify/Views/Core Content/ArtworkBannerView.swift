@@ -47,7 +47,7 @@ final class ArtworkBannerView: BannerView {
         detailsView.topAnchor.constraint(equalTo: artworkPlaceholderView.bottomAnchor, constant: 16).isActive = true
 
         addSubview(actionBarView)
-        actionBarView.constrainEdges(to: layoutMarginsGuide, excluding: .top)
+        actionBarView.constrainEdges(to: layoutMarginsGuide, excluding: .top, withPriorities: .forCellSizing)
         actionBarView.topAnchor.constraint(equalTo: detailsView.bottomAnchor).isActive = true
     }
 

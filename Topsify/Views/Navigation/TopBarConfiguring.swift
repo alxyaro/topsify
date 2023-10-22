@@ -3,11 +3,18 @@
 import Combine
 import UIKit
 
-protocol TopBarConfiguring {
+protocol TopBarConfiguring: AnyObject {
     var topBarTitlePublisher: AnyPublisher<String?, Never> { get }
     var topBarAccentColorPublisher: AnyPublisher<UIColor?, Never> { get }
     var topBarPlayButton: PlayButton? { get }
     var topBarVisibility: TopBarVisibility { get }
+    var topBarButtonStyle: TopBarButtonStyle? { get }
+    var topBarScrollAmountPublisher: AnyPublisher<CGFloat, Never> { get }
+}
+
+enum TopBarButtonStyle {
+    /// When the bar is transparent, the buttons get a translucent background to give them more contrast.
+    case prominent
 }
 
 enum TopBarVisibility {

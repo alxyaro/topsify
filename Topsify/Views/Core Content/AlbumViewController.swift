@@ -178,4 +178,12 @@ extension AlbumViewController: TopBarConfiguring {
     var topBarVisibility: TopBarVisibility {
         .controlledByBanner(in: collectionView)
     }
+
+    var topBarButtonStyle: TopBarButtonStyle? {
+        nil
+    }
+
+    var topBarScrollAmountPublisher: AnyPublisher<CGFloat, Never> {
+        collectionView.scrollAmountPublisher
+    }
 }

@@ -64,6 +64,7 @@ class AppButton: UIControl {
     }
 
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        guard isUserInteractionEnabled, alpha >= 0.01 else { return nil }
         if self.point(inside: point, with: event) {
             return self
         }
