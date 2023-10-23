@@ -148,6 +148,7 @@ final class AlbumViewModelTests: XCTestCase {
                 accentColor: album.accentColor,
                 artworkURL: album.imageURL,
                 title: album.title,
+                description: nil,
                 userAttribution: album.artists.map {
                     BannerUserAttribution(
                         avatarURL: $0.avatarURL,

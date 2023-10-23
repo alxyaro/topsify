@@ -113,7 +113,8 @@ private extension ArtworkBannerViewModel {
     ) {
         accentColor = playlist.accentColor
         artworkURL = playlist.imageURL
-        title = playlist.title
+        title = !playlist.isCoverSelfDescriptive ? playlist.title : nil
+        description = playlist.description
         userAttribution = [playlist.creator].map { BannerUserAttribution(avatarURL: $0.avatarURL, name: $0.name) }
 
         let playlistTerm = NSLocalizedString("Playlist", comment: "Content type")

@@ -116,6 +116,7 @@ final class PlaylistViewModelTests: XCTestCase {
             creator: .mock(avatarURL: .imageMock(id: "fantona"), name: "Music Reviewer"),
             imageURL: .imageMock(id: "artwork"),
             title: "Not Goods",
+            description: "Just the opinion of some guy.",
             isOfficial: false,
             totalDuration: .hours(64) + .minutes(23)
         )
@@ -140,6 +141,7 @@ final class PlaylistViewModelTests: XCTestCase {
                 accentColor: playlist.accentColor,
                 artworkURL: .imageMock(id: "artwork"),
                 title: "Not Goods",
+                description: "Just the opinion of some guy.",
                 userAttribution: [
                     BannerUserAttribution(
                         avatarURL: .imageMock(id: "fantona"),
