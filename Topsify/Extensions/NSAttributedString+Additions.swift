@@ -4,13 +4,14 @@ import UIKit
 
 extension NSAttributedString {
 
-    convenience init(
-        text: String,
+    convenience init?(
+        text: String?,
         font: UIFont,
         kerning: CGFloat = 0,
         lineHeight: CGFloat = 0,
         lineBreakMode: NSLineBreakMode = .byTruncatingTail
     ) {
+        guard let text else { return nil }
         let attrStr = NSMutableAttributedString(string: text)
         attrStr.font(font)
         if kerning != 0 {

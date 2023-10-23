@@ -7,7 +7,6 @@ final class BannerDetailsView: UIView {
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = .appTextPrimary
-        label.font = .appFont(ofSize: 24, weight: .bold)
         label.numberOfLines = 1
         return label
     }()
@@ -75,7 +74,7 @@ final class BannerDetailsView: UIView {
         userAttribution: [BannerUserAttribution]? = nil,
         details: String
     ) {
-        titleLabel.text = title
+        titleLabel.attributedText = NSAttributedString(text: title, font: .appFont(ofSize: 24, weight: .bold), kerning: -1)
         titleLabel.isHidden = title == nil
 
         descriptionLabel.text = description
