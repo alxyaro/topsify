@@ -195,14 +195,13 @@
 		6BF3DD162A5C9E3300E5F2D0 /* QueueViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF3DD152A5C9E3300E5F2D0 /* QueueViewController.swift */; };
 		6BF3DD182A5E30EC00E5F2D0 /* QueueListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF3DD172A5E30EC00E5F2D0 /* QueueListView.swift */; };
 		6BF3DD1A2A5E357500E5F2D0 /* SongListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF3DD192A5E357500E5F2D0 /* SongListCell.swift */; };
-		6BF3DD1C2A5E380800E5F2D0 /* SongListCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF3DD1B2A5E380800E5F2D0 /* SongListCellViewModel.swift */; };
+		6BF3DD1C2A5E380800E5F2D0 /* SongViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF3DD1B2A5E380800E5F2D0 /* SongViewModel.swift */; };
 		6BF3DD1E2A5F407C00E5F2D0 /* ExplicitLabelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF3DD1D2A5F407C00E5F2D0 /* ExplicitLabelView.swift */; };
 		6BF3DD212A6034B500E5F2D0 /* QueueListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF3DD202A6034B500E5F2D0 /* QueueListViewModel.swift */; };
 		6BF3DD232A60671400E5F2D0 /* QueueListHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF3DD222A60671400E5F2D0 /* QueueListHeaderView.swift */; };
 		6BF3DD252A608B7E00E5F2D0 /* InverseMaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF3DD242A608B7E00E5F2D0 /* InverseMaskView.swift */; };
 		6BF3DD272A62FA4F00E5F2D0 /* QueueListViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF3DD262A62FA4F00E5F2D0 /* QueueListViewModelTests.swift */; };
 		6BF3DD292A6324B600E5F2D0 /* QueueListLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF3DD282A6324B600E5F2D0 /* QueueListLayout.swift */; };
-		6BF3DD2E2A686BE600E5F2D0 /* SongListCellViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF3DD2D2A686BE600E5F2D0 /* SongListCellViewModelTests.swift */; };
 		6BF64F0529C65534003C04CA /* Combine+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF64F0429C65534003C04CA /* Combine+Additions.swift */; };
 		6BF64F0729C6661B003C04CA /* TestPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF64F0629C6661B003C04CA /* TestPublisher.swift */; };
 		6BF9690229D726A300EA8B6F /* AppCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BF9690129D726A300EA8B6F /* AppCollectionView.swift */; };
@@ -440,14 +439,13 @@
 		6BF3DD152A5C9E3300E5F2D0 /* QueueViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueViewController.swift; sourceTree = "<group>"; };
 		6BF3DD172A5E30EC00E5F2D0 /* QueueListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueListView.swift; sourceTree = "<group>"; };
 		6BF3DD192A5E357500E5F2D0 /* SongListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongListCell.swift; sourceTree = "<group>"; };
-		6BF3DD1B2A5E380800E5F2D0 /* SongListCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongListCellViewModel.swift; sourceTree = "<group>"; };
+		6BF3DD1B2A5E380800E5F2D0 /* SongViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongViewModel.swift; sourceTree = "<group>"; };
 		6BF3DD1D2A5F407C00E5F2D0 /* ExplicitLabelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplicitLabelView.swift; sourceTree = "<group>"; };
 		6BF3DD202A6034B500E5F2D0 /* QueueListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueListViewModel.swift; sourceTree = "<group>"; };
 		6BF3DD222A60671400E5F2D0 /* QueueListHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueListHeaderView.swift; sourceTree = "<group>"; };
 		6BF3DD242A608B7E00E5F2D0 /* InverseMaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InverseMaskView.swift; sourceTree = "<group>"; };
 		6BF3DD262A62FA4F00E5F2D0 /* QueueListViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueListViewModelTests.swift; sourceTree = "<group>"; };
 		6BF3DD282A6324B600E5F2D0 /* QueueListLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueListLayout.swift; sourceTree = "<group>"; };
-		6BF3DD2D2A686BE600E5F2D0 /* SongListCellViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongListCellViewModelTests.swift; sourceTree = "<group>"; };
 		6BF64F0429C65534003C04CA /* Combine+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Combine+Additions.swift"; sourceTree = "<group>"; };
 		6BF64F0629C6661B003C04CA /* TestPublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPublisher.swift; sourceTree = "<group>"; };
 		6BF9690129D726A300EA8B6F /* AppCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCollectionView.swift; sourceTree = "<group>"; };
@@ -536,7 +534,7 @@
 			isa = PBXGroup;
 			children = (
 				6B0C39D128209CCE00B59313 /* ContentTileViewModel.swift */,
-				6BF3DD1B2A5E380800E5F2D0 /* SongListCellViewModel.swift */,
+				6BF3DD1B2A5E380800E5F2D0 /* SongViewModel.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -916,7 +914,6 @@
 				6B4854F22A54BCA900B52E25 /* PlayerViewModelTests.swift */,
 				6BF3DD0D2A58CD5700E5F2D0 /* PlayerTopBarViewModelTests.swift */,
 				6BF3DD262A62FA4F00E5F2D0 /* QueueListViewModelTests.swift */,
-				6BF3DD2D2A686BE600E5F2D0 /* SongListCellViewModelTests.swift */,
 				6B8805842A7038AF000C2B00 /* QueueSelectionMenuViewModelTests.swift */,
 				6B8805862A715CA4000C2B00 /* QueueViewModelTests.swift */,
 				6B9B46FB2A9571DA002042F6 /* AlbumViewModelTests.swift */,
@@ -1181,7 +1178,7 @@
 				6B9A536629B2BB47001D4C2A /* NSDirectionalEdgeInsets+Additions.swift in Sources */,
 				6B8D10122A83192300457DCF /* UIView+Extensions.swift in Sources */,
 				6B9B44C529CF745100F6BA94 /* PlayerControlsView.swift in Sources */,
-				6BF3DD1C2A5E380800E5F2D0 /* SongListCellViewModel.swift in Sources */,
+				6BF3DD1C2A5E380800E5F2D0 /* SongViewModel.swift in Sources */,
 				6BF3DD182A5E30EC00E5F2D0 /* QueueListView.swift in Sources */,
 				6BDE702F2A6B1FFE00ACDD86 /* QueueSelectionMenuView.swift in Sources */,
 				6B8D0FF52A80A05000457DCF /* Arithmetic+Extensions.swift in Sources */,
@@ -1339,7 +1336,6 @@
 				6B9B46FC2A9571DA002042F6 /* AlbumViewModelTests.swift in Sources */,
 				6BDC889329F1CE19003B7290 /* MockPlaybackQueue.swift in Sources */,
 				6B0D782827F0E4BE001BA64E /* TopsifyTests.swift in Sources */,
-				6BF3DD2E2A686BE600E5F2D0 /* SongListCellViewModelTests.swift in Sources */,
 				6BBF4FD429F4512500CBA32D /* PlaybackQueueIndexTests.swift in Sources */,
 				6B4F864E29F5AEA5004625B8 /* PlayerControlsViewModelTests.swift in Sources */,
 				6B21E39229E3A5E000BE2B99 /* Playlist+Mock.swift in Sources */,

@@ -55,7 +55,7 @@ final class QueueListView: UIView {
                 return collectionView.dequeueEmptyCell(for: indexPath)
             }
 
-            var viewModel: SongListCellViewModel?
+            var viewModel: SongViewModel?
             switch Section.from(indexPath: indexPath) {
             case .nowPlaying:
                 viewModel = content.nowPlaying?.viewModel
@@ -117,7 +117,6 @@ final class QueueListView: UIView {
     private let movedItemSubject = PassthroughSubject<QueueListViewModel.ItemMovement, Never>()
     private let selectionChangedSubject = PassthroughSubject<Void, Never>()
     private let tappedItemSubject = PassthroughSubject<QueueListViewModel.ItemIndex, Never>()
-    private let tappedOptionsButtonAtSubject = PassthroughSubject<QueueListViewModel.ItemIndex, Never>()
     private var disposeBag = DisposeBag()
 
     init(viewModel: QueueListViewModel) {
@@ -154,8 +153,7 @@ final class QueueListView: UIView {
                     self?.collectionView.indexPathsForSelectedItems?.compactMap(Self.vmIndex(for:)) ?? []
                 }
                 .eraseToAnyPublisher(),
-            tappedItem: tappedItemSubject.eraseToAnyPublisher(),
-            tappedOptionsButtonAt: tappedOptionsButtonAtSubject.eraseToAnyPublisher()
+            tappedItem: tappedItemSubject.eraseToAnyPublisher()
         ))
 
         outputs.content
@@ -293,14 +291,6 @@ extension QueueListView: SongListCellDelegate {
             let index = Self.vmIndex(for: indexPath)
         else { return }
         tappedItemSubject.send(index)
-    }
-
-    func songListCellOptionsButtonTapped(_ cell: SongListCell) {
-        guard
-            let indexPath = collectionView.indexPath(for: cell),
-            let index = Self.vmIndex(for: indexPath)
-        else { return }
-        tappedOptionsButtonAtSubject.send(index)
     }
 }
 

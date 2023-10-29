@@ -209,14 +209,12 @@ extension QueueListViewModel.Inputs {
     static func mock(
         movedItem: AnyPublisher<QueueListViewModel.ItemMovement, Never> = .never(),
         selectedItemIndices: AnyPublisher<[QueueListViewModel.ItemIndex], Never> = .never(),
-        tappedItem: AnyPublisher<QueueListViewModel.ItemIndex, Never> = .never(),
-        tappedOptionsButtonAt: AnyPublisher<QueueListViewModel.ItemIndex, Never> = .never()
+        tappedItem: AnyPublisher<QueueListViewModel.ItemIndex, Never> = .never()
     ) -> Self {
         .init(
             movedItem: movedItem,
             selectedItemIndices: selectedItemIndices,
-            tappedItem: tappedItem,
-            tappedOptionsButtonAt: tappedOptionsButtonAt
+            tappedItem: tappedItem
         )
     }
 }

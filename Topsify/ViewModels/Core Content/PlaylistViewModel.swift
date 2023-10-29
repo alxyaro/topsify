@@ -52,10 +52,10 @@ final class PlaylistViewModel {
                 }
                 .removeDuplicates()
                 .eraseToAnyPublisher(),
-            songListViewModels: playlistSongs
+            songViewModels: playlistSongs
                 .map { songs in
                     songs.map { song in
-                        SongListCellViewModel(song: song)
+                        SongViewModel(from: song)
                     }
                 }
                 .eraseToAnyPublisher()
@@ -68,7 +68,6 @@ final class PlaylistViewModel {
 extension PlaylistViewModel {
 
     struct Dependencies {
-        let calendar: Calendar
         let contentService: ContentServiceType
     }
 
@@ -81,7 +80,7 @@ extension PlaylistViewModel {
         let title: AnyPublisher<String, Never>
         let accentColor: AnyPublisher<HexColor, Never>
         let bannerConfig: AnyPublisher<BannerConfig, Never>
-        let songListViewModels: AnyPublisher<[SongListCellViewModel], Never>
+        let songViewModels: AnyPublisher<[SongViewModel], Never>
     }
 
     enum BannerConfig: Equatable {
@@ -165,7 +164,6 @@ extension PlaylistViewModel.Dependencies {
 
     static func live() -> Self {
         .init(
-            calendar: .current,
             contentService: DefaultContentService()
         )
     }

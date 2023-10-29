@@ -14,7 +14,6 @@ final class PlaylistViewModelTests: XCTestCase {
         let viewModel = PlaylistViewModel(
             playlistID: UUID(),
             dependencies: .init(
-                calendar: .testCalendar,
                 contentService: MockContentService(
                     streamPlaylist: { _ in shouldFetchFail ? .fail(.generic) : .just(.mock()) }
                 )
@@ -28,7 +27,7 @@ final class PlaylistViewModelTests: XCTestCase {
         ))
 
         let loadState = TestSubscriber.subscribe(to: outputs.loadState)
-        _ = TestSubscriber.subscribe(to: outputs.songListViewModels)
+        _ = TestSubscriber.subscribe(to: outputs.songViewModels)
 
         XCTAssertEqual(loadState.pollValues(), [.initial, .loading, .error(.failedToLoad)])
 
@@ -45,7 +44,6 @@ final class PlaylistViewModelTests: XCTestCase {
         let viewModel = PlaylistViewModel(
             playlistID: playlist.id,
             dependencies: .init(
-                calendar: .testCalendar,
                 contentService: MockContentService(
                     streamPlaylist: { _ in playlistPublisher.eraseToAnyPublisher() }
                 )
@@ -79,7 +77,6 @@ final class PlaylistViewModelTests: XCTestCase {
         let viewModel = PlaylistViewModel(
             playlistID: playlist.id,
             dependencies: .init(
-                calendar: .testCalendar,
                 contentService: MockContentService(
                     streamPlaylist: { _ in .just(playlist) }
                 )
@@ -97,7 +94,6 @@ final class PlaylistViewModelTests: XCTestCase {
         let viewModel = PlaylistViewModel(
             playlistID: playlist.id,
             dependencies: .init(
-                calendar: .testCalendar,
                 contentService: MockContentService(
                     streamPlaylist: { _ in .just(playlist) }
                 )
@@ -124,7 +120,6 @@ final class PlaylistViewModelTests: XCTestCase {
         let viewModel = PlaylistViewModel(
             playlistID: playlist.id,
             dependencies: .init(
-                calendar: .testCalendar,
                 contentService: MockContentService(
                     streamPlaylist: { _ in .just(playlist) }
                 )
@@ -173,7 +168,6 @@ final class PlaylistViewModelTests: XCTestCase {
         let viewModel = PlaylistViewModel(
             playlistID: playlist.id,
             dependencies: .init(
-                calendar: .testCalendar,
                 contentService: MockContentService(
                     streamPlaylist: { _ in .just(playlist) }
                 )
@@ -217,7 +211,6 @@ final class PlaylistViewModelTests: XCTestCase {
         let viewModel = PlaylistViewModel(
             playlistID: UUID(),
             dependencies: .init(
-                calendar: .testCalendar,
                 contentService: MockContentService(
                     streamPlaylist: { _ in .just(.mock()) },
                     streamPlaylistSongs: { _ in .just(songs) }
@@ -227,9 +220,9 @@ final class PlaylistViewModelTests: XCTestCase {
 
         let outputs = viewModel.bind(inputs: .mock())
 
-        let songListViewModels = TestSubscriber.subscribe(to: outputs.songListViewModels)
+        let songViewModels = TestSubscriber.subscribe(to: outputs.songViewModels)
 
-        XCTAssertEqual(try songListViewModels.pollOnlyValue().count, 3)
+        XCTAssertEqual(try songViewModels.pollOnlyValue().count, 3)
     }
 
     // MARK: - Helpers
@@ -243,7 +236,6 @@ final class PlaylistViewModelTests: XCTestCase {
         let viewModel = PlaylistViewModel(
             playlistID: Playlist.mock().id,
             dependencies: .init(
-                calendar: .testCalendar,
                 contentService: MockContentService(
                     streamPlaylist: { _ in playlist },
                     streamPlaylistSongs: { _ in playlistSongs }

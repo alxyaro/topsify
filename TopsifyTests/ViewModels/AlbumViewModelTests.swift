@@ -29,24 +29,24 @@ final class AlbumViewModelTests: XCTestCase {
 
         let loadState = TestSubscriber.subscribe(to: outputs.loadState)
         let bannerViewModel = TestSubscriber.subscribe(to: outputs.bannerViewModel)
-        let songsListViewModels = TestSubscriber.subscribe(to: outputs.songListViewModels)
+        let songViewModels = TestSubscriber.subscribe(to: outputs.songViewModels)
 
         XCTAssertEqual(loadState.pollValues(), [.initial, .loading, .error(.failedToLoad)])
         XCTAssertEqual(bannerViewModel.pollValues().count, 0)
-        XCTAssertEqual(songsListViewModels.pollValues().count, 0)
+        XCTAssertEqual(songViewModels.pollValues().count, 0)
 
         shouldFetchFail = false
         tappedReloadButton.send()
 
         XCTAssertEqual(loadState.pollValues(), [.loading, .loaded])
         XCTAssertEqual(bannerViewModel.pollValues().count, 1)
-        XCTAssertEqual(songsListViewModels.pollValues().count, 1)
+        XCTAssertEqual(songViewModels.pollValues().count, 1)
 
         tappedReloadButton.send()
 
         XCTAssertEqual(loadState.pollValues(), [.loading, .loaded])
         XCTAssertEqual(bannerViewModel.pollValues().count, 1)
-        XCTAssertEqual(songsListViewModels.pollValues().count, 1)
+        XCTAssertEqual(songViewModels.pollValues().count, 1)
     }
 
     func testOutput_loadState_isLoading_afterBind() {
@@ -183,9 +183,9 @@ final class AlbumViewModelTests: XCTestCase {
 
         let outputs = viewModel.bind(inputs: .mock())
 
-        let songListViewModels = TestSubscriber.subscribe(to: outputs.songListViewModels)
+        let songViewModels = TestSubscriber.subscribe(to: outputs.songViewModels)
 
-        XCTAssertEqual(try? songListViewModels.pollOnlyValue().count, 3)
+        XCTAssertEqual(try? songViewModels.pollOnlyValue().count, 3)
     }
 
     // MARK: - Helpers

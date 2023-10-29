@@ -20,7 +20,7 @@ final class AlbumViewController: BannerCollectionViewController<AlbumViewControl
     private let titleSubject = CurrentValueSubject<String?, Never>(nil)
     private let accentColorSubject = CurrentValueSubject<UIColor?, Never>(nil)
     private var bannerViewModel: ArtworkBannerViewModel?
-    private var songListViewModels = [SongListCellViewModel]()
+    private var songViewModels = [SongViewModel]()
     private var disposeBag = DisposeBag()
 
     init(viewModel: AlbumViewModel) {
@@ -97,13 +97,13 @@ final class AlbumViewController: BannerCollectionViewController<AlbumViewControl
             }
             .store(in: &disposeBag)
 
-        outputs.songListViewModels
-            .sink { [weak self] songListViewModels in
+        outputs.songViewModels
+            .sink { [weak self] songViewModels in
                 guard let self else { return }
-                self.songListViewModels = songListViewModels
+                self.songViewModels = songViewModels
 
                 var snapshot = dataSource.snapshot()
-                snapshot.reloadIDIndependentSection(.songs, itemCount: songListViewModels.count)
+                snapshot.reloadIDIndependentSection(.songs, itemCount: songViewModels.count)
                 dataSource.apply(snapshot)
             }
             .store(in: &disposeBag)
@@ -149,7 +149,7 @@ extension AlbumViewController: BannerCollectionViewControllerDelegate {
     func cell(collectionView: UICollectionView, forSection section: Section, at indexPath: IndexPath) -> UICollectionViewCell {
         switch section {
         case .songs:
-            guard let viewModel = songListViewModels[safe: indexPath.item] else {
+            guard let viewModel = songViewModels[safe: indexPath.item] else {
                 return collectionView.dequeueEmptyCell(for: indexPath)
             }
             let cell = collectionView.dequeueReusableCell(for: indexPath, cellType: SongListCell.self)

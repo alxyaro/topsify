@@ -50,10 +50,10 @@ final class AlbumViewModel {
                     )
                 }
                 .eraseToAnyPublisher(),
-            songListViewModels: albumSongs
+            songViewModels: albumSongs
                 .map { songs in
                     songs.map { song in
-                        SongListCellViewModel(song: song)
+                        SongViewModel(from: song)
                     }
                 }
                 .eraseToAnyPublisher()
@@ -79,7 +79,7 @@ extension AlbumViewModel {
         let title: AnyPublisher<String, Never>
         let accentColor: AnyPublisher<HexColor, Never>
         let bannerViewModel: AnyPublisher<ArtworkBannerViewModel, Never>
-        let songListViewModels: AnyPublisher<[SongListCellViewModel], Never>
+        let songViewModels: AnyPublisher<[SongViewModel], Never>
     }
 
     enum LoadError: UserFacingError {

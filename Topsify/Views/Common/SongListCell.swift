@@ -5,7 +5,6 @@ import UIKit
 
 protocol SongListCellDelegate: AnyObject {
     func songListCellTapped(_ cell: SongListCell)
-    func songListCellOptionsButtonTapped(_ cell: SongListCell)
 }
 
 final class SongListCell: UICollectionViewListCell, Reusable {
@@ -47,6 +46,7 @@ final class SongListCell: UICollectionViewListCell, Reusable {
         return label
     }()
 
+    private var disposeBag = DisposeBag()
     private weak var delegate: SongListCellDelegate?
 
     override init(frame: CGRect) {
@@ -90,8 +90,6 @@ final class SongListCell: UICollectionViewListCell, Reusable {
         let contentTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleContentTap))
         contentTapGestureRecognizer.delegate = self
         contentView.addGestureRecognizer(contentTapGestureRecognizer)
-
-        optionsButton.addTarget(self, action: #selector(handleOptionsButtonTap), for: .touchUpInside)
     }
 
     override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
@@ -132,19 +130,23 @@ final class SongListCell: UICollectionViewListCell, Reusable {
         accessories = []
     }
 
-    func configure(with viewModel: SongListCellViewModel, delegate: SongListCellDelegate?, options: Options = .init()) {
+    func configure(with viewModel: SongViewModel, delegate: SongListCellDelegate?, options: Options = .init()) {
+        disposeBag = DisposeBag()
         self.delegate = delegate
 
         directionalLayoutMargins = .horizontal(16)
 
-        titleLabel.text = viewModel.outputs.title
-        subtitleLabel.text = viewModel.outputs.subtitle
-        explicitLabelView.isHidden = !viewModel.outputs.showExplicitLabel
-        optionsButton.isHidden = !viewModel.outputs.showOptionsButton
+        titleLabel.text = viewModel.title
+        subtitleLabel.text = viewModel.subtitle
+        explicitLabelView.isHidden = !viewModel.showExplicitTag
+
+        viewModel.optionsButtonVisibility.apply(to: optionsButton, disposeBag: &disposeBag)
+
+        optionsButton.isHidden = viewModel.optionsButtonVisibility == .hidden
 
         if options.showThumbnail {
             thumbnailView.isHidden = false
-            thumbnailView.configure(with: viewModel.outputs.artworkURL)
+            thumbnailView.configure(with: viewModel.artworkURL)
         } else {
             thumbnailView.isHidden = true
         }
@@ -169,10 +171,6 @@ final class SongListCell: UICollectionViewListCell, Reusable {
 
     @objc private func handleContentTap() {
         delegate?.songListCellTapped(self)
-    }
-
-    @objc private func handleOptionsButtonTap() {
-        delegate?.songListCellOptionsButtonTapped(self)
     }
 
     static func computePreferredHeight() -> CGFloat {

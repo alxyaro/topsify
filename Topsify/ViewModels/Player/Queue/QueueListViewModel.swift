@@ -56,17 +56,20 @@ final class QueueListViewModel {
             }
             .store(in: &disposeBag)
 
-        inputs.tappedOptionsButtonAt
-            .sink { index in
-                // TODO: handle options button tap
-            }
-            .store(in: &disposeBag)
-
         return Outputs(
             content: playbackQueue.state
                 .map { state in
                     Content(
-                        nowPlaying: state.activeItem.map { ListItem.from($0, showOptionsButton: true) },
+                        nowPlaying: state.activeItem.map {
+                            ListItem.from(
+                                $0,
+                                optionsButtonVisibility: .shown(
+                                    onTap: {
+                                        // TODO: handle options button tap
+                                    }
+                                )
+                            )
+                        },
                         nextInQueue: state.userQueue.map { ListItem.from($0) },
                         nextFromSource: state.upNext.prefix(100).map { ListItem.from($0) }
                     )
@@ -108,7 +111,6 @@ extension QueueListViewModel {
         let movedItem: AnyPublisher<ItemMovement, Never>
         let selectedItemIndices: AnyPublisher<[ItemIndex], Never>
         let tappedItem: AnyPublisher<ItemIndex, Never>
-        let tappedOptionsButtonAt: AnyPublisher<ItemIndex, Never>
     }
 
     struct Outputs {
@@ -150,17 +152,17 @@ extension QueueListViewModel {
 
     struct ListItem: Identifiable {
         let id: UUID
-        let viewModel: SongListCellViewModel
+        let viewModel: SongViewModel
 
         static func from(
             _ playbackQueueItem: PlaybackQueueItem,
-            showOptionsButton: Bool = false
+            optionsButtonVisibility: ButtonVisibility = .hidden
         ) -> Self {
             .init(
                 id: playbackQueueItem.id,
                 viewModel: .init(
-                    song: playbackQueueItem.song,
-                    showOptionsButton: showOptionsButton
+                    from: playbackQueueItem.song,
+                    optionsButtonVisibility: optionsButtonVisibility
                 )
             )
         }
