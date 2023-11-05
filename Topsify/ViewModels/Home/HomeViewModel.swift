@@ -167,7 +167,7 @@ private extension HomeViewModel.Section {
         case .moreLike(let moreLike):
             self = .moreLike(
                 headerViewModel: HomeViewModel.ArtistHeaderViewModel(
-                    from: moreLike.artistInfo,
+                    from: moreLike.artist,
                     caption: NSLocalizedString("More like", comment: "Precedes an artist's name, e.g. 'More like - Post Malone'"),
                     tappedContentSubject: tappedContentSubject
                 ),
@@ -206,16 +206,16 @@ private extension ContentTileViewModel {
 private extension HomeViewModel.ArtistHeaderViewModel {
 
     init(
-        from artistInfo: SpotlightEntry.ArtistInfo,
+        from artistRef: ArtistRef,
         caption: String,
         tappedContentSubject: some Subject<ContentID, Never>
     ) {
         self.init(
-            avatarURL: artistInfo.avatarURL,
-            artistName: artistInfo.name,
+            avatarURL: artistRef.avatarURL,
+            artistName: artistRef.name,
             captionText: caption,
             onTap: {
-                tappedContentSubject.send(ContentID(contentType: .artist, id: artistInfo.id))
+                tappedContentSubject.send(ContentID(contentType: .artist, id: artistRef.id))
             }
         )
     }

@@ -1,9 +1,4 @@
-//
-//  Playlist.swift
-//  Topsify
-//
-//  Created by Alex Yaro on 2022-04-17.
-//
+// Created by Alex Yaro on 2022-04-17.
 
 import Foundation
 
@@ -22,9 +17,29 @@ struct Playlist: Identifiable, Equatable {
 
 extension Playlist {
 
-    struct Creator: Equatable {
-        let id: ContentID
-        let avatarURL: URL
-        let name: String
+    enum Creator: Equatable {
+        case user(UserRef)
+        case artist(ArtistRef)
+    }
+}
+
+extension Playlist.Creator {
+
+    var name: String {
+        switch self {
+        case .user(let userRef):
+            return userRef.name
+        case .artist(let artistRef):
+            return artistRef.name
+        }
+    }
+
+    var avatarURL: URL {
+        switch self {
+        case .user(let userRef):
+            return userRef.avatarURL
+        case .artist(let artistRef):
+            return artistRef.avatarURL
+        }
     }
 }

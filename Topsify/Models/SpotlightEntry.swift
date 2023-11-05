@@ -15,7 +15,7 @@ extension SpotlightEntry {
     }
 
     struct MoreLike {
-        let artistInfo: ArtistInfo
+        let artist: ArtistRef
         let items: [ContentItem]
     }
 
@@ -24,11 +24,5 @@ extension SpotlightEntry {
         let imageURL: URL
         let title: String?
         let subtitle: String
-    }
-
-    struct ArtistInfo {
-        let id: UUID
-        let name: String
-        let avatarURL: URL
     }
 }

@@ -1,9 +1,4 @@
-//
-//  User.swift
-//  Topsify
-//
-//  Created by Alex Yaro on 2022-04-26.
-//
+// Created by Alex Yaro on 2022-04-26.
 
 import Foundation
 
