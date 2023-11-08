@@ -6,7 +6,7 @@ import Foundation
 extension Album {
     static func mock(
         id: UUID = .init(),
-        artists: [User] = [.mock()],
+        artists: [UserRef] = [.mock()],
         imageURL: URL = .imageMockWithRandomID(),
         title: String = "Test Album",
         type: AlbumType = .album,

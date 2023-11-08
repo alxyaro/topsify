@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4F1287342AFB21480013A213 /* UserRef+Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1287332AFB21480013A213 /* UserRef+Mock.swift */; };
 		4F639A9C2AC5F25A005BF20F /* RecentActivityItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639A9B2AC5F25A005BF20F /* RecentActivityItem.swift */; };
 		4F639AA02AC741F1005BF20F /* ContentID+Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639A9F2AC741F1005BF20F /* ContentID+Mock.swift */; };
 		4F639AA22AC75101005BF20F /* PlaybackSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639AA12AC75101005BF20F /* PlaybackSource.swift */; };
@@ -263,6 +264,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4F1287332AFB21480013A213 /* UserRef+Mock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserRef+Mock.swift"; sourceTree = "<group>"; };
 		4F639A9B2AC5F25A005BF20F /* RecentActivityItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentActivityItem.swift; sourceTree = "<group>"; };
 		4F639A9F2AC741F1005BF20F /* ContentID+Mock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContentID+Mock.swift"; sourceTree = "<group>"; };
 		4F639AA12AC75101005BF20F /* PlaybackSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackSource.swift; sourceTree = "<group>"; };
@@ -832,6 +834,7 @@
 				6B36C9C729E0CC8B00A1F8D9 /* URL+Mock.swift */,
 				6B36C9BF29E0CB4500A1F8D9 /* Song+Mock.swift */,
 				6B36C9C429E0CC3E00A1F8D9 /* User+Mock.swift */,
+				4F1287332AFB21480013A213 /* UserRef+Mock.swift */,
 				6B403C8229E39DE100CA6DE0 /* Album+Mock.swift */,
 				6B21E39129E3A5E000BE2B99 /* Playlist+Mock.swift */,
 				6BDC889229F1CE19003B7290 /* MockPlaybackQueue.swift */,
@@ -1260,7 +1263,6 @@
 				6BF3DD162A5C9E3300E5F2D0 /* QueueViewController.swift in Sources */,
 				6B9B46F42A8FC7CD002042F6 /* ArtworkBannerViewModel.swift in Sources */,
 				6B35720727FBDB78007CBDF6 /* UICollectionReusableView+identifier.swift in Sources */,
-				4FBE98732ABFF35400802FF8 /* ContentID+UniqueList.swift in Sources */,
 				6B35721727FCFC8D007CBDF6 /* UIColor+AppColors.swift in Sources */,
 				6B3572252803430C007CBDF6 /* AppNavigationBar.swift in Sources */,
 				6BAE1B7A299053ED0092E53E /* Collections+Extensions.swift in Sources */,
@@ -1345,6 +1347,7 @@
 				6B36C9C929E0CC9200A1F8D9 /* URL+Mock.swift in Sources */,
 				4F639AA62ACA29A1005BF20F /* PlaylistViewModelTests.swift in Sources */,
 				6B8805852A7038AF000C2B00 /* QueueSelectionMenuViewModelTests.swift in Sources */,
+				4F1287342AFB21480013A213 /* UserRef+Mock.swift in Sources */,
 				6B9B46FC2A9571DA002042F6 /* AlbumViewModelTests.swift in Sources */,
 				6BDC889329F1CE19003B7290 /* MockPlaybackQueue.swift in Sources */,
 				6B0D782827F0E4BE001BA64E /* TopsifyTests.swift in Sources */,

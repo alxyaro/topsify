@@ -6,7 +6,7 @@ import Foundation
 extension Song {
     static func mock(
         id: UUID = .init(),
-        artists: [User] = [.mock()],
+        artists: [UserRef] = [.mock()],
         imageURL: URL = .imageMockWithRandomID(),
         title: String = "Test Song",
         accentColor: HexColor = .init("#0011ee"),

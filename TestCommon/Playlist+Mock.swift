@@ -34,14 +34,17 @@ extension Playlist {
 extension Playlist.Creator {
 
     static func mock(
-        id: ContentID = .mock(contentType: .user),
+        id: ContentID = .mock(contentType: .artist),
         avatarURL: URL = .imageMockWithRandomID(),
         name: String = "Creator Name"
     ) -> Self {
-        .init(
-            id: id,
-            avatarURL: avatarURL,
-            name: name
-        )
+        switch id.contentType {
+        case .artist:
+            return .artist(.mock(id: id.id, avatarURL: avatarURL, name: name))
+        case .user:
+            return .user(.mock(id: id.id, avatarURL: avatarURL, name: name))
+        default:
+            fatalError("Unexpected ContentID given to \(Self.self).\(#function)")
+        }
     }
 }

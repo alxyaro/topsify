@@ -117,7 +117,7 @@ final class HomeViewModelTests: XCTestCase {
         reloadButtonRelay.accept()
         spotlightEntries.send([
             .moreLike(.init(
-                artistInfo: .init(id: UUID(), name: "BNYX", avatarURL: .imageMock(id: "bnyx")),
+                artist: .init(id: UUID(), avatarURL: .imageMock(id: "bnyx"), name: "BNYX"),
                 items: [
                     .init(
                         contentID: ContentID(contentType: .artist, id: UUID()),
