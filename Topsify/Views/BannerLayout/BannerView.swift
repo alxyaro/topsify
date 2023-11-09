@@ -61,6 +61,22 @@ class BannerView: UICollectionReusableView, Reusable {
         backgroundGradientView.frame.size.height += 150 // extend gradient a bit below banner
         backgroundGradientView.alpha = 1 - scrollAmount.pctInRange(bounds.height * 0.7 ... bounds.height)
     }
+
+    override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
+        let attributes = super.preferredLayoutAttributesFitting(layoutAttributes)
+        if let attributes = attributes as? BannerLayout.LayoutAttributes {
+            attributes.frame.size.height -= attributes.topContentInset
+        }
+        return attributes
+    }
+
+    override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
+        super.apply(layoutAttributes)
+        if let layoutAttributes = layoutAttributes as? BannerLayout.LayoutAttributes {
+            frame.size.height = layoutAttributes.frame.height + layoutAttributes.topContentInset
+            frame.origin.y = -layoutAttributes.topContentInset
+        }
+    }
 }
 
 extension UICollectionView {

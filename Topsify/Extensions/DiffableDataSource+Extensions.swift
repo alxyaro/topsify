@@ -5,7 +5,7 @@ import UIKit
 extension NSDiffableDataSourceSnapshot where ItemIdentifierType == AnyHashable {
 
     /// An item ID that's unique compared to all other item IDs in the snapshot.
-    private struct UniqueItemID<SectionIdentifierType: Hashable>: Hashable {
+    private struct UniqueItemID: Hashable {
         let sectionID: SectionIdentifierType
         let id = UUID()
     }

@@ -28,6 +28,12 @@ extension TimeInterval {
             return "\(self / 60)m"
         }
 
+        // TODO: Remove this workaround when its no longer necessary
+        // Due to a bug in Foundation, minutes unit is not properly abbreviated...
+        if #available(iOS 17, *), unitsStyle == .abbreviated {
+            return str.replacingOccurrences(of: "min", with: "m")
+        }
+
         return str
     }
 }
