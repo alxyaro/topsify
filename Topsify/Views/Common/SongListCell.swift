@@ -12,9 +12,18 @@ final class SongListCell: UICollectionViewListCell, Reusable {
     private static let accessoryActiveColor = UIColor.appTextPrimary
 
     struct Options {
-        var showThumbnail = false
+
+        enum ThumbnailStyle {
+            case regular
+            case currentlyPlaying
+        }
+
+        var thumbnailStyle: ThumbnailStyle?
+        var songNumberPrefix: Int?
         var includeEditingAccessories = false
     }
+
+    private let numberPrefixView = NumberPrefixView()
 
     private let thumbnailView = ThumbnailView()
 
@@ -73,17 +82,19 @@ final class SongListCell: UICollectionViewListCell, Reusable {
         titleStackView.axis = .vertical
         titleStackView.spacing = 4
 
-        let mainStackView = UIStackView(arrangedSubviews: [thumbnailView, titleStackView, optionsButton])
+        let mainStackView = UIStackView(arrangedSubviews: [numberPrefixView, thumbnailView, titleStackView, optionsButton])
         mainStackView.axis = .horizontal
         mainStackView.spacing = 12
         mainStackView.alignment = .center
         mainStackView.directionalLayoutMargins = .horizontal(16)
+        mainStackView.preservesSuperviewLayoutMargins = true
         mainStackView.isLayoutMarginsRelativeArrangement = true
+        mainStackView.heightAnchor.constraint(greaterThanOrEqualToConstant: 48).isActive = true
 
         contentView.addSubview(mainStackView)
-        mainStackView.constrainEdgesToSuperview(excluding: .vertical, withPriorities: .forCellSizing)
-        titleStackView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
-        titleStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12).priority(.justLessThanRequired).isActive = true
+        mainStackView.constrainEdgesToSuperview(withInsets: .vertical(8), withPriorities: .forCellSizing)
+
+        useCollectionViewLayoutMargins()
     }
 
     private func setUpUserInteraction() {
@@ -134,8 +145,6 @@ final class SongListCell: UICollectionViewListCell, Reusable {
         disposeBag = DisposeBag()
         self.delegate = delegate
 
-        directionalLayoutMargins = .horizontal(16)
-
         titleLabel.text = viewModel.title
         subtitleLabel.text = viewModel.subtitle
         explicitLabelView.isHidden = !viewModel.showExplicitTag
@@ -144,11 +153,18 @@ final class SongListCell: UICollectionViewListCell, Reusable {
 
         optionsButton.isHidden = viewModel.optionsButtonVisibility == .hidden
 
-        if options.showThumbnail {
+        if let thumbnailStyle = options.thumbnailStyle {
             thumbnailView.isHidden = false
-            thumbnailView.configure(with: viewModel.artworkURL)
+            thumbnailView.configure(with: viewModel.artworkURL, style: thumbnailStyle)
         } else {
             thumbnailView.isHidden = true
+        }
+
+        if let songNumberPrefix = options.songNumberPrefix {
+            numberPrefixView.label.text = "\(songNumberPrefix)"
+            numberPrefixView.isHidden = false
+        } else {
+            numberPrefixView.isHidden = true
         }
 
         if options.includeEditingAccessories {
@@ -197,15 +213,15 @@ extension SongListCell: UIGestureRecognizerDelegate {
     }
 }
 
-private extension SongListCell {
+// MARK: - ThumbnailView
 
+private extension SongListCell {
     final class ThumbnailView: UIView {
 
         private let imageView: RemoteImageView = {
             let imageView = RemoteImageView()
-            imageView.layer.cornerRadius = 4
             imageView.clipsToBounds = true
-            imageView.constrainDimensions(uniform: 45)
+            imageView.constrainDimensions(uniform: 48)
             return imageView
         }()
 
@@ -222,8 +238,45 @@ private extension SongListCell {
             fatalError("init(coder:) has not been implemented")
         }
 
-        func configure(with imageURL: URL) {
+        func configure(with imageURL: URL, style: Options.ThumbnailStyle) {
             imageView.configure(with: imageURL)
+
+            imageView.layer.cornerRadius = 0
+            switch style {
+            case .regular:
+                break
+            case .currentlyPlaying:
+                imageView.layer.cornerRadius = 4
+            }
+        }
+    }
+}
+
+// MARK: - NumberPrefixView
+
+private extension SongListCell {
+    final class NumberPrefixView: UIView {
+
+        let label: UILabel = {
+            let label = UILabel()
+            label.font = .appFont(ofSize: 13)
+            label.textColor = .appTextPrimary
+            label.numberOfLines = 1
+            label.textAlignment = .left
+            label.widthAnchor.constraint(greaterThanOrEqualToConstant: 12).isActive = true
+            label.requireIntrinsicWidth()
+            return label
+        }()
+
+        init() {
+            super.init(frame: .zero)
+
+            addSubview(label)
+            label.constrainEdgesToSuperview()
+        }
+        
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
         }
     }
 }

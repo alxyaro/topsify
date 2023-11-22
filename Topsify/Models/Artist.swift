@@ -10,7 +10,7 @@ struct Artist: Identifiable, Equatable {
     let popularSongs: [PopularSong]
     let popularAlbums: [PopularAlbum]
     let about: About
-    let similarArtists: [ArtistRef]
+    let recommendedArtists: [ArtistRef]
 }
 
 extension Artist {

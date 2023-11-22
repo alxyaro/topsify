@@ -8,6 +8,7 @@ protocol ContentServiceType {
     func fetchAlbumSongs(albumID id: UUID) -> Future<[Song], ContentServiceFetchError>
     func streamPlaylist(id: UUID) -> AnyPublisher<Playlist, ContentServiceFetchError>
     func streamPlaylistSongs(playlistID id: UUID) -> AnyPublisher<[Song], ContentServiceFetchError>
+    func fetchArtist(id: UUID) -> Future<Artist, ContentServiceFetchError>
 }
 
 enum ContentServiceFetchError: Error {

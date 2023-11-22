@@ -1,6 +1,7 @@
 // Created by Alex Yaro on 2023-08-06.
 
 import Combine
+import CombineCocoa
 import UIKit
 
 extension UICollectionView {
@@ -13,5 +14,17 @@ extension UICollectionView {
                 return contentOffset.y + adjustedContentInset.top
             }
             .eraseToAnyPublisher()
+    }
+}
+
+extension UICollectionReusableView {
+
+    func useCollectionViewLayoutMargins() {
+        preservesSuperviewLayoutMargins = true
+        directionalLayoutMargins = .zero
+        if let self = self as? UICollectionViewCell {
+            self.contentView.preservesSuperviewLayoutMargins = true
+            self.contentView.directionalLayoutMargins = .zero
+        }
     }
 }

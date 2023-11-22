@@ -52,7 +52,7 @@ extension HomeViewController {
 
             collectionView.registerEmptyCell()
             collectionView.registerEmptySupplementaryView(ofKind: UICollectionView.elementKindSectionHeader)
-            collectionView.register(supplementaryViewType: HomeSimpleHeaderCell.self, ofKind: UICollectionView.elementKindSectionHeader)
+            collectionView.register(supplementaryViewType: LabelHeaderCell.self, ofKind: LabelHeaderCell.kind)
             collectionView.register(supplementaryViewType: HomeArtistHeaderCell.self, ofKind: UICollectionView.elementKindSectionHeader)
             collectionView.register(cellType: NavigationHeaderView.Cell.self)
             collectionView.register(cellType: ContentTileCell.self)
@@ -104,7 +104,7 @@ private extension HomeViewController.CollectionManager {
         let section = NSCollectionLayoutSection(group: group)
         section.orthogonalScrollingBehavior = .continuous
         section.interGroupSpacing = 16
-        section.boundarySupplementaryItems = [.header()]
+        section.boundarySupplementaryItems = [LabelHeaderCell.compositionalLayoutSupplementaryItem(estimatedHeight: 50)]
 
         return section
     }
@@ -164,8 +164,12 @@ extension HomeViewController.CollectionManager: UICollectionViewDataSource {
         }
         switch section {
         case let .generic(title, _):
-            let cell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, for: indexPath, viewType: HomeSimpleHeaderCell.self)
-            cell.configure(heading: title)
+            let cell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, for: indexPath, viewType: LabelHeaderCell.self)
+            cell.configure(
+                text: title,
+                style: .init(font: .appFont(ofSize: 21, weight: .bold)),
+                bottomPadding: 16
+            )
             return cell
         case let .moreLike(headerViewModel, _):
             let cell = collectionView.dequeueReusableSupplementaryView(ofKind: kind, for: indexPath, viewType: HomeArtistHeaderCell.self)
@@ -174,16 +178,6 @@ extension HomeViewController.CollectionManager: UICollectionViewDataSource {
         case .navigationHeader, .recentActivity:
             return collectionView.dequeueEmptySupplementaryView(ofKind: kind, for: indexPath)
         }
-    }
-}
-
-private extension NSCollectionLayoutBoundarySupplementaryItem {
-    static func header(estimatedHeight: CGFloat = 50) -> Self {
-        .init(
-            layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(estimatedHeight)),
-            elementKind: UICollectionView.elementKindSectionHeader,
-            alignment: .top
-        )
     }
 }
 

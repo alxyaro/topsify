@@ -35,6 +35,7 @@ final class QueueListView: UIView {
 
         collectionView.backgroundColor = .clear
         collectionView.indicatorStyle = .white
+        collectionView.directionalLayoutMargins = .horizontal(16)
         collectionView.isEditing = true
         collectionView.allowsSelectionDuringEditing = true
         collectionView.allowsMultipleSelectionDuringEditing = true
@@ -75,7 +76,7 @@ final class QueueListView: UIView {
             cell.configure(
                 with: viewModel,
                 delegate: self,
-                options: indexPath.section == Section.nowPlaying.index ? .init(showThumbnail: true) : .init(includeEditingAccessories: true)
+                options: indexPath.section == Section.nowPlaying.index ? .init(thumbnailStyle: .currentlyPlaying) : .init(includeEditingAccessories: true)
             )
             return cell
         }

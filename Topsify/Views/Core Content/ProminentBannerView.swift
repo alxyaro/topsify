@@ -13,7 +13,6 @@ final class ProminentBannerView: BannerView {
 
     private lazy var backgroundImageContainerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .appBackground
         view.clipsToBounds = true
 
         view.addSubview(backgroundImageView)

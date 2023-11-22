@@ -32,6 +32,7 @@ final class QueueListLayout: UICollectionViewCompositionalLayout {
                 let item = NSCollectionLayoutItem(layoutSize: size)
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitems: [item])
                 let section = NSCollectionLayoutSection(group: group)
+                section.interGroupSpacing = 4
 
                 let headerHeight = QueueListHeaderView.computePreferredHeight()
                 let headerSize = NSCollectionLayoutSize(
@@ -107,7 +108,7 @@ final class QueueListLayout: UICollectionViewCompositionalLayout {
 
     override func targetIndexPath(forInteractivelyMovingItem currentIndexPath: IndexPath, withPosition position: CGPoint) -> IndexPath {
         /// For some reason, if you drag your finger far left and try moving up and down, the layout will fail to
-        /// find a new IndexPath. Setting the x position to zero prevents that.
+        /// find a new IndexPath. Setting a fixed x position prevents that.
         var position = position
         position.x = 0
         let targetIndexPath = super.targetIndexPath(forInteractivelyMovingItem: currentIndexPath, withPosition: position)
@@ -165,7 +166,7 @@ final class QueueListLayout: UICollectionViewCompositionalLayout {
 
     override func layoutAttributesForInteractivelyMovingItem(at indexPath: IndexPath, withTargetPosition position: CGPoint) -> UICollectionViewLayoutAttributes {
         let attrs = super.layoutAttributesForInteractivelyMovingItem(at: indexPath, withTargetPosition: position)
-        /// Set the x position to zero, so that the cell being moved aligns with the bounds of the content.
+        /// Set the x position to the natural leading edge of cells, so that the cell being is fixed along the horizontal axis.
         /// (This is the same behaviour you get in UITableViews or with the UICollectionLayoutListConfiguration)
         attrs.frame.origin.x = 0
         return attrs

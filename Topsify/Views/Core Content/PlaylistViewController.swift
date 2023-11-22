@@ -57,21 +57,8 @@ final class PlaylistViewController: BannerCollectionViewController<PlaylistViewC
             reloadRequested: loadStateView.retryButtonTapPublisher
         ))
 
-        UIView.performWithoutAnimation {
-            outputs.loadState
-                .map(\.isLoaded)
-                .sink { [weak self] isLoaded in
-                    guard let self else { return }
-                    if isLoaded {
-                        playButton.fadeIn()
-                    } else {
-                        playButton.fadeOut()
-                    }
-                }
-                .store(in: &disposeBag)
-        }
-
         loadStateView.configure(loadState: outputs.loadState)
+        playButton.setDynamicVisibility(basedOn: outputs.loadState)
 
         outputs.title
             .mapOptional()

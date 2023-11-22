@@ -10,6 +10,7 @@ struct MockContentService: ContentServiceType {
     var fetchAlbumSongs: (UUID) -> AnyPublisher<[Song], ContentServiceFetchError> = { _ in .just([]) }
     var streamPlaylist: (UUID) -> AnyPublisher<Playlist, ContentServiceFetchError> = { _ in .fail(.notFound) }
     var streamPlaylistSongs: (UUID) -> AnyPublisher<[Song], ContentServiceFetchError> = { _ in .just([]) }
+    var fetchArtist: (UUID) -> AnyPublisher<Artist, ContentServiceFetchError> = { _ in .fail(.notFound) }
 
     func fetchAlbum(id: UUID) -> Future<Album, ContentServiceFetchError> {
         fetchAlbum(id).toFuture()
@@ -25,5 +26,9 @@ struct MockContentService: ContentServiceType {
 
     func streamPlaylistSongs(playlistID id: UUID) -> AnyPublisher<[Song], ContentServiceFetchError> {
         streamPlaylistSongs(id)
+    }
+
+    func fetchArtist(id: UUID) -> Future<Topsify.Artist, Topsify.ContentServiceFetchError> {
+        fetchArtist(id).toFuture()
     }
 }

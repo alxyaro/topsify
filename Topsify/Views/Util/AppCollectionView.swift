@@ -7,6 +7,7 @@ class AppCollectionView: LayoutCallbackCollectionView {
     init(collectionViewLayout: UICollectionViewLayout) {
         super.init(frame: .zero, collectionViewLayout: collectionViewLayout)
         delaysContentTouches = false
+        directionalLayoutMargins = .horizontal(16)
     }
 
     required init?(coder: NSCoder) {

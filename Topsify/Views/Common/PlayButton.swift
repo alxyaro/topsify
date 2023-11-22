@@ -1,5 +1,6 @@
 // Created by Alex Yaro on 2023-08-06.
 
+import Combine
 import UIKit
 
 final class PlayButton: AppIconButton {
@@ -9,6 +10,7 @@ final class PlayButton: AppIconButton {
     private static let pauseIcon = "Icons/pause"
 
     private var verticalConstraint: NSLayoutConstraint?
+    private var disposeBag = DisposeBag()
 
     init() {
         super.init(icon: Self.playIcon)
@@ -29,5 +31,21 @@ final class PlayButton: AppIconButton {
     func constrainVertically(with anchor: NSLayoutYAxisAnchor) {
         verticalConstraint?.isActive = false
         verticalConstraint = centerYAnchor.constraint(greaterThanOrEqualTo: anchor).isActive(true)
+    }
+
+    func setDynamicVisibility(basedOn loadState: AnyPublisher<LoadState<some UserFacingError>, Never>) {
+        UIView.performWithoutAnimation {
+            loadState
+                .map(\.isLoaded)
+                .sink { [weak self] isLoaded in
+                    guard let self else { return }
+                    if isLoaded {
+                        fadeIn()
+                    } else {
+                        fadeOut()
+                    }
+                }
+                .store(in: &disposeBag)
+        }
     }
 }

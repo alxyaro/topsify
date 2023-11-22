@@ -140,8 +140,6 @@ final class TopBar: UIView {
     }
 
     private func setUpDynamicPropertyUpdates(configurator: TopBarConfiguring) {
-        var lastButtonStyle: TopBarButtonStyle?
-
         Publishers.CombineLatest(
             configurator.topBarVisibility.viewPublisher.prepend(nil),
             didLayoutSubviewsSubject
@@ -170,16 +168,7 @@ final class TopBar: UIView {
             let titleOffset = 1 - Self.easeOutQuad(x: titleOpacity)
             titleLabel.transform = .init(translationX: 0, y: titleOffset * Self.safeAreaHeight / 4)
 
-            let buttonStyle = configurator?.topBarButtonStyle
-            if lastButtonStyle != buttonStyle {
-                UIView.animate(withDuration: 0.2) { [weak self] in
-                    self?.updateButtons(visibilityValue: visibilityValue, style: buttonStyle)
-                    self?.contentView.layoutIfNeeded()
-                }
-            } else {
-                updateButtons(visibilityValue: visibilityValue, style: buttonStyle)
-            }
-            lastButtonStyle = buttonStyle
+            updateButtons(visibilityValue: visibilityValue, style: configurator?.topBarButtonStyle)
         }
         .store(in: &disposeBag)
 
@@ -199,14 +188,18 @@ final class TopBar: UIView {
     }
 
     private func updateButtons(visibilityValue: CGFloat, style: TopBarButtonStyle?) {
-        switch style {
-        case .none:
-            backButtonLeadingConstraint?.constant = 0
-            backButton.contentView.backgroundColor = .clear
-        case .prominent:
-            let backButtonBackgroundStylePct = (1 - visibilityValue.pctInRange(-100 ... -50))
-            backButtonLeadingConstraint?.constant = backButton.iconFrame.minX * backButtonBackgroundStylePct
-            backButton.contentView.backgroundColor = .black.withAlphaComponent(0.3 * backButtonBackgroundStylePct)
+        UIView.animate(withDuration: 0.2, delay: 0, options: .beginFromCurrentState) { [weak self] in
+            guard let self else { return }
+            switch style {
+            case .none:
+                backButtonLeadingConstraint?.constant = 0
+                backButton.contentView.backgroundColor = .clear
+            case .prominent:
+                let backButtonBackgroundStylePct = (1 - visibilityValue.pctInRange(-100 ... -50))
+                backButtonLeadingConstraint?.constant = backButton.iconFrame.minX * backButtonBackgroundStylePct
+                backButton.contentView.backgroundColor = .black.withAlphaComponent(0.3 * backButtonBackgroundStylePct)
+            }
+            contentView.layoutIfNeeded()
         }
     }
 

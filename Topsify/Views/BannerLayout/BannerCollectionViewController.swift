@@ -11,8 +11,7 @@ protocol BannerCollectionViewControllerDelegate<Section>: AnyObject {
 }
 
 class BannerCollectionViewController<Section, Delegate>: UIViewController
-where Section: Hashable & RawRepresentable,
-      Section.RawValue == Int,
+where Section: Hashable,
       Delegate: BannerCollectionViewControllerDelegate<Section> {
 
     typealias DataSource = UICollectionViewDiffableDataSource<Section, AnyHashable>
@@ -36,9 +35,9 @@ where Section: Hashable & RawRepresentable,
     }()
 
     private(set) lazy var dataSource: DataSource = {
-        let dataSource = DataSource(collectionView: collectionView) { [weak delegate] collectionView, indexPath, itemIdentifier in
+        let dataSource = DataSource(collectionView: collectionView) { [weak self, weak delegate] collectionView, indexPath, itemIdentifier in
             guard
-                let section = Section(rawValue: indexPath.section),
+                let section = self?.section(for: indexPath.section),
                 let cell = delegate?.cell(collectionView: collectionView, forSection: section, at: indexPath)
             else {
                 return collectionView.dequeueEmptyCell(for: indexPath)
@@ -73,5 +72,13 @@ where Section: Hashable & RawRepresentable,
 
         view.addSubview(collectionView)
         collectionView.constrainEdgesToSuperview()
+    }
+
+    func section(for index: Int) -> Section? {
+        if #available(iOS 15, *) {
+            dataSource.sectionIdentifier(for: index)
+        } else {
+            dataSource.snapshot().sectionIdentifiers[safe: index]
+        }
     }
 }
