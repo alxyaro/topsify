@@ -35,7 +35,7 @@ final class ArtistViewModel {
         let bannerViewModel = artist
             .map { artist in
                 let monthlyListenersStrFormat = NSLocalizedString("%@ monthly listeners", comment: "Details text for artist page, parameter is the number of listeners")
-                let monthlyListenersStr = String(format: monthlyListenersStrFormat, artist.about.monthlyListeners.formatted())
+                let monthlyListenersStr = String(format: monthlyListenersStrFormat, artist.about.monthlyListeners.formattedWithAbbreviation())
 
                 return ProminentBannerViewModel(
                     accentColor: artist.accentColor,
