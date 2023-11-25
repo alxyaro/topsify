@@ -32,7 +32,6 @@ final class QueueListLayout: UICollectionViewCompositionalLayout {
                 let item = NSCollectionLayoutItem(layoutSize: size)
                 let group = NSCollectionLayoutGroup.horizontal(layoutSize: size, subitems: [item])
                 let section = NSCollectionLayoutSection(group: group)
-                section.interGroupSpacing = 4
 
                 let headerHeight = QueueListHeaderView.computePreferredHeight()
                 let headerSize = NSCollectionLayoutSize(
