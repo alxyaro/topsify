@@ -58,7 +58,7 @@ final class BannerActionBarView: UIView {
         sideButtonsStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
 
         for buttonModel in viewModel.sideButtons {
-            let button = Self.createSideButton(for: buttonModel.buttonType)
+            let button = createSideButton(for: buttonModel.buttonType)
 
             button.tapPublisher
                 .sink(receiveValue: buttonModel.onTap)
@@ -77,14 +77,18 @@ final class BannerActionBarView: UIView {
         }
     }
 
-    private static func createSideButton(for buttonType: BannerActionBarViewModel.SideButtonType) -> AppButton {
+    private func createSideButton(for buttonType: BannerActionBarViewModel.SideButtonType) -> AppButton {
         switch buttonType {
         case .save:
-            return createIconButton(icon: "Icons/save")
+            return Self.createIconButton(icon: "Icons/save")
         case .download:
-            return createIconButton(icon: "Icons/download")
+            return Self.createIconButton(icon: "Icons/download")
         case .options:
-            return createIconButton(icon: "Icons/options")
+            return Self.createIconButton(icon: "Icons/options")
+        case .follow(let isFollowing):
+            let text = isFollowing ? NSLocalizedString("Following", comment: "Button text") : NSLocalizedString("Follow", comment: "Button text")
+            let button = AppTextButton(text: text, style: isFollowing ? .primary : .secondary, size: .small)
+            return button
         }
     }
 

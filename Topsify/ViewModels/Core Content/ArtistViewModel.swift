@@ -44,6 +44,7 @@ final class ArtistViewModel {
                     details: .simple(monthlyListenersStr),
                     actionBarViewModel: .init(
                         sideButtons: [
+                            .init(buttonType: .follow(isFollowing: false), onTap: {}),
                             .init(buttonType: .options, onTap: {})
                         ],
                         shuffleButtonVisibility: .shown(onTap: {})

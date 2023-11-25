@@ -41,8 +41,8 @@ final class LoadStateView: UIView {
     }()
 
     private let retryButton = AppTextButton(
-        title: NSLocalizedString("Retry", comment: "Button text"),
-        style: .primaryOutlined
+        text: NSLocalizedString("Retry", comment: "Button text"),
+        style: .secondary
     )
 
     private lazy var errorStackView: UIStackView = {

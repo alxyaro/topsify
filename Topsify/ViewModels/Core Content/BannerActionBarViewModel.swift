@@ -14,9 +14,10 @@ extension BannerActionBarViewModel {
         @IgnoreEquality private(set) var onTap: () -> Void
     }
 
-    enum SideButtonType {
+    enum SideButtonType: Equatable {
         case save
         case download
         case options
+        case follow(isFollowing: Bool)
     }
 }

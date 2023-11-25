@@ -3,54 +3,130 @@
 import UIKit
 
 class AppTextButton: AppButton {
-    private static let height: CGFloat = 48
 
     struct Style {
-        static let primary = Style(backgroundStyle: .filled(.appBackground), textColor: .primaryButtonColor)
-        static let primaryOutlined = Style(backgroundStyle: .outlined(.primaryButtonColor), textColor: .primaryButtonColor)
+        static let primary = Style(backgroundStyle: .outlined(.primaryButtonColor), textColor: .primaryButtonColor)
+        static let secondary = Style(backgroundStyle: .outlined(.primaryButtonColor.withAlphaComponent(0.4)), textColor: .primaryButtonColor)
 
         enum BackgroundStyle {
-            case filled(UIColor)
             case outlined(UIColor)
+            case filled(UIColor)
         }
 
         let backgroundStyle: BackgroundStyle
         let textColor: UIColor
     }
 
-    private let backgroundView: UIView = {
-        let view = UIView()
-        view.constrainHeight(to: height)
-        view.layer.cornerRadius = height / 2
-        return view
-    }()
+    enum Size {
+        case small
+        case regular
+    }
 
-    private let titleLabel: UILabel = {
+    var text: String? {
+        get {
+            textLabel.text
+        }
+        set {
+            textLabel.text = newValue
+        }
+    }
+
+    var style: Style {
+        didSet {
+            updateViewStyleAndSize()
+        }
+    }
+
+    var size: Size {
+        didSet {
+            updateViewStyleAndSize()
+        }
+    }
+
+    private let textLabel: UILabel = {
         let label = UILabel()
         label.numberOfLines = 1
-        label.font = .appFont(ofSize: 15, weight: .bold)
         return label
     }()
 
-    init(
-        title: String,
-        style: Style
-    ) {
-        backgroundView.addSubview(titleLabel)
-        titleLabel.constrainEdgesToSuperview(withInsets: .horizontal(30))
+    private let heightConstraint: NSLayoutConstraint
 
+    init(
+        text: String,
+        style: Style,
+        size: Size = .regular
+    ) {
+        self.style = style
+        self.size = size
+
+        let contentView = UIView()
+        heightConstraint = contentView.heightAnchor.constraint(equalToConstant: 0).isActive(true)
+
+        contentView.addSubview(textLabel)
+        textLabel.constrainEdges(to: contentView.layoutMarginsGuide)
+
+        super.init(contentView: contentView)
+
+        self.text = text
+        updateViewStyleAndSize()
+    }
+
+    private func updateViewStyleAndSize() {
+        heightConstraint.constant = size.height
+        contentView.layer.cornerRadius = size.height / 2
+        contentView.directionalLayoutMargins = .horizontal(size.sidePadding)
+
+        textLabel.textColor = style.textColor
+        textLabel.font = size.font
+
+        contentView.backgroundColor = .clear
+        contentView.layer.borderWidth = 0
         switch style.backgroundStyle {
         case .filled(let backgroundColor):
-            backgroundView.backgroundColor = backgroundColor
+            contentView.backgroundColor = backgroundColor
         case .outlined(let outlineColor):
-            backgroundView.layer.borderWidth = 2
-            backgroundView.layer.borderColor = outlineColor.withAlphaComponent(0.3).cgColor
+            contentView.layer.borderWidth = size.outlineWidth
+            contentView.layer.borderColor = outlineColor.cgColor
         }
+    }
+}
 
-        titleLabel.text = title
-        titleLabel.textColor = style.textColor
+private extension AppTextButton.Size {
 
-        super.init(contentView: backgroundView)
+    var height: CGFloat {
+        switch self {
+        case .small:
+            return 34
+        case .regular:
+            return 48
+        }
+    }
+
+    var sidePadding: CGFloat {
+        switch self {
+        case .small:
+            return 18
+        case .regular:
+            return 30
+        }
+    }
+
+    var outlineWidth: CGFloat {
+        switch self {
+        case .small:
+            return 1
+        case .regular:
+            return 2
+        }
+    }
+
+    var font: UIFont {
+        switch self {
+        case .small:
+            return .appFont(ofSize: 13, weight: .bold)
+        case .regular:
+            return .appFont(ofSize: 15, weight: .bold)
+        }
     }
 }
 
