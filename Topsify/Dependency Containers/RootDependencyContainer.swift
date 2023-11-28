@@ -22,7 +22,16 @@ struct RootDependencyContainer {
     }
 
     private func makeHomeTabViewController() -> UIViewController {
-        let homeVC = HomeViewController()
+        let homeVC = HomeViewController(
+            viewModel: .init(
+                dependencies: .init(
+                    service: DefaultHomeService(),
+                    scheduler: .main,
+                    calendar: .current,
+                    now: Date.init
+                )
+            )
+        )
         return NewAppNavigationController(rootViewController: homeVC)
     }
 
