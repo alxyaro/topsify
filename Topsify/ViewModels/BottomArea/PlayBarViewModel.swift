@@ -95,14 +95,3 @@ extension PlayBarViewModel {
         let subtitle: String
     }
 }
-
-// MARK: - Live Dependencies
-
-extension PlayBarViewModel.Dependencies {
-
-    static func live() -> Self {
-        .init(
-            playbackQueue: Environment.current.playbackQueue
-        )
-    }
-}

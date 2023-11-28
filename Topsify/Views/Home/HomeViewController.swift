@@ -9,8 +9,8 @@ import UIKit
 import Combine
 import CombineExt
 
-final class HomeViewController: AppNavigableController, NavigationHeaderProviding {
-    
+final class HomeViewController: UIViewController, NavigationHeaderProviding {
+
     private let backgroundGradient: CAGradientLayer = {
         let layer = CAGradientLayer()
         layer.type = .axial
@@ -38,10 +38,10 @@ final class HomeViewController: AppNavigableController, NavigationHeaderProvidin
     private let viewDidAppearRelay = PassthroughRelay<Void>()
     private var disposeBag = DisposeBag()
     
-    init(viewModel: HomeViewModel = .init(dependencies: .live())) {
+    init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
-        
-        super.init()
+
+        super.init(nibName: nil, bundle: nil)
     }
 
     required init?(coder: NSCoder) {
@@ -54,7 +54,6 @@ final class HomeViewController: AppNavigableController, NavigationHeaderProvidin
         super.viewDidLoad()
 
         setUpView()
-        setUpNavigationBar()
         bindViewModel()
     }
 
@@ -89,20 +88,6 @@ final class HomeViewController: AppNavigableController, NavigationHeaderProvidin
 
         view.addSubview(loadStateView)
         loadStateView.constrainEdgesToSuperview()
-    }
-
-    private func setUpNavigationBar() {
-        navBarButtons += [
-            AppNavigationBarButton(iconName: "bell", onTap: {
-
-            }),
-            AppNavigationBarButton(iconName: "clock.arrow.circlepath", onTap: {
-
-            }),
-            AppNavigationBarButton(iconName: "gear", onTap: { [weak self] in
-                self?.navigationController?.pushViewController(HomeViewController(), animated: true)
-            })
-        ]
     }
 
     private func bindViewModel() {

@@ -67,14 +67,3 @@ extension QueueViewModel {
         let dismiss: AnyPublisher<Void, Never>
     }
 }
-
-// MARK: - Live Dependencies
-
-extension QueueViewModel.Dependencies {
-
-    static func live() -> Self {
-        .init(
-            playbackQueue: Environment.current.playbackQueue
-        )
-    }
-}

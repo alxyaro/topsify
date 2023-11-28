@@ -32,12 +32,19 @@ final class PlayerViewController: UIViewController {
     private let viewModel: PlayerViewModel
     private let playBarView: PlayBarView
     private let interactionControllerForPresentation: UIPercentDrivenInteractiveTransition?
+    private let factory: DependencyFactory
     private var disposeBag = DisposeBag()
 
-    init(viewModel: PlayerViewModel, playBarView: PlayBarView, interactionControllerForPresentation: UIPercentDrivenInteractiveTransition? = nil) {
+    init(
+        viewModel: PlayerViewModel,
+        playBarView: PlayBarView,
+        interactionControllerForPresentation: UIPercentDrivenInteractiveTransition? = nil,
+        factory: DependencyFactory
+    ) {
         self.viewModel = viewModel
         self.playBarView = playBarView
         self.interactionControllerForPresentation = interactionControllerForPresentation
+        self.factory = factory
 
         super.init(nibName: nil, bundle: nil)
 
@@ -128,8 +135,8 @@ final class PlayerViewController: UIViewController {
                 guard let self, self.presentedViewController == nil else {
                     return
                 }
-                let vc = QueueViewController(viewModel: .init(dependencies: .live()))
-                present(vc, animated: true)
+                let queueVC = factory.makeQueueViewController()
+                present(queueVC, animated: true)
             }
             .store(in: &disposeBag)
 
@@ -141,6 +148,12 @@ final class PlayerViewController: UIViewController {
                 presentingViewController.dismiss(animated: true)
             }
             .store(in: &disposeBag)
+    }
+}
+
+extension PlayerViewController {
+    struct DependencyFactory {
+        let makeQueueViewController: () -> QueueViewController
     }
 }
 

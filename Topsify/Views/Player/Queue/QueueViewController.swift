@@ -11,16 +11,17 @@ final class QueueViewController: UIViewController {
 
     private let controlsBackgroundView = GradientFadeView(color: backgroundColor, direction: .up)
 
-    private let controlsView = PlayerControlsView(
-        // TODO: inject elsewhere
-        viewModel: .init(dependencies: .init(playbackQueue: Environment.current.playbackQueue))
-    )
+    private let controlsView: PlayerControlsView
 
     private let viewModel: QueueViewModel
     private var disposeBag = DisposeBag()
 
-    init(viewModel: QueueViewModel) {
+    init(
+        viewModel: QueueViewModel,
+        controlsView: PlayerControlsView
+    ) {
         self.viewModel = viewModel
+        self.controlsView = controlsView
 
         topBarView = .init(
             viewModel: viewModel.topBarViewModel,

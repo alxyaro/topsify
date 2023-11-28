@@ -4,12 +4,12 @@ import Combine
 import UIKit
 
 final class RemoteImageView: UIImageView {
-    private let imageProvider: ImageProviderType
+    // TODO: set this to a mock image provider by default for all test targets
+    static let imageProvider: ImageProviderType = ImageProvider()
 
     private var loadCancellable: AnyCancellable?
 
-    init(imageProvider: ImageProviderType = Environment.current.imageProvider) {
-        self.imageProvider = imageProvider
+    init() {
         super.init(frame: .zero)
         contentMode = .scaleAspectFill
         reset()
@@ -31,7 +31,7 @@ final class RemoteImageView: UIImageView {
 
         // disable animations for the publisher subscription call in case an image is available immediately
         UIView.performWithoutAnimation {
-            loadCancellable = imageProvider.image(for: url).sink { [weak self] completion in
+            loadCancellable = Self.imageProvider.image(for: url).sink { [weak self] completion in
                 if case .failure = completion {
                     self?.applyErrorStyle()
                 }

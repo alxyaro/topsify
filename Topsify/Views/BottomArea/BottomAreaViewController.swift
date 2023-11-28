@@ -18,6 +18,7 @@ final class BottomAreaViewController: UITabBarController {
 
     private let gradientView = GradientFadeView(color: .init(named: "BackgroundColor"), direction: .up)
 
+    private let factory: DependencyFactory
     private let tabsToVCs: [TabBarView.Tab: UIViewController]
     private let activeTabSubject = CurrentValueSubject<TabBarView.Tab, Never>(.home)
     private var disposeBag = DisposeBag()
@@ -26,9 +27,10 @@ final class BottomAreaViewController: UITabBarController {
         homeViewController: UIViewController,
         searchViewController: UIViewController,
         libraryViewController: UIViewController,
-        playBarViewModel: PlayBarViewModel
+        factory: DependencyFactory
     ) {
-        playBarView = PlayBarView(viewModel: playBarViewModel)
+        self.factory = factory
+        self.playBarView = factory.playBarView
 
         tabsToVCs = [
             .home: homeViewController,
@@ -86,6 +88,8 @@ final class BottomAreaViewController: UITabBarController {
     }
 
     private func setUpViews() {
+        view.backgroundColor = .appBackground
+
         view.addSubview(gradientView)
         gradientView.constrainEdgesToSuperview(excluding: .top)
         gradientView.heightAnchor.constraint(equalToConstant: 220).isActive = true
@@ -121,16 +125,22 @@ final class BottomAreaViewController: UITabBarController {
     }
 
     @objc private func presentPlayer() {
-        let playerVC = PlayerViewController(
-            viewModel: .init(dependencies: .live()),
-            playBarView: playBarView,
-            interactionControllerForPresentation: playerTransitionHandler?.interactionController
-        )
+        let playerVC = factory.makePlayerViewController(playBarView, playerTransitionHandler?.interactionController)
         present(playerVC, animated: true)
     }
 
     private func updateSafeAreaInset(of viewController: UIViewController) {
         viewController.additionalSafeAreaInsets.bottom = (view.frame.height - playBarView.frame.minY) - view.safeAreaInsets.bottom + 16
+    }
+}
+
+extension BottomAreaViewController {
+    struct DependencyFactory {
+        let playBarView: PlayBarView
+        let makePlayerViewController: (
+            _ playBarView: PlayBarView,
+            _ interactionControllerForPresentation: UIPercentDrivenInteractiveTransition?
+        ) -> PlayerViewController
     }
 }
 

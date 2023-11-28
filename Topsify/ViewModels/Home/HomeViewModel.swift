@@ -220,16 +220,3 @@ private extension HomeViewModel.ArtistHeaderViewModel {
         )
     }
 }
-
-// MARK: - Live Dependencies
-
-extension HomeViewModel.Dependencies {
-    static func live() -> Self {
-        .init(
-            service: DefaultHomeService(),
-            scheduler: .main,
-            calendar: .current,
-            now: Date.init
-        )
-    }
-}
