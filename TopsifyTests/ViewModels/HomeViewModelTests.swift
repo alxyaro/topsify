@@ -63,7 +63,7 @@ final class HomeViewModelTests: XCTestCase {
             [
                 .navigationHeader,
                 .recentActivity([
-                    .init(title: "Love Music", imageURL: .imageMock(id: "love_music"))
+                    .init(title: "Love Music", imageURL: .imageMock(id: "love_music"), onTap: {})
                 ]),
                 .generic(
                     header: "Generic Section",
@@ -202,6 +202,57 @@ final class HomeViewModelTests: XCTestCase {
         // should not re-emit duplicate values
         XCTAssertEqual(navigationHeaderTitle.pollValues(), [])
         XCTAssertEqual(backgroundTintStyle.pollValues(), [])
+    }
+
+    func testOutputs_presentContent_whenContentTileTapped_emitsWithExpectedValue() throws {
+        let spotlightEntries = TestPublisher<[SpotlightEntry], HomeServiceFetchError>()
+
+        let viewModel = HomeViewModel(
+            dependencies: .mock(
+                service: MockHomeService(
+                    spotlightEntriesPublisher: spotlightEntries.eraseToAnyPublisher()
+                )
+            )
+        )
+
+        let outputs = viewModel.bind(inputs: .init(
+            viewDidAppear: .just(()),
+            tappedReloadButton: .never()
+        ))
+
+        let sections = TestSubscriber.subscribe(to: outputs.sections)
+        let presentContent = TestSubscriber.subscribe(to: outputs.presentContent)
+
+        let contentID = ContentID(contentType: .artist, id: UUID())
+
+        spotlightEntries.send([
+            .generic(.init(
+                title: "Some Section",
+                items: [
+                    .init(
+                        contentID: contentID,
+                        imageURL: .imageMock(),
+                        title: "Tory Lanez",
+                        subtitle: ""
+                    )
+                ]
+            ))
+        ])
+
+        let contentTileTapHandler = try XCTUnwrap({
+            for section in try sections.pollOnlyValue() {
+                if case let .generic(_, contentTiles) = section {
+                    return contentTiles.first?.onTap
+                }
+            }
+            return nil
+        }())
+
+        XCTAssertEqual(presentContent.pollValues(), [])
+
+        contentTileTapHandler()
+
+        XCTAssertEqual(presentContent.pollValues(), [contentID])
     }
 }
 

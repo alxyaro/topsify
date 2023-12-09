@@ -22,25 +22,30 @@ final class RecentActivityItemCell: UICollectionViewCell, Reusable {
         return label
     }()
 
+    private let buttonContainer = AppButton()
+    private var disposeBag = DisposeBag()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = .appCardBackground
-        layer.cornerRadius = 5
-        clipsToBounds = true
+        let containerView = buttonContainer.contentView
 
-        contentView.addSubview(imageView)
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
-        imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
-        imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor).isActive = true
-        imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor).isActive = true
+        containerView.backgroundColor = .appCardBackground
+        containerView.layer.cornerRadius = 5
+        containerView.clipsToBounds = true
 
-        contentView.addSubview(label)
-        label.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(buttonContainer)
+        buttonContainer.constrainEdgesToSuperview()
+
+        containerView.addSubview(imageView)
+        imageView.constrainEdgesToSuperview(excluding: .trailing)
+        imageView.constrainWidthToHeight()
+
+        containerView.addSubview(label)
+        label.useAutoLayout()
         label.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 8).isActive = true
         label.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8).isActive = true
-        label.centerYAnchor.constraint(equalTo: contentView.centerYAnchor).isActive = true
+        label.constrainVerticallyInCenter(of: containerView)
 
         // this is to avoid all the views animating from a zero frame
         UIView.performWithoutAnimation {
@@ -60,5 +65,8 @@ final class RecentActivityItemCell: UICollectionViewCell, Reusable {
     func configure(with viewModel: RecentActivityItemViewModel) {
         label.text = viewModel.title
         imageView.configure(with: viewModel.imageURL)
+
+        disposeBag = DisposeBag()
+        buttonContainer.tapPublisher.sink(receiveValue: viewModel.onTap).store(in: &disposeBag)
     }
 }

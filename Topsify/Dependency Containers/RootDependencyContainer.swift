@@ -30,9 +30,61 @@ struct RootDependencyContainer {
                     calendar: .current,
                     now: Date.init
                 )
+            ),
+            factory: .init(
+                makeContentViewController: makeContentViewController(for:)
             )
         )
         return NewAppNavigationController(rootViewController: homeVC)
+    }
+
+    private func makeContentViewController(for contentID: ContentID) -> UIViewController? {
+        switch contentID.contentType {
+        case .album:
+            return makeAlbumViewController(albumID: contentID.id)
+        case .playlist:
+            return makePlaylistViewController(playlistID: contentID.id)
+        case .artist:
+            return makeArtistViewController(artistID: contentID.id)
+        case .user:
+            assertionFailure("User VC is not implemented yet!")
+            return nil
+        }
+    }
+
+    private func makeAlbumViewController(albumID: UUID) -> AlbumViewController {
+        AlbumViewController(
+            viewModel: .init(
+                albumID: albumID,
+                dependencies: .init(
+                    calendar: .current,
+                    contentService: DefaultContentService()
+                )
+            )
+        )
+    }
+
+    private func makePlaylistViewController(playlistID: UUID) -> PlaylistViewController {
+        PlaylistViewController(
+            viewModel: .init(
+                playlistID: playlistID,
+                dependencies: .init(
+                    contentService: DefaultContentService()
+                )
+            )
+        )
+    }
+
+    private func makeArtistViewController(artistID: UUID) -> ArtistViewController {
+        ArtistViewController(
+            viewModel: .init(
+                artistID: artistID,
+                dependencies: .init(
+                    contentService: DefaultContentService(),
+                    calendar: .current
+                )
+            )
+        )
     }
 
     private func makeSearchTabViewController() -> UIViewController {

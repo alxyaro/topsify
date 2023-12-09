@@ -46,8 +46,17 @@ extension UIView {
     }
 
     func constrainInCenter(of anchorable: FrameAnchorable) {
+        constrainHorizontallyInCenter(of: anchorable)
+        constrainVerticallyInCenter(of: anchorable)
+    }
+
+    func constrainHorizontallyInCenter(of anchorable: FrameAnchorable) {
         useAutoLayout()
         centerXAnchor.constraint(equalTo: anchorable.centerXAnchor).isActive = true
+    }
+
+    func constrainVerticallyInCenter(of anchorable: FrameAnchorable) {
+        useAutoLayout()
         centerYAnchor.constraint(equalTo: anchorable.centerYAnchor).isActive = true
     }
 
@@ -64,6 +73,11 @@ extension UIView {
     func constrainHeight(to height: CGFloat) {
         useAutoLayout()
         heightAnchor.constraint(equalToConstant: height).isActive = true
+    }
+
+    func constrainWidthToHeight() {
+        useAutoLayout()
+        widthAnchor.constraint(equalTo: heightAnchor).isActive = true
     }
 
     func constrainDimensions(width: CGFloat, height: CGFloat) {

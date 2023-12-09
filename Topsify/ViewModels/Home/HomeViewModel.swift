@@ -47,7 +47,7 @@ struct HomeViewModel {
                     var result = [Section]()
                     result.append(.navigationHeader)
                     if !recentActivity.isEmpty {
-                        result.append(.recentActivity(recentActivity.map { RecentActivityItemViewModel(from: $0) }))
+                        result.append(.recentActivity(recentActivity.map { RecentActivityItemViewModel(from: $0, tappedContentSubject: tappedContentSubject) }))
                     }
                     result.append(contentsOf: spotlight.map { Section(from: $0, tappedContentSubject: tappedContentSubject) })
                     return result
@@ -88,7 +88,8 @@ struct HomeViewModel {
             loadState: loadState,
             navigationHeaderTitle: navigationHeaderTitle.eraseToAnyPublisher(),
             backgroundTintStyle: backgroundTintStyle.eraseToAnyPublisher(),
-            sections: sections
+            sections: sections,
+            presentContent: tappedContentSubject.eraseToAnyPublisher()
         )
     }
 }
@@ -107,6 +108,7 @@ extension HomeViewModel {
         let navigationHeaderTitle: AnyPublisher<String, Never>
         let backgroundTintStyle: AnyPublisher<BackgroundTintStyle, Never>
         let sections: AnyPublisher<[Section], Never>
+        let presentContent: AnyPublisher<ContentID, Never>
     }
 
     struct Dependencies {
@@ -179,9 +181,14 @@ private extension HomeViewModel.Section {
 
 private extension RecentActivityItemViewModel {
 
-    init(from model: RecentActivityItem) {
-        title = model.title
-        imageURL = model.imageURL
+    init(from model: RecentActivityItem, tappedContentSubject: some Subject<ContentID, Never>) {
+        self.init(
+            title: model.title,
+            imageURL: model.imageURL,
+            onTap: {
+                tappedContentSubject.send(model.contentID)
+            }
+        )
     }
 }
 

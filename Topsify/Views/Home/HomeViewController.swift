@@ -35,11 +35,16 @@ final class HomeViewController: UIViewController, NavigationHeaderProviding {
     private lazy var collectionManager = CollectionManager(navigationHeaderView: navigationHeaderView)
 
     private let viewModel: HomeViewModel
+    private let factory: DependencyFactory
     private let viewDidAppearRelay = PassthroughRelay<Void>()
     private var disposeBag = DisposeBag()
     
-    init(viewModel: HomeViewModel) {
+    init(
+        viewModel: HomeViewModel,
+        factory: DependencyFactory
+    ) {
         self.viewModel = viewModel
+        self.factory = factory
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -126,6 +131,13 @@ final class HomeViewController: UIViewController, NavigationHeaderProviding {
                 collectionManager?.updateSections($0)
             }
             .store(in: &disposeBag)
+
+        outputs.presentContent
+            .sink { [weak self] contentID in
+                guard let self, let vc = factory.makeContentViewController(contentID) else { return }
+                navigationController?.pushViewController(vc, animated: true)
+            }
+            .store(in: &disposeBag)
     }
 
     private func updateGradientPosition() {
@@ -133,5 +145,11 @@ final class HomeViewController: UIViewController, NavigationHeaderProviding {
         CALayer.performWithoutAnimation {
             backgroundGradient.position.y = min(0, -(collectionView.contentOffset.y + collectionView.adjustedContentInset.top) / 2)
         }
+    }
+}
+
+extension HomeViewController {
+    struct DependencyFactory {
+        let makeContentViewController: (ContentID) -> UIViewController?
     }
 }

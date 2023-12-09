@@ -51,6 +51,8 @@ final class HomeArtistHeaderCell: UICollectionReusableView, Reusable {
 
     private lazy var containerButton = AppButton(contentView: mainStackView, scaleOnTap: false)
 
+    private var disposeBag = DisposeBag()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -64,8 +66,12 @@ final class HomeArtistHeaderCell: UICollectionReusableView, Reusable {
     }
 
     func configure(with viewModel: HomeViewModel.ArtistHeaderViewModel) {
+        disposeBag = DisposeBag()
+
         imageView.configure(with: viewModel.avatarURL)
         captionLabel.text = viewModel.captionText
         artistLabel.text = viewModel.artistName
+
+        containerButton.tapPublisher.sink(receiveValue: viewModel.onTap).store(in: &disposeBag)
     }
 }

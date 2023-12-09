@@ -5,9 +5,9 @@
 //  Created by Alex Yaro on 2022-04-04.
 //
 
-import UIKit
 import Combine
 import Reusable
+import UIKit
 
 final class ContentTileCell: UICollectionViewCell, Reusable {
     static let defaultFixedWidth: CGFloat = 140
@@ -40,12 +40,19 @@ final class ContentTileCell: UICollectionViewCell, Reusable {
         return view
     }()
 
-    private var viewModel: ContentTileViewModel?
-    
+    private let button = AppButton()
+
+    private var isCircular: Bool = false {
+        didSet {
+            updateCornerRadius()
+        }
+    }
+
+    private var disposeBag = DisposeBag()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
-        let button = AppButton()
+
         contentView.addSubview(button)
         button.constrainEdgesToSuperview()
 
@@ -82,7 +89,7 @@ final class ContentTileCell: UICollectionViewCell, Reusable {
         with viewModel: ContentTileViewModel,
         fixedWidth: CGFloat? = defaultFixedWidth
     ) {
-        self.viewModel = viewModel
+        disposeBag = DisposeBag()
 
         imageView.configure(with: viewModel.imageURL)
 
@@ -105,14 +112,16 @@ final class ContentTileCell: UICollectionViewCell, Reusable {
         // https://developer.apple.com/documentation/uikit/uilabel/1620525-linebreakmode
         subtitleLabel.lineBreakMode = .byTruncatingTail
 
+        isCircular = viewModel.isCircular
+
+        button.tapPublisher.sink(receiveValue: viewModel.onTap).store(in: &disposeBag)
+
         if let fixedWidth {
             imageViewWidthConstraint.constant = fixedWidth
             imageViewWidthConstraint.isActive = true
         } else {
             imageViewWidthConstraint.isActive = false
         }
-
-        updateCornerRadius()
     }
     
     override func layoutSubviews() {
@@ -120,8 +129,7 @@ final class ContentTileCell: UICollectionViewCell, Reusable {
         updateCornerRadius()
     }
     
-    func updateCornerRadius() {
-        imageView.layer.cornerRadius = viewModel?.isCircular == true ? imageView.bounds.width / 2 : 0
+    private func updateCornerRadius() {
+        imageView.layer.cornerRadius = isCircular ? imageView.bounds.width / 2 : 0
     }
-    
 }
