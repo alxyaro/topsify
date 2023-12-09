@@ -28,9 +28,19 @@ final class PlayButton: AppIconButton {
         contentView.layer.shadowPath = UIBezierPath(roundedRect: .init(origin: .zero, size: .uniform(Self.size)), cornerRadius: Self.size / 2).cgPath
     }
 
-    func constrainVertically(with anchor: NSLayoutYAxisAnchor) {
+    func constrainVertically(in view: UIView) {
+        if superview == nil {
+            // If we don't have a TopBar, the PlayButton won't be in the view hierarchy
+            assertionFailure(
+                """
+                PlayButton wasn't already in the view heirarchy!
+                Ensure that you're pushing the corresponding VC onto a \(NewAppNavigationController.self).
+                """
+            )
+            view.addSubview(self)
+        }
         verticalConstraint?.isActive = false
-        verticalConstraint = centerYAnchor.constraint(greaterThanOrEqualTo: anchor).isActive(true)
+        verticalConstraint = centerYAnchor.constraint(greaterThanOrEqualTo: view.centerYAnchor).isActive(true)
     }
 
     func setDynamicVisibility(basedOn loadState: AnyPublisher<LoadState<some UserFacingError>, Never>) {

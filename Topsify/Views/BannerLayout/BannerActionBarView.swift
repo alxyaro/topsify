@@ -71,7 +71,7 @@ final class BannerActionBarView: UIView {
 
         if let playButton {
             playButtonPlaceholderView.isHidden = false
-            playButton.constrainVertically(with: playButtonPlaceholderView.centerYAnchor)
+            playButton.constrainVertically(in: playButtonPlaceholderView)
         } else {
             playButtonPlaceholderView.isHidden = true
         }
