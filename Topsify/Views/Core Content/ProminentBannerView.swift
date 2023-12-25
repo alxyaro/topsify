@@ -106,10 +106,10 @@ final class ProminentBannerView: BannerView {
         switch viewModel.details {
         case let .simple(details):
             detailsView.configure(details: details)
-        case let .userAttributed(description, userAttribution, details):
+        case let .userAttributed(description, attributionViewModel, details):
             detailsView.configure(
                 description: description,
-                userAttribution: userAttribution,
+                attributionViewModel: attributionViewModel,
                 details: details
             )
         }

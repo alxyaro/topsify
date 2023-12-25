@@ -7,7 +7,7 @@ struct ArtworkBannerViewModel: Equatable {
     let artworkURL: URL
     let title: String?
     let description: String?
-    let userAttribution: [BannerUserAttribution]
+    let attributionViewModel: BannerAttributionViewModel
     let details: String
     let actionBarViewModel: BannerActionBarViewModel
 }

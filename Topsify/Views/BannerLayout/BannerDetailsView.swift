@@ -19,28 +19,9 @@ final class BannerDetailsView: UIView {
         return label
     }()
 
-    private let artistAvatarImageView: RemoteImageView = {
-        let view = RemoteImageView()
-        view.constrainDimensions(uniform: 20)
-        view.layer.cornerRadius = 10
-        view.clipsToBounds = true
+    private let attributionContainerView: UIView = {
+        let view = UIView()
         return view
-    }()
-
-    private let artistsLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .appTextPrimary
-        label.font = .appFont(ofSize: 13, weight: .bold)
-        label.numberOfLines = 1
-        return label
-    }()
-
-    private lazy var artistRowStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [artistAvatarImageView, artistsLabel])
-        stackView.axis = .horizontal
-        stackView.alignment = .center
-        stackView.spacing = 8
-        return stackView
     }()
 
     private let detailsLabel: UILabel = {
@@ -54,7 +35,7 @@ final class BannerDetailsView: UIView {
     init() {
         super.init(frame: .zero)
 
-        let stackView = UIStackView(arrangedSubviews: [titleLabel, descriptionLabel, artistRowStackView, detailsLabel])
+        let stackView = UIStackView(arrangedSubviews: [titleLabel, descriptionLabel, attributionContainerView, detailsLabel])
         stackView.axis = .vertical
         stackView.alignment = .leading
         stackView.spacing = 8
@@ -71,7 +52,7 @@ final class BannerDetailsView: UIView {
     func configure(
         title: String? = nil,
         description: String? = nil,
-        userAttribution: [BannerUserAttribution]? = nil,
+        attributionViewModel: BannerAttributionViewModel? = nil,
         details: String
     ) {
         titleLabel.attributedText = NSAttributedString(text: title, font: .appFont(ofSize: 24, weight: .bold), kerning: -1)
@@ -80,12 +61,15 @@ final class BannerDetailsView: UIView {
         descriptionLabel.text = description
         descriptionLabel.isHidden = description == nil
 
-        // TODO: support list of artists
-        if let userAttribution = userAttribution?.first {
-            artistsLabel.text = userAttribution.name
-            artistAvatarImageView.configure(with: userAttribution.avatarURL)
+        attributionContainerView.subviews.forEach { $0.removeFromSuperview() }
+        if let attributionViewModel {
+            attributionContainerView.isHidden = false
+            let attributionView = BannerAttributionView(viewModel: attributionViewModel)
+            attributionContainerView.addSubview(attributionView)
+            attributionView.constrainEdgesToSuperview()
+        } else {
+            attributionContainerView.isHidden = true
         }
-        artistRowStackView.isHidden = userAttribution?.first == nil
 
         detailsLabel.text = details
     }

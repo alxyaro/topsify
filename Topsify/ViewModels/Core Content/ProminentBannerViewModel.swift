@@ -14,7 +14,7 @@ extension ProminentBannerViewModel {
 
     enum Details: Equatable {
         case simple(String)
-        case userAttributed(description: String?, attribution: [BannerUserAttribution], details: String)
+        case userAttributed(description: String?, attributionViewModel: BannerAttributionViewModel, details: String)
     }
 
     struct UserInfo: Equatable {

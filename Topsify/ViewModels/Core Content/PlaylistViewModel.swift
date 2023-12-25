@@ -114,7 +114,11 @@ private extension ArtworkBannerViewModel {
         artworkURL = playlist.imageURL
         title = !playlist.isCoverSelfDescriptive ? playlist.title : nil
         description = playlist.description
-        userAttribution = [playlist.creator].map { BannerUserAttribution(avatarURL: $0.avatarURL, name: $0.name) }
+
+        attributionViewModel = BannerAttributionViewModel(
+            attribution: [playlist.creator],
+            onTap: { _ in } // TODO: impl
+        )
 
         let playlistTerm = NSLocalizedString("Playlist", comment: "Content type")
         // TODO: add private/public playlist icons to the details string
@@ -143,7 +147,10 @@ private extension ProminentBannerViewModel {
 
         details = .userAttributed(
             description: playlist.description,
-            attribution: [playlist.creator].map { BannerUserAttribution(avatarURL: $0.avatarURL, name: $0.name) },
+            attributionViewModel: BannerAttributionViewModel(
+                attribution: [playlist.creator],
+                onTap: { _ in } // TODO: impl
+            ),
             details: playlist.totalDuration.formatted(units: [.hour, .minute])
         )
 

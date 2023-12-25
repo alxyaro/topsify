@@ -75,7 +75,7 @@ final class ArtworkBannerView: BannerView {
         detailsView.configure(
             title: viewModel.title,
             description: viewModel.description,
-            userAttribution: viewModel.userAttribution,
+            attributionViewModel: viewModel.attributionViewModel,
             details: viewModel.details
         )
         actionBarView.configure(with: viewModel.actionBarViewModel, playButton: playButton)

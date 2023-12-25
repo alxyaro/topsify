@@ -109,7 +109,11 @@ private extension ArtworkBannerViewModel {
         artworkURL = album.imageURL
         title = album.title
         description = nil
-        userAttribution = album.artists.map { BannerUserAttribution(avatarURL: $0.avatarURL, name: $0.name) }
+
+        attributionViewModel = BannerAttributionViewModel(
+            attribution: album.artists.map { .artist($0) },
+            onTap: { _ in } // TODO: impl
+        )
 
         let releaseYear = String(calendar.component(.year, from: album.releaseDate))
         details = [album.type.displayName, releaseYear].bulletJoined()
