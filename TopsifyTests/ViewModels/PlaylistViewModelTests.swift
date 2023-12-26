@@ -137,12 +137,10 @@ final class PlaylistViewModelTests: XCTestCase {
                 artworkURL: .imageMock(id: "artwork"),
                 title: "Not Goods",
                 description: "Just the opinion of some guy.",
-                userAttribution: [
-                    BannerUserAttribution(
-                        avatarURL: .imageMock(id: "fantona"),
-                        name: "Music Reviewer"
-                    )
-                ],
+                attributionViewModel: BannerAttributionViewModel(
+                    attribution: [playlist.creator],
+                    onTap: { _ in }
+                ),
                 details: "Playlist \u{2022} 64h 23m",
                 actionBarViewModel: BannerActionBarViewModel(
                     sideButtons: [
@@ -186,12 +184,10 @@ final class PlaylistViewModelTests: XCTestCase {
                 title: playlist.title,
                 details: .userAttributed(
                     description: playlist.description,
-                    attribution: [
-                        BannerUserAttribution(
-                            avatarURL: .imageMock(id: "sopfity"),
-                            name: "Sopfity"
-                        )
-                    ],
+                    attributionViewModel: BannerAttributionViewModel(
+                        attribution: [playlist.creator],
+                        onTap: { _ in }
+                    ),
                     details: "1h 23m"
                 ),
                 actionBarViewModel: BannerActionBarViewModel(

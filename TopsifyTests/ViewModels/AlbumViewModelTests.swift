@@ -149,12 +149,10 @@ final class AlbumViewModelTests: XCTestCase {
                 artworkURL: album.imageURL,
                 title: album.title,
                 description: nil,
-                userAttribution: album.artists.map {
-                    BannerUserAttribution(
-                        avatarURL: $0.avatarURL,
-                        name: $0.name
-                    )
-                },
+                attributionViewModel: BannerAttributionViewModel(
+                    attribution: album.artists.map { .artist($0) },
+                    onTap: { _ in }
+                ),
                 details: "Album \u{2022} 2023",
                 actionBarViewModel: BannerActionBarViewModel(
                     sideButtons: [

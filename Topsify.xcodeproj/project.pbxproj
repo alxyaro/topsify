@@ -12,7 +12,6 @@
 		4F1287322AFB1F790013A213 /* UIKit+FormattingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1287312AFB1F790013A213 /* UIKit+FormattingTests.swift */; };
 		4F1287342AFB21480013A213 /* UserRef+Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1287332AFB21480013A213 /* UserRef+Mock.swift */; };
 		4F639A9C2AC5F25A005BF20F /* RecentActivityItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639A9B2AC5F25A005BF20F /* RecentActivityItem.swift */; };
-		4F639AA02AC741F1005BF20F /* ContentID+Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639A9F2AC741F1005BF20F /* ContentID+Mock.swift */; };
 		4F639AA22AC75101005BF20F /* PlaybackSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639AA12AC75101005BF20F /* PlaybackSource.swift */; };
 		4F639AA42ACA061D005BF20F /* PlaylistViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639AA32ACA061D005BF20F /* PlaylistViewModel.swift */; };
 		4F639AA62ACA29A1005BF20F /* PlaylistViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639AA52ACA29A1005BF20F /* PlaylistViewModelTests.swift */; };
@@ -35,10 +34,11 @@
 		4FBE986F2ABFF17C00802FF8 /* ContentID.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FBE986E2ABFF17C00802FF8 /* ContentID.swift */; };
 		4FBE98712ABFF1C100802FF8 /* ContentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FBE98702ABFF1C100802FF8 /* ContentType.swift */; };
 		4FBE987A2AC2012600802FF8 /* SwizzleHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FBE98792AC2012600802FF8 /* SwizzleHelper.swift */; };
+		4FD5DC1B2B3B41A600EB343D /* UserOrArtistRef+Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD5DC192B3B416C00EB343D /* UserOrArtistRef+Mock.swift */; };
+		4FD5DC1D2B3B41B500EB343D /* ContentID+Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639A9F2AC741F1005BF20F /* ContentID+Mock.swift */; };
 		4FFE34772AD8D6DA0070D416 /* ProminentBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFE34762AD8D6DA0070D416 /* ProminentBannerView.swift */; };
 		4FFE34792ADAF8300070D416 /* NSAttributedString+Additions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFE34782ADAF8300070D416 /* NSAttributedString+Additions.swift */; };
 		4FFE347D2ADB14EC0070D416 /* CircularStd-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4FFE347C2ADB14EC0070D416 /* CircularStd-Black.otf */; };
-		4FFE347F2ADBA6D80070D416 /* BannerUserAttribution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFE347E2ADBA6D80070D416 /* BannerUserAttribution.swift */; };
 		4FFE34812AEEDEF40070D416 /* ArtistViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFE34802AEEDEF30070D416 /* ArtistViewController.swift */; };
 		4FFE34832AEEFBC40070D416 /* ArtistViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFE34822AEEFBC40070D416 /* ArtistViewModel.swift */; };
 		4FFE34852AF7E80C0070D416 /* Artist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FFE34842AF7E80C0070D416 /* Artist.swift */; };
@@ -303,10 +303,10 @@
 		4FBE986E2ABFF17C00802FF8 /* ContentID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentID.swift; sourceTree = "<group>"; };
 		4FBE98702ABFF1C100802FF8 /* ContentType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentType.swift; sourceTree = "<group>"; };
 		4FBE98792AC2012600802FF8 /* SwizzleHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwizzleHelper.swift; sourceTree = "<group>"; };
+		4FD5DC192B3B416C00EB343D /* UserOrArtistRef+Mock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserOrArtistRef+Mock.swift"; sourceTree = "<group>"; };
 		4FFE34762AD8D6DA0070D416 /* ProminentBannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProminentBannerView.swift; sourceTree = "<group>"; };
 		4FFE34782ADAF8300070D416 /* NSAttributedString+Additions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAttributedString+Additions.swift"; sourceTree = "<group>"; };
 		4FFE347C2ADB14EC0070D416 /* CircularStd-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "CircularStd-Black.otf"; sourceTree = "<group>"; };
-		4FFE347E2ADBA6D80070D416 /* BannerUserAttribution.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerUserAttribution.swift; sourceTree = "<group>"; };
 		4FFE34802AEEDEF30070D416 /* ArtistViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistViewController.swift; sourceTree = "<group>"; };
 		4FFE34822AEEFBC40070D416 /* ArtistViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistViewModel.swift; sourceTree = "<group>"; };
 		4FFE34842AF7E80C0070D416 /* Artist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Artist.swift; sourceTree = "<group>"; };
@@ -563,6 +563,8 @@
 			children = (
 				4F639AB62AD08EFF005BF20F /* BannerActionBarViewModel.swift */,
 				4FA711A52B269B0A0086B79F /* BannerAttributionViewModel.swift */,
+				6B9B46F32A8FC7CD002042F6 /* ArtworkBannerViewModel.swift */,
+				4F639AB42AD08E9F005BF20F /* ProminentBannerViewModel.swift */,
 			);
 			path = Banner;
 			sourceTree = "<group>";
@@ -695,7 +697,7 @@
 			isa = PBXGroup;
 			children = (
 				6B8D0FED2A7FF87200457DCF /* Core Content */,
-				6BC3CCE12A79DDF0007C3176 /* BannerLayout */,
+				6BC3CCE12A79DDF0007C3176 /* Banner */,
 				6B9B44C129CF657C00F6BA94 /* Player */,
 				6B005C1127F2B58E0064929C /* Home */,
 				6B35721C27FE4D2C007CBDF6 /* Common */,
@@ -902,6 +904,7 @@
 				6B21E39129E3A5E000BE2B99 /* Playlist+Mock.swift */,
 				6BDC889229F1CE19003B7290 /* MockPlaybackQueue.swift */,
 				4F639A9F2AC741F1005BF20F /* ContentID+Mock.swift */,
+				4FD5DC192B3B416C00EB343D /* UserOrArtistRef+Mock.swift */,
 			);
 			path = TestCommon;
 			sourceTree = "<group>";
@@ -926,8 +929,6 @@
 		6B8D0FED2A7FF87200457DCF /* Core Content */ = {
 			isa = PBXGroup;
 			children = (
-				6B8D0FEA2A7ED84500457DCF /* ArtworkBannerView.swift */,
-				4FFE34762AD8D6DA0070D416 /* ProminentBannerView.swift */,
 				6B8D0FEE2A7FF95A00457DCF /* AlbumViewController.swift */,
 				4F639AA92ACBBB8A005BF20F /* PlaylistViewController.swift */,
 				4FFE34802AEEDEF30070D416 /* ArtistViewController.swift */,
@@ -957,17 +958,14 @@
 		6B9B46E32A8D8C1E002042F6 /* Core Content */ = {
 			isa = PBXGroup;
 			children = (
-				4FFE347E2ADBA6D80070D416 /* BannerUserAttribution.swift */,
-				6B9B46F32A8FC7CD002042F6 /* ArtworkBannerViewModel.swift */,
 				6B9B46E42A8D8C30002042F6 /* AlbumViewModel.swift */,
 				4F639AA32ACA061D005BF20F /* PlaylistViewModel.swift */,
 				4FFE34822AEEFBC40070D416 /* ArtistViewModel.swift */,
-				4F639AB42AD08E9F005BF20F /* ProminentBannerViewModel.swift */,
 			);
 			path = "Core Content";
 			sourceTree = "<group>";
 		};
-		6BC3CCE12A79DDF0007C3176 /* BannerLayout */ = {
+		6BC3CCE12A79DDF0007C3176 /* Banner */ = {
 			isa = PBXGroup;
 			children = (
 				6B8D0FE42A7EA01A00457DCF /* BannerLayout.swift */,
@@ -976,8 +974,10 @@
 				4F639AB02ACE6279005BF20F /* BannerDetailsView.swift */,
 				4F639AB82AD09262005BF20F /* BannerActionBarView.swift */,
 				4FA711A22B2691790086B79F /* BannerAttributionView.swift */,
+				6B8D0FEA2A7ED84500457DCF /* ArtworkBannerView.swift */,
+				4FFE34762AD8D6DA0070D416 /* ProminentBannerView.swift */,
 			);
-			path = BannerLayout;
+			path = Banner;
 			sourceTree = "<group>";
 		};
 		6BD2EA7029A3EA8700D5F1AD /* ViewModels */ = {
@@ -1290,7 +1290,6 @@
 				6B35724B280C8E15007CBDF6 /* Playlist.swift in Sources */,
 				6BAE1B61298721110092E53E /* RemoteImageView.swift in Sources */,
 				6B444BBB2A40F4AC0063DBD5 /* HorizontalGradientMaskView.swift in Sources */,
-				4F639AA02AC741F1005BF20F /* ContentID+Mock.swift in Sources */,
 				6BED243D29D750C8002D51C2 /* PlayerSubMenuView.swift in Sources */,
 				6BF9690229D726A300EA8B6F /* AppCollectionView.swift in Sources */,
 				6B9B44CF29D2242300F6BA94 /* MarqueeView.swift in Sources */,
@@ -1358,7 +1357,6 @@
 				6B35720327FBB0C8007CBDF6 /* UIFont+appFont.swift in Sources */,
 				6B005C1527F3F0EB0064929C /* Album.swift in Sources */,
 				6BE368B529A2828E00687D48 /* LoadState.swift in Sources */,
-				4FFE347F2ADBA6D80070D416 /* BannerUserAttribution.swift in Sources */,
 				4FA711972B00854C0086B79F /* Hashable+Extensions.swift in Sources */,
 				6B403C6429E200DA00CA6DE0 /* FakeContentService.swift in Sources */,
 				6BF3DD232A60671400E5F2D0 /* QueueListHeaderView.swift in Sources */,
@@ -1422,9 +1420,11 @@
 				6B36C9C929E0CC9200A1F8D9 /* URL+Mock.swift in Sources */,
 				4F639AA62ACA29A1005BF20F /* PlaylistViewModelTests.swift in Sources */,
 				6B8805852A7038AF000C2B00 /* QueueSelectionMenuViewModelTests.swift in Sources */,
+				4FD5DC1B2B3B41A600EB343D /* UserOrArtistRef+Mock.swift in Sources */,
 				4F1287342AFB21480013A213 /* UserRef+Mock.swift in Sources */,
 				6B9B46FC2A9571DA002042F6 /* AlbumViewModelTests.swift in Sources */,
 				6BDC889329F1CE19003B7290 /* MockPlaybackQueue.swift in Sources */,
+				4FD5DC1D2B3B41B500EB343D /* ContentID+Mock.swift in Sources */,
 				6B0D782827F0E4BE001BA64E /* TopsifyTests.swift in Sources */,
 				4F1287322AFB1F790013A213 /* UIKit+FormattingTests.swift in Sources */,
 				6BBF4FD429F4512500CBA32D /* PlaybackQueueIndexTests.swift in Sources */,
