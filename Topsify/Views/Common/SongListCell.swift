@@ -145,6 +145,10 @@ final class SongListCell: UICollectionViewListCell, Reusable {
         disposeBag = DisposeBag()
         self.delegate = delegate
 
+        // The UICollectionViewListCell seems to update the layout margins on cell re-use.
+        // To ensure the margins stay consistent, this explicit assignment is necessary:
+        directionalLayoutMargins = .zero
+
         titleLabel.text = viewModel.title
         subtitleLabel.text = viewModel.subtitle
         explicitLabelView.isHidden = !viewModel.showExplicitTag
