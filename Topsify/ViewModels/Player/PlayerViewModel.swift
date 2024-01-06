@@ -23,7 +23,7 @@ final class PlayerViewModel {
         ))
         self.stageViewModel = .init(playbackQueue: dependencies.playbackQueue)
         self.titleViewModel = .init(dependencies: .init(playbackQueue: dependencies.playbackQueue))
-        self.controlsViewModel = .init(dependencies: .init(playbackQueue: dependencies.playbackQueue))
+        self.controlsViewModel = .init(dependencies: .init(playbackQueue: dependencies.playbackQueue, playbackManager: dependencies.playbackManager))
     }
 
     func bind(inputs: Inputs) -> Outputs {
@@ -54,6 +54,7 @@ extension PlayerViewModel {
 
     struct Dependencies {
         let playbackQueue: any PlaybackQueueType
+        let playbackManager: any PlaybackManagerType
     }
 
     struct Inputs {

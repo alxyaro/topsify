@@ -11,6 +11,14 @@ final class PlayerControlsViewModel {
     }
 
     func bind(inputs: Inputs) -> Outputs {
+        inputs.tappedPlayButton
+            .sink(receiveValue: dependencies.playbackManager.play)
+            .store(in: &disposeBag)
+
+        inputs.tappedPauseButton
+            .sink(receiveValue: dependencies.playbackManager.pause)
+            .store(in: &disposeBag)
+
         inputs.tappedNextButton
             .sink { [dependencies] in
                 dependencies.playbackQueue.goToNextItem()
@@ -23,7 +31,11 @@ final class PlayerControlsViewModel {
             }
             .store(in: &disposeBag)
 
-        return Outputs()
+        return Outputs(
+            isPlaying: dependencies.playbackManager.statusPublisher
+                .map { $0 == .playing }
+                .eraseToAnyPublisher()
+        )
     }
 }
 
@@ -33,12 +45,17 @@ extension PlayerControlsViewModel {
 
     struct Dependencies {
         let playbackQueue: any PlaybackQueueType
+        let playbackManager: any PlaybackManagerType
     }
 
     struct Inputs {
+        let tappedPlayButton: AnyPublisher<Void, Never>
+        let tappedPauseButton: AnyPublisher<Void, Never>
         let tappedNextButton: AnyPublisher<Void, Never>
         let tappedPreviousButton: AnyPublisher<Void, Never>
     }
 
-    typealias Outputs = Void
+    struct Outputs {
+        let isPlaying: AnyPublisher<Bool, Never>
+    }
 }

@@ -1,12 +1,15 @@
 // Created by Alex Yaro on 2023-11-26.
 
+import AVFoundation
 import UIKit
 
 struct RootDependencyContainer {
     private let playbackQueue: any PlaybackQueueType
+    private let playbackManager: any PlaybackManagerType
 
     init() {
         self.playbackQueue = PlaybackQueue()
+        self.playbackManager = PlaybackManager(playbackQueue: playbackQueue, audioSession: AVAudioSession.sharedInstance())
     }
 
     func makeRootViewController() -> UIViewController {
@@ -116,13 +119,25 @@ struct RootDependencyContainer {
         PlayerViewController(
             viewModel: PlayerViewModel(
                 dependencies: .init(
-                    playbackQueue: playbackQueue
+                    playbackQueue: playbackQueue,
+                    playbackManager: playbackManager
                 )
             ),
             playBarView: playBarView,
             interactionControllerForPresentation: interactionControllerForPresentation,
             factory: .init(
+                sliderView: makePlayerSliderView(),
                 makeQueueViewController: makeQueueViewController
+            )
+        )
+    }
+
+    private func makePlayerSliderView() -> PlayerSliderView {
+        PlayerSliderView(
+            viewModel: PlayerSliderViewModel(
+                dependencies: .init(
+                    playbackManager: playbackManager
+                )
             )
         )
     }
@@ -142,7 +157,8 @@ struct RootDependencyContainer {
         PlayerControlsView(
             viewModel: .init(
                 dependencies: .init(
-                    playbackQueue: playbackQueue
+                    playbackQueue: playbackQueue,
+                    playbackManager: playbackManager
                 )
             )
         )

@@ -16,7 +16,6 @@ final class PlayerViewController: UIViewController {
     private lazy var titleView = PlayerTitleView(
         viewModel: viewModel.titleViewModel
     )
-    private let sliderView = PlayerSliderContainerView()
     private lazy var controlsView = PlayerControlsView(
         viewModel: viewModel.controlsViewModel
     )
@@ -86,7 +85,7 @@ final class PlayerViewController: UIViewController {
 
         let mainStackView = UIStackView(arrangedSubviews: [
             titleView,
-            sliderView,
+            factory.sliderView,
             controlsView,
             subMenuView
         ])
@@ -153,6 +152,7 @@ final class PlayerViewController: UIViewController {
 
 extension PlayerViewController {
     struct DependencyFactory {
+        let sliderView: PlayerSliderView
         let makeQueueViewController: () -> QueueViewController
     }
 }

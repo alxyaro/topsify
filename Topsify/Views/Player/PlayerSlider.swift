@@ -4,6 +4,7 @@ import UIKit
 
 final class PlayerSlider: UIControl {
     static let padding: CGFloat = 16
+    static let dragValueChangedEvent = CustomControlEvent.playerSlider_dragValueChanged.event
 
     private let trackView: UIView = {
         let view = UIView()
@@ -36,16 +37,29 @@ final class PlayerSlider: UIControl {
     }
     private var activeTouchOffsetFromThumb: CGPoint?
 
-    var progressPercent: CGFloat = 0.5 {
+    private(set) var dragValuePercentage: CGFloat? {
         didSet {
-            if progressPercent < 0 {
-                progressPercent = 0
-            }
-            if progressPercent > 1 {
-                progressPercent = 1
-            }
+            dragValuePercentage = dragValuePercentage?.clamped(to: 0...1)
             updateProgressDisplay()
-            sendActions(for: .valueChanged)
+            if dragValuePercentage != oldValue {
+                sendActions(for: Self.dragValueChangedEvent)
+            }
+        }
+    }
+
+    var valuePercentage: CGFloat? {
+        didSet {
+            valuePercentage = valuePercentage?.clamped(to: 0...1)
+            updateProgressDisplay()
+            if valuePercentage != oldValue {
+                sendActions(for: .valueChanged)
+            }
+        }
+    }
+
+    override var isEnabled: Bool {
+        didSet {
+            alpha = isEnabled ? 1 : 0.7
         }
     }
 
@@ -57,6 +71,12 @@ final class PlayerSlider: UIControl {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func endActiveDrag() {
+        activeTouch = nil
+        activeTouchOffsetFromThumb = nil
+        dragValuePercentage = nil
     }
 
     override func layoutSubviews() {
@@ -83,6 +103,10 @@ final class PlayerSlider: UIControl {
     // MARK: - Touch Tracking
 
     override func beginTracking(_ touch: UITouch, with event: UIEvent?) -> Bool {
+        guard valuePercentage != nil else {
+            return false
+        }
+
         let offsetFromThumb = touch.location(in: thumbView)
         let expandedThumbRegion = thumbView.bounds.expanded(by: 16)
 
@@ -104,26 +128,29 @@ final class PlayerSlider: UIControl {
         let thumbSize = thumbView.frame.width
         let adjustedTrackWidth = trackView.frame.width - thumbSize
 
-        let progress = targetThumbPosition / adjustedTrackWidth
+        let pct = (targetThumbPosition / adjustedTrackWidth).clamped(to: 0...1)
 
-        let lastProgress = progressPercent
-        progressPercent = progress
+        let lastPct = dragValuePercentage ?? valuePercentage
 
         // When hitting either end of the slider, emit a vibration
-        if (progressPercent == 0 || progressPercent == 1) && progressPercent != lastProgress {
+        if (pct == 0 || pct == 1) && pct != lastPct {
             UISelectionFeedbackGenerator().selectionChanged()
         }
 
+        dragValuePercentage = pct
         return true
     }
 
     override func endTracking(_ touch: UITouch?, with event: UIEvent?) {
-        cancelTracking(with: event)
+        if let dragValuePercentage {
+            valuePercentage = dragValuePercentage
+        }
+        endActiveDrag()
+        sendActions(for: .valueChangedByUser)
     }
 
     override func cancelTracking(with event: UIEvent?) {
-        activeTouch = nil
-        activeTouchOffsetFromThumb = nil
+        endActiveDrag()
     }
 
     override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
@@ -146,10 +173,13 @@ final class PlayerSlider: UIControl {
         let thumbSize = thumbView.frame.width
         let adjustedTrackWidth = trackView.frame.width - thumbSize
 
-        let thumbProgressPosition = adjustedTrackWidth * progressPercent
+        let thumbPosition = adjustedTrackWidth * (dragValuePercentage ?? valuePercentage ?? 0)
+
+        thumbView.isHidden = valuePercentage == nil
+        progressOverlayView.isHidden = valuePercentage == nil
 
         thumbView.frame.origin = .init(
-            x: trackView.frame.minX + thumbProgressPosition,
+            x: trackView.frame.minX + thumbPosition,
             y: trackView.frame.minY + trackView.frame.height / 2 - thumbSize / 2
         )
 
