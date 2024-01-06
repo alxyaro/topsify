@@ -9,6 +9,7 @@ struct Song: Identifiable, Equatable {
     let title: String
     let accentColor: HexColor
     let isExplicit: Bool
+    let streamURL: URL
 }
 
 extension Song: CustomDebugStringConvertible {
