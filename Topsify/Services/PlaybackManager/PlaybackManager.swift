@@ -19,15 +19,17 @@ final class PlaybackManager: PlaybackManagerType {
 
     private let player = AVPlayer()
     private let playbackQueue: any PlaybackQueueType
-    private var audioSession: AVAudioSession
+    private var audioSessionHelper: AudioSessionHelperType
     private var disposeBag = DisposeBag()
+
+    private var playCancellable: AnyCancellable?
     private var activeSeekTarget = CurrentValueSubject<CMTime?, Never>(nil)
 
-    init(playbackQueue: any PlaybackQueueType, audioSession: AVAudioSession) {
+    init(playbackQueue: any PlaybackQueueType, audioSessionHelper: AudioSessionHelperType) {
         self.playbackQueue = playbackQueue
-        self.audioSession = audioSession
+        self.audioSessionHelper = audioSessionHelper
 
-        try? audioSession.setCategory(.playback, mode: .moviePlayback)
+        try? audioSessionHelper.configureAudio()
 
         configurePlayerItemPopulation(playbackQueue)
         configureTimingEvents()
@@ -93,16 +95,23 @@ final class PlaybackManager: PlaybackManagerType {
             pause()
             return
         }
-        do {
-            try audioSession.setActive(true)
-            status = .playing
-            player.play()
-        } catch {
-            pause()
+        let playTask = Task { @MainActor in
+            do {
+                try await audioSessionHelper.activateAudio()
+                guard !Task.isCancelled else {
+                    return
+                }
+                status = .playing
+                player.play()
+            } catch {
+                pause()
+            }
         }
+        playCancellable = playTask.anyCancellable
     }
     
     func pause() {
+        playCancellable?.cancel()
         status = .notPlaying
         player.pause()
     }
