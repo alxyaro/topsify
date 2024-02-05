@@ -9,7 +9,11 @@ struct RootDependencyContainer {
 
     init() {
         self.playbackQueue = PlaybackQueue()
-        self.playbackManager = PlaybackManager(playbackQueue: playbackQueue, audioSession: AVAudioSession.sharedInstance())
+        self.playbackManager = PlaybackManager(
+            player: AVQueuePlayer(),
+            playbackQueue: playbackQueue,
+            audioSessionHelper: AudioSessionHelper()
+        )
     }
 
     func makeRootViewController() -> UIViewController {

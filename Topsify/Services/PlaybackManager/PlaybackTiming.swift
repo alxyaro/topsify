@@ -10,7 +10,7 @@ struct PlaybackTiming {
 
 extension PlaybackTiming {
 
-    init?(from playerItem: AVPlayerItem) {
+    init?(from playerItem: any PlayerItemType) {
         if playerItem.duration == .indefinite {
             return nil
         }

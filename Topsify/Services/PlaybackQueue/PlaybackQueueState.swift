@@ -31,6 +31,10 @@ extension PlaybackQueueState {
         upNext.count
     }
 
+    var nextItem: PlaybackQueueItem? {
+        userQueue.first ?? upNext.first
+    }
+
     var activeItemIndex: Int? {
         activeItem != nil ? history.count : nil
     }

@@ -11,6 +11,7 @@
 		4F12872F2AFB09270013A213 /* UIKit+Formatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F12872E2AFB09270013A213 /* UIKit+Formatting.swift */; };
 		4F1287322AFB1F790013A213 /* UIKit+FormattingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1287312AFB1F790013A213 /* UIKit+FormattingTests.swift */; };
 		4F1287342AFB21480013A213 /* UserRef+Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1287332AFB21480013A213 /* UserRef+Mock.swift */; };
+		4F612DCF2B70152200524DDA /* QueuePlayerQueuingHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F612DCE2B70152200524DDA /* QueuePlayerQueuingHelper.swift */; };
 		4F639A9C2AC5F25A005BF20F /* RecentActivityItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639A9B2AC5F25A005BF20F /* RecentActivityItem.swift */; };
 		4F639AA22AC75101005BF20F /* PlaybackSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639AA12AC75101005BF20F /* PlaybackSource.swift */; };
 		4F639AA42ACA061D005BF20F /* PlaylistViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F639AA32ACA061D005BF20F /* PlaylistViewModel.swift */; };
@@ -43,6 +44,7 @@
 		4FD5DC252B41EA8400EB343D /* PlaybackTiming.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD5DC242B41EA8400EB343D /* PlaybackTiming.swift */; };
 		4FD5DC292B41FD6E00EB343D /* PlaybackError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD5DC282B41FD6E00EB343D /* PlaybackError.swift */; };
 		4FD5DC2D2B421C9700EB343D /* PlaybackStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD5DC2C2B421C9700EB343D /* PlaybackStatus.swift */; };
+		4FD5DC2F2B423EE000EB343D /* PlayerTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD5DC2E2B423EE000EB343D /* PlayerTypes.swift */; };
 		4FD5DC312B42589500EB343D /* SubjectBacked.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD5DC302B42589500EB343D /* SubjectBacked.swift */; };
 		4FD5DC372B43466D00EB343D /* AVFoundation+Combine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD5DC362B43466D00EB343D /* AVFoundation+Combine.swift */; };
 		4FD5DC392B43629C00EB343D /* PlayerSliderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FD5DC382B43629C00EB343D /* PlayerSliderViewModel.swift */; };
@@ -290,6 +292,7 @@
 		4F12872E2AFB09270013A213 /* UIKit+Formatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIKit+Formatting.swift"; sourceTree = "<group>"; };
 		4F1287312AFB1F790013A213 /* UIKit+FormattingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIKit+FormattingTests.swift"; sourceTree = "<group>"; };
 		4F1287332AFB21480013A213 /* UserRef+Mock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserRef+Mock.swift"; sourceTree = "<group>"; };
+		4F612DCE2B70152200524DDA /* QueuePlayerQueuingHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueuePlayerQueuingHelper.swift; sourceTree = "<group>"; };
 		4F639A9B2AC5F25A005BF20F /* RecentActivityItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentActivityItem.swift; sourceTree = "<group>"; };
 		4F639A9F2AC741F1005BF20F /* ContentID+Mock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContentID+Mock.swift"; sourceTree = "<group>"; };
 		4F639AA12AC75101005BF20F /* PlaybackSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackSource.swift; sourceTree = "<group>"; };
@@ -322,6 +325,7 @@
 		4FD5DC242B41EA8400EB343D /* PlaybackTiming.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackTiming.swift; sourceTree = "<group>"; };
 		4FD5DC282B41FD6E00EB343D /* PlaybackError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackError.swift; sourceTree = "<group>"; };
 		4FD5DC2C2B421C9700EB343D /* PlaybackStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackStatus.swift; sourceTree = "<group>"; };
+		4FD5DC2E2B423EE000EB343D /* PlayerTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerTypes.swift; sourceTree = "<group>"; };
 		4FD5DC302B42589500EB343D /* SubjectBacked.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubjectBacked.swift; sourceTree = "<group>"; };
 		4FD5DC362B43466D00EB343D /* AVFoundation+Combine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVFoundation+Combine.swift"; sourceTree = "<group>"; };
 		4FD5DC382B43629C00EB343D /* PlayerSliderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerSliderViewModel.swift; sourceTree = "<group>"; };
@@ -599,7 +603,9 @@
 				4FD5DC242B41EA8400EB343D /* PlaybackTiming.swift */,
 				4FD5DC282B41FD6E00EB343D /* PlaybackError.swift */,
 				4FD5DC1F2B41E2D700EB343D /* PlaybackManager.swift */,
+				4FD5DC2E2B423EE000EB343D /* PlayerTypes.swift */,
 				4FD4232B2B6EB2E700FE514D /* AudioSessionHelper.swift */,
+				4F612DCE2B70152200524DDA /* QueuePlayerQueuingHelper.swift */,
 			);
 			path = PlaybackManager;
 			sourceTree = "<group>";
@@ -1356,6 +1362,7 @@
 				4FA711992B0087F50086B79F /* Identified.swift in Sources */,
 				6BED244929D8BB47002D51C2 /* PlayerStageBasicItemCell.swift in Sources */,
 				6B9B44D129D28C6E00F6BA94 /* PlayerTitleView.swift in Sources */,
+				4F612DCF2B70152200524DDA /* QueuePlayerQueuingHelper.swift in Sources */,
 				6B04D59F2A4644F000DA0FC2 /* TransitionPanGestureHandler.swift in Sources */,
 				4F639AAC2ACBC1AF005BF20F /* BannerCollectionViewController.swift in Sources */,
 				4FBE987A2AC2012600802FF8 /* SwizzleHelper.swift in Sources */,
@@ -1454,6 +1461,7 @@
 				6B46C8DF29E9E508006DEDBB /* PlayerStageViewModel.swift in Sources */,
 				6BE368B729A2903900687D48 /* FakeUtils.swift in Sources */,
 				4FA711A62B269B0A0086B79F /* BannerAttributionViewModel.swift in Sources */,
+				4FD5DC2F2B423EE000EB343D /* PlayerTypes.swift in Sources */,
 				6BFAA33D29ABEB660017E807 /* EmptyCollectionViewCell.swift in Sources */,
 				6B357244280BB8DA007CBDF6 /* RecentActivityItemCell.swift in Sources */,
 				6B8D0FF32A809C7E00457DCF /* UICollectionView+Additions.swift in Sources */,

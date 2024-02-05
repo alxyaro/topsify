@@ -17,58 +17,64 @@ final class PlaybackManager: PlaybackManagerType {
     @SubjectBacked var status = PlaybackStatus.notPlaying
     @SubjectBacked var timing: PlaybackTiming?
 
-    private let player = AVPlayer()
+    private let player: any QueuePlayerType
+    private let queuingHelper: QueuePlayerQueuingHelper
     private let playbackQueue: any PlaybackQueueType
     private var audioSessionHelper: AudioSessionHelperType
     private var disposeBag = DisposeBag()
 
-    private var playCancellable: AnyCancellable?
+    private var activePlayTaskCancellable: AnyCancellable?
+    private var activeSeekTaskCancellable: AnyCancellable?
     private var activeSeekTarget = CurrentValueSubject<CMTime?, Never>(nil)
 
-    init(playbackQueue: any PlaybackQueueType, audioSessionHelper: AudioSessionHelperType) {
+    init(
+        player: any QueuePlayerType,
+        playbackQueue: any PlaybackQueueType,
+        audioSessionHelper: AudioSessionHelperType
+    ) {
+        self.player = player
+        self.queuingHelper = .init(queuePlayer: player)
         self.playbackQueue = playbackQueue
         self.audioSessionHelper = audioSessionHelper
 
         try? audioSessionHelper.configureAudio()
 
-        configurePlayerItemPopulation(playbackQueue)
-        configureTimingEvents()
+        configurePlaybackQueueBinding(playbackQueue, player: player)
+        configureTimingEvents(player: player)
     }
 
-    private func configurePlayerItemPopulation(_ playbackQueue: some PlaybackQueueType) {
+    private func configurePlaybackQueueBinding<P: QueuePlayerType>(_ playbackQueue: some PlaybackQueueType, player: P) {
+        let queuingHelper = queuingHelper
+
+        var nextPlayerItem: P.Item?
+
+        // TODO: set up some form of error handling if currentItemStatusPublisher emits .failed
+        //  This can happen if the media failed to load, so it may be appropriate to skip to next item or show an error message.
         playbackQueue.state
-            .map(\.activeItem?.song.streamURL)
-            .reEmit(onOutputFrom: player.publisher(for: \.status)
-                .removeDuplicates()
-                .filter { $0 == .failed }
-            )
-            .sink { [weak self] streamURL in
+            .map { ($0.activeItem, $0.nextItem) }
+            .sink { currentItemID, nextItemID in
+                queuingHelper.setCurrentItem(.init(from: currentItemID))
+                queuingHelper.setNextItem(.init(from: nextItemID))
+
+                nextPlayerItem = player.items()[safe: 1]
+            }
+            .store(in: &disposeBag)
+
+        player.currentItemPublisher
+            .sink { [weak self] currentItem in
                 guard let self else { return }
-                if let streamURL {
-                    let playerItem = AVPlayerItem(url: streamURL)
-                    player.replaceCurrentItem(with: playerItem)
-                    player.seek(to: .zero)
-                } else {
-                    player.replaceCurrentItem(with: nil)
+                if currentItem == nextPlayerItem {
+                    nextPlayerItem = nil
+                    playbackQueue.goToNextItem()
                 }
             }
             .store(in: &disposeBag)
     }
 
-    private func configureTimingEvents() {
-        let currentItemPublisher = player.publisher(for: \.currentItem)
-
-        let currentItemStatusPublisher = player.publisher(for: \.currentItem)
-            .map { currentItem -> AnyPublisher<AVPlayerItem.Status, Never> in
-                if let currentItem {
-                    currentItem.publisher(for: \.status, options: [.initial, .new]).eraseToAnyPublisher()
-                } else {
-                    AnyPublisher.never()
-                }
-            }
-            .switchToLatest()
-
-        let periodicTimePublisher = player.periodicTimePublisher(forInterval: CMTime(value: 1, timescale: 5))
+    private func configureTimingEvents(player: some QueuePlayerType) {
+        let currentItemPublisher = player.currentItemPublisher
+        let currentItemStatusPublisher = player.currentItemStatusPublisher
+        let periodicTimePublisher = player.periodicTimePublisher
 
         Publishers.Merge4(
             currentItemPublisher.mapToVoid(),
@@ -90,11 +96,13 @@ final class PlaybackManager: PlaybackManagerType {
         .store(in: &disposeBag)
     }
 
+    @MainActor
     func play() {
         guard player.currentItem != nil else {
             pause()
             return
         }
+        activePlayTaskCancellable?.cancel()
         let playTask = Task { @MainActor in
             do {
                 try await audioSessionHelper.activateAudio()
@@ -107,31 +115,32 @@ final class PlaybackManager: PlaybackManagerType {
                 pause()
             }
         }
-        playCancellable = playTask.anyCancellable
+        activePlayTaskCancellable = playTask.anyCancellable
     }
-    
+
+    @MainActor
     func pause() {
-        playCancellable?.cancel()
+        activePlayTaskCancellable?.cancel()
         status = .notPlaying
         player.pause()
     }
-    
+
     func seek(to time: TimeInterval) {
         let targetTime = CMTime(seconds: time, preferredTimescale: 100)
         let seekTolerance = CMTime(value: 1, timescale: 10) // Allow seek error up to 1/10th of a second
 
-        activeSeekTarget.send(targetTime)
-        player.seek(
-            to: targetTime,
-            toleranceBefore: seekTolerance,
-            toleranceAfter: seekTolerance,
-            completionHandler: { [weak self] _ in
-                guard let self else { return }
-                if activeSeekTarget.value == targetTime {
-                    activeSeekTarget.send(nil)
-                }
-            }
-        )
+        activeSeekTaskCancellable?.cancel()
+        let seekTask = Task { @MainActor in
+            activeSeekTarget.send(targetTime)
+            await player.seek(
+                to: targetTime,
+                toleranceBefore: seekTolerance,
+                toleranceAfter: seekTolerance
+            )
+            guard !Task.isCancelled else { return }
+            activeSeekTarget.send(nil)
+        }
+        activeSeekTaskCancellable = seekTask.anyCancellable
     }
 
     func skipBackward() {
