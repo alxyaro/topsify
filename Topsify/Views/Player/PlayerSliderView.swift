@@ -17,14 +17,14 @@ final class PlayerSliderView: UIView {
 
     private let leadingTimeLabel: UILabel = {
         let label = UILabel()
-        label.font = .appFont(ofSize: 13)
+        label.font = .appFont(ofSize: 11)
         label.textColor = .appTextSecondary
         return label
     }()
 
     private let trailingTimeLabel: UILabel = {
         let label = UILabel()
-        label.font = .appFont(ofSize: 13)
+        label.font = .appFont(ofSize: 11)
         label.textColor = .appTextSecondary
         return label
     }()
@@ -63,7 +63,7 @@ final class PlayerSliderView: UIView {
 
         addSubview(timeLabelsStackView)
         timeLabelsStackView.constrainEdges(to: slider, excluding: .vertical, withInsets: .horizontal(PlayerSlider.padding))
-        timeLabelsStackView.topAnchor.constraint(equalTo: slider.bottomAnchor, constant: 3 - PlayerSlider.padding).isActive = true
+        timeLabelsStackView.topAnchor.constraint(equalTo: slider.bottomAnchor, constant: -PlayerSlider.padding + 5).isActive = true
         timeLabelsStackView.bottomAnchor.constraint(equalTo: bottomAnchor).priority(.justLessThanRequired).isActive = true
 
         // Bring slider to front so it gets priority on touch events:
