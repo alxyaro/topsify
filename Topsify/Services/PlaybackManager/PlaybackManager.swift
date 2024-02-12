@@ -6,15 +6,15 @@ import Foundation
 
 final class PlaybackManager: PlaybackManagerType {
 
-    var statusPublisher: AnyPublisher<PlaybackStatus, Never> {
-        $status.eraseToAnyPublisher()
+    var isPlayingPublisher: AnyPublisher<Bool, Never> {
+        $isPlaying.eraseToAnyPublisher()
     }
 
     var timingPublisher: AnyPublisher<PlaybackTiming?, Never> {
         $timing.eraseToAnyPublisher()
     }
 
-    @SubjectBacked var status = PlaybackStatus.notPlaying
+    @SubjectBacked var isPlaying = false
     @SubjectBacked var timing: PlaybackTiming?
 
     private let player: any QueuePlayerType
@@ -61,8 +61,8 @@ final class PlaybackManager: PlaybackManagerType {
             .store(in: &disposeBag)
 
         player.currentItemPublisher
-            .sink { [weak self] currentItem in
-                guard let self else { return }
+            .unwrapped()
+            .sink { currentItem in
                 if currentItem == nextPlayerItem {
                     nextPlayerItem = nil
                     playbackQueue.goToNextItem()
@@ -94,6 +94,12 @@ final class PlaybackManager: PlaybackManagerType {
             }
         }
         .store(in: &disposeBag)
+
+        player.isPlaying
+            .sink { [weak self] in
+                self?.isPlaying = $0
+            }
+            .store(in: &disposeBag)
     }
 
     @MainActor
@@ -109,7 +115,6 @@ final class PlaybackManager: PlaybackManagerType {
                 guard !Task.isCancelled else {
                     return
                 }
-                status = .playing
                 player.play()
             } catch {
                 pause()
@@ -121,7 +126,6 @@ final class PlaybackManager: PlaybackManagerType {
     @MainActor
     func pause() {
         activePlayTaskCancellable?.cancel()
-        status = .notPlaying
         player.pause()
     }
 

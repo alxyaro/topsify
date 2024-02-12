@@ -4,8 +4,8 @@ import Combine
 import Foundation
 
 protocol PlaybackManagerType {
-    var status: PlaybackStatus { get }
-    var statusPublisher: AnyPublisher<PlaybackStatus, Never> { get }
+    var isPlaying: Bool { get }
+    var isPlayingPublisher: AnyPublisher<Bool, Never> { get }
     var timing: PlaybackTiming? { get }
     var timingPublisher: AnyPublisher<PlaybackTiming?, Never> { get }
 

@@ -32,9 +32,7 @@ final class PlayerControlsViewModel {
             .store(in: &disposeBag)
 
         return Outputs(
-            isPlaying: dependencies.playbackManager.statusPublisher
-                .map { $0 == .playing }
-                .eraseToAnyPublisher()
+            isPlaying: dependencies.playbackManager.isPlayingPublisher
         )
     }
 }

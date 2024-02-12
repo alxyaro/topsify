@@ -6,7 +6,7 @@ import AVFoundation
 
 /// Thin protocol wrappers over AVFoundation player types.
 
-protocol PlayerItemType: Hashable {
+protocol PlayerItemType: AnyObject, Hashable {
     var status: AVPlayerItem.Status { get }
     var statusPublisher: AnyPublisher<AVPlayerItem.Status, Never> { get }
     var duration: CMTime { get }
@@ -24,6 +24,8 @@ protocol PlayerType {
     var statusPublisher: AnyPublisher<AVPlayer.Status, Never> { get }
     var currentItem: Item? { get }
     var currentItemPublisher: AnyPublisher<Item?, Never> { get }
+    var rate: Float { get }
+    var ratePublisher: AnyPublisher<Float, Never> { get }
     var periodicTimePublisher: AnyPublisher<Void, Never> { get }
 
     func replaceCurrentItem(with item: Item?)
@@ -56,6 +58,13 @@ extension PlayerType {
             .switchToLatest()
             .eraseToAnyPublisher()
     }
+
+    var isPlaying: AnyPublisher<Bool, Never> {
+        ratePublisher
+            .map { $0 > 0 }
+            .removeDuplicates()
+            .eraseToAnyPublisher()
+    }
 }
 
 // MARK: - Default Conformances
@@ -74,7 +83,11 @@ extension AVPlayer: PlayerType {
     var currentItemPublisher: AnyPublisher<AVPlayerItem?, Never> {
         publisher(for: \.currentItem, options: [.initial, .new]).eraseToAnyPublisher()
     }
-    
+
+    var ratePublisher: AnyPublisher<Float, Never> {
+        publisher(for: \.rate, options: [.initial, .new]).eraseToAnyPublisher()
+    }
+
     var periodicTimePublisher: AnyPublisher<Void, Never> {
         periodicTimePublisher(forInterval: CMTime(value: 1, timescale: 5)).mapToVoid().eraseToAnyPublisher()
     }
